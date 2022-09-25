@@ -235,6 +235,7 @@ public class Window extends JFrame implements ActionListener {
                     }
 
                     // Open the project
+                    new Project(folder);
                 }
             }
         }
