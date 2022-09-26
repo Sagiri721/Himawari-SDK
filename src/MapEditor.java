@@ -657,10 +657,4 @@ public class MapEditor {
 
         return coord * map.tileSet.size;
     }
-
-    private int reversePoint(int coord) {
-
-        int relative = coord / map.tileSet.size;
-        return relative * (800 / maxSize);
-    }
 }
