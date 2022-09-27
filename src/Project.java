@@ -3,7 +3,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -23,6 +22,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     String[] options = { "Sprites", "Sound", "Objects", "Maps" };
     JComboBox<String> box = new JComboBox<String>(options);
     JPanel res = new JPanel();
+
+    JList<String> list = new JList<>();
 
     private File path, engineFiles;
     private File compiler;
@@ -77,9 +78,22 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         title0.setBounds(5, 5, 300, 20);
         title0.setForeground(Color.white);
 
+        list.setName("erasable");
+        list.setBounds(5, 80, 340, 1000);
+        list.setVisible(false);
+
+        list.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+
+                // Open file
+                openFile();
+            }
+        });
+
         res.setLayout(null);
         res.add(box);
         res.add(title0);
+        res.add(list);
 
         // Bullshit initialization
 
@@ -155,24 +169,19 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             dispose();
         } else if (e.getSource() == box) {
 
-            Component[] cc = res.getComponents();
-            for (Component c : cc) {
-
-                if (c.getName() == "erasable")
-                    res.remove(c);
-            }
-
             switch (box.getSelectedIndex()) {
 
                 case -1:
 
                     // Erase
                     break;
-                case 0:
+                default:
 
                     // Fetch sprites from
 
-                    File spritesFolder = new File(engineFiles.getAbsolutePath() + "/Sprites");
+                    String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+                    list.setVisible(true);
+                    File spritesFolder = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]);
                     String[] files = new String[spritesFolder.listFiles().length];
 
                     int index = 0;
@@ -182,14 +191,37 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                         index++;
                     }
 
-                    JList<String> list = new JList<String>(files);
-                    list.setName("erasable");
-                    list.setBounds(5, 80, 300, 20 * files.length);
-                    res.add(list);
+                    list.setListData(files);
 
                     break;
             }
         }
+    }
+
+    public void openFile() {
+
+        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+        File opened = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
+                .getSelectedIndex()];
+
+        try {
+
+            File openfile = new File("src/functions/output/open_file.bat");
+            FileWriter fw = new FileWriter(openfile);
+
+            String command = opened.getAbsolutePath();
+            fw.write(command);
+            fw.close();
+
+            Runtime.getRuntime().exec(openfile.getAbsolutePath());
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(null, "Trouble opening file", "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
     }
 
     public void openCodeFile(String filePath, String file) throws Exception {
