@@ -23,7 +23,7 @@ import java.util.Scanner;
 
 public class Window extends JFrame implements ActionListener {
 
-    JMenu menu = new JMenu("Project"), mapmenu = new JMenu("Map");
+    JMenu menu = new JMenu("Project Manager Tool"), mapmenu = new JMenu("Map Editor Tool");
     JMenuItem i0 = new JMenuItem("New Map"), i1 = new JMenuItem("Load Map"),
             createP = new JMenuItem("Create Project"), loadP = new JMenuItem("Load Project");
     JMenuBar mb = new JMenuBar();

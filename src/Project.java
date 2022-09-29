@@ -1,9 +1,13 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Scanner;
 import java.awt.Color;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle;
+import javax.swing.border.BevelBorder;
 
 import java.awt.event.*;
 
@@ -34,6 +39,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             settings = new JMenuItem("Add Visual Studio Code as default code editor"),
             close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store");
     JMenuBar bar = new JMenuBar();
+
+    JPanel control;
+
+    JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert");
 
     Project(File path) {
 
@@ -95,8 +104,28 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         res.add(title0);
         res.add(list);
 
+        control = new JPanel();
+        control.setBounds(360, 5, 420, 530);
+        control.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+        control.setLayout(null);
+
+        JLabel label0 = new JLabel("Control Panel");
+        label0.setBounds(5, 5, 100, 30);
+        control.add(label0);
+
+        newObject.setBounds(5, 30, 160, 20);
+        newObject.addActionListener(this);
+
+        newAlert.setBounds(5, 55, 160, 20);
+        newAlert.addActionListener(this);
+
+        control.add(newObject);
+        control.add(newAlert);
+        control.setLayout(null);
+
         // Bullshit initialization
 
+        add(control);
         add(res);
 
         addKeyListener(this);
@@ -195,6 +224,41 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
                     break;
             }
+        } else if (e.getSource() == newObject) {
+
+            try {
+
+                Scanner s = new Scanner(new File("src/templates/Object.txt"));
+
+                String text = "";
+                while (s.hasNextLine())
+                    text += s.nextLine() + "\n";
+
+                String object_name = JOptionPane.showInputDialog(null, "Object name?", "Create Object",
+                        JOptionPane.INFORMATION_MESSAGE);
+                text = text.replace("[Object]", object_name);
+
+                Integer option = JOptionPane.showConfirmDialog(null, "Go to advanced configuration panel?",
+                        "Advanced Configuration", JOptionPane.YES_NO_OPTION);
+                // No: 1 Yes: 0
+
+                if (option == 0) {
+                    // Do some more stuff
+                }
+
+                File newFile = new File(path + "/src/main/java/Assets/Objects/" + object_name + ".java");
+                FileWriter fw = new FileWriter(newFile);
+
+                fw.write(text);
+                fw.close();
+
+                JOptionPane.showMessageDialog(null, "Object Created");
+
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
@@ -204,24 +268,26 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         File opened = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
                 .getSelectedIndex()];
 
-        try {
+        if (box.getSelectedIndex() != 3) {
 
-            File openfile = new File("src/functions/output/open_file.bat");
-            FileWriter fw = new FileWriter(openfile);
+            try {
 
-            String command = opened.getAbsolutePath();
-            fw.write(command);
-            fw.close();
+                File openfile = new File("src/functions/output/open_file.bat");
+                FileWriter fw = new FileWriter(openfile);
 
-            Runtime.getRuntime().exec(openfile.getAbsolutePath());
+                String command = opened.getAbsolutePath();
+                fw.write(command);
+                fw.close();
 
-        } catch (Exception e) {
+                Runtime.getRuntime().exec(openfile.getAbsolutePath());
 
-            JOptionPane.showMessageDialog(null, "Trouble opening file", "ERROR",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            } catch (Exception e) {
+
+                JOptionPane.showMessageDialog(null, "Trouble opening file", "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
         }
-
     }
 
     public void openCodeFile(String filePath, String file) throws Exception {
