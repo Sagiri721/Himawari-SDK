@@ -9,6 +9,7 @@ import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -286,6 +287,55 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 JOptionPane.showMessageDialog(null, "Trouble opening file", "ERROR",
                         JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
+            }
+        } else {
+
+            String dirpath = opened.getAbsolutePath();
+            String tilesetPath = "";
+
+            try {
+
+                JFileChooser fc = new JFileChooser();
+                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fc.setCurrentDirectory(new File(path + "/src/main/java/Assets/Sprites"));
+
+                int option = fc.showDialog(null, "Choose tileset");
+
+                // Import tileset
+                if (option == JFileChooser.APPROVE_OPTION) {
+
+                    File f = fc.getSelectedFile();
+
+                    String s = f.getName().substring(f.getName().length() - 4);
+
+                    if (s.equals(".png") || s.equals(".jpg")) {
+                        // Valid image file
+                        tilesetPath = f.getAbsolutePath();
+
+                        tilesetPath = tilesetPath.replace("\\", "/");
+
+                        JOptionPane.showMessageDialog(this, "Image succefully imported");
+                    } else
+                        JOptionPane.showMessageDialog(this, "Invalid image file");
+
+                    TileSet tileset = new TileSet(tilesetPath,
+                            Integer.parseInt(JOptionPane.showInputDialog(null, "Tile set size?")));
+
+                    // Get map measures
+
+                    Scanner file = new Scanner(dirpath + "/room-tiles.txt");
+                    Integer dimensions = file.nextLine().split(" ").length;
+
+                    Map map = new Map(tileset, dimensions, dimensions);
+                    MapEditor editor = new MapEditor(map);
+
+                    editor.importMap(dirpath);
+                }
+
+            } catch (Exception e) {
+
+                JOptionPane.showMessageDialog(null, "There was a problem opening the map editor", "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }

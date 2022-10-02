@@ -146,90 +146,7 @@ public class MapEditor {
 
                     String dirPath = fc.getSelectedFile().getAbsolutePath();
 
-                    try {
-                        File tiles = new File(dirPath + "\\room-tiles.txt");
-                        File obj = new File(dirPath + "\\room-objects.txt");
-
-                        String inTiles = "";
-                        String inObj = "";
-
-                        Scanner s = new Scanner(tiles);
-                        while (s.hasNextLine())
-                            inTiles += s.nextLine() + "\n";
-
-                        s.close();
-                        s = new Scanner(obj);
-                        while (s.hasNextLine())
-                            inObj += s.nextLine() + "\n";
-                        s.close();
-
-                        // Get the info from the objects
-                        objects.clear();
-
-                        for (String line : inObj.split("\n")) {
-
-                            String[] info = line.split(" ");
-
-                            Object oo = new Object();
-                            oo.name = info[0];
-                            oo.x = (Integer.parseInt(info[1].split("-")[0])) / map.tileSet.size;
-                            oo.y = (Integer.parseInt(info[1].split("-")[1])) / map.tileSet.size;
-
-                            oo.w = Integer.parseInt(info[3].split("-")[0]);
-                            oo.h = Integer.parseInt(info[3].split("-")[1]);
-
-                            oo.angle = Integer.parseInt(info[2]);
-
-                            objects.add(oo);
-                        }
-
-                        // Get the tiles
-                        boolean set = false;
-                        int count = 0;
-
-                        importTiles: {
-
-                            for (String line : inTiles.split("\n")) {
-
-                                String[] indTiles = line.split(" ");
-
-                                if (!set) {
-
-                                    // Set the matrix
-                                    int size = indTiles.length;
-                                    mapOutput = new int[size][size];
-
-                                    maxSize = size;
-                                    displayX = size;
-                                    displayY = size;
-
-                                    set = true;
-                                }
-
-                                for (int i = 0; i < indTiles.length; i++) {
-
-                                    try {
-                                        mapOutput[i][count] = Integer.parseInt(indTiles[i]);
-                                    } catch (Exception ee) {
-                                        ee.printStackTrace();
-                                        JOptionPane.showMessageDialog(null, "Error importing tiles", "ERROR",
-                                                JOptionPane.ERROR_MESSAGE);
-
-                                        break importTiles;
-                                    }
-                                }
-
-                                count++;
-                            }
-                        }
-
-                        main.getComponentAt(0, 32).repaint();
-
-                    } catch (Exception ee) {
-
-                        JOptionPane.showMessageDialog(null, "Unable to open files", "ERROR", JOptionPane.ERROR_MESSAGE);
-                        ee.printStackTrace();
-                    }
+                    importMap(dirPath);
                 }
             }
 
@@ -656,5 +573,93 @@ public class MapEditor {
     private int getRealCoords(int coord) {
 
         return coord * map.tileSet.size;
+    }
+
+    public void importMap(String dirPath) {
+
+        try {
+            File tiles = new File(dirPath + "\\room-tiles.txt");
+            File obj = new File(dirPath + "\\room-objects.txt");
+
+            String inTiles = "";
+            String inObj = "";
+
+            Scanner s = new Scanner(tiles);
+            while (s.hasNextLine())
+                inTiles += s.nextLine() + "\n";
+
+            s.close();
+            s = new Scanner(obj);
+            while (s.hasNextLine())
+                inObj += s.nextLine() + "\n";
+            s.close();
+
+            // Get the info from the objects
+            objects.clear();
+
+            for (String line : inObj.split("\n")) {
+
+                String[] info = line.split(" ");
+
+                Object oo = new Object();
+                oo.name = info[0];
+                oo.x = (Integer.parseInt(info[1].split("-")[0])) / map.tileSet.size;
+                oo.y = (Integer.parseInt(info[1].split("-")[1])) / map.tileSet.size;
+
+                oo.w = Integer.parseInt(info[3].split("-")[0]);
+                oo.h = Integer.parseInt(info[3].split("-")[1]);
+
+                oo.angle = Integer.parseInt(info[2]);
+
+                objects.add(oo);
+            }
+
+            // Get the tiles
+            boolean set = false;
+            int count = 0;
+
+            importTiles: {
+
+                for (String line : inTiles.split("\n")) {
+
+                    String[] indTiles = line.split(" ");
+
+                    if (!set) {
+
+                        // Set the matrix
+                        int size = indTiles.length;
+                        mapOutput = new int[size][size];
+
+                        maxSize = size;
+                        displayX = size;
+                        displayY = size;
+
+                        set = true;
+                    }
+
+                    for (int i = 0; i < indTiles.length; i++) {
+
+                        try {
+                            mapOutput[i][count] = Integer.parseInt(indTiles[i]);
+                        } catch (Exception ee) {
+                            ee.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "Error importing tiles", "ERROR",
+                                    JOptionPane.ERROR_MESSAGE);
+
+                            break importTiles;
+                        }
+                    }
+
+                    count++;
+                }
+            }
+
+            main.getComponentAt(0, 32).repaint();
+
+        } catch (Exception ee) {
+
+            JOptionPane.showMessageDialog(null, "Unable to open files", "ERROR", JOptionPane.ERROR_MESSAGE);
+            ee.printStackTrace();
+        }
     }
 }
