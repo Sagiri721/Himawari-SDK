@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Scanner;
 import java.awt.Color;
 
@@ -18,8 +17,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle;
 import javax.swing.border.BevelBorder;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.awt.event.*;
 
@@ -37,7 +38,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
             other = new JMenu("Misc");
     JMenuItem i0 = new JMenuItem("Run (f5)"), i1 = new JMenuItem("Open Game Code (f1)"),
-            settings = new JMenuItem("Add Visual Studio Code as default code editor"),
+            settings = new JMenuItem("Set default code editor"),
             close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store");
     JMenuBar bar = new JMenuBar();
 
@@ -259,6 +260,19 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 e1.printStackTrace();
             } catch (IOException e1) {
                 e1.printStackTrace();
+            }
+        } else if (e.getSource() == settings) {
+
+            JFileChooser fc = new JFileChooser();
+            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+            int option = fc.showDialog(null, "Set app");
+
+            if (option == JFileChooser.APPROVE_OPTION) {
+
+                // Write to settings
+                Settings.file_open_definition = fc.getSelectedFile().getAbsolutePath();
+                Settings.updateFile();
             }
         }
     }
