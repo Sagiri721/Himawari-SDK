@@ -51,6 +51,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JButton website = new JButton("Website"), docs = new JButton("Documentation"), update = new JButton("Update"),
             quit = new JButton("QUIT");
 
+    JButton openB = new JButton("Open file");
+    JButton del = new JButton("Delete file");
+
     Project(File path) {
 
         this.path = path;
@@ -82,7 +85,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setJMenuBar(bar);
 
         // User interface initization
-        res.setBounds(5, 5, 350, 530);
+        res.setBounds(5, 5, 350, 520);
         res.setBackground(Color.black);
 
         box.setSelectedIndex(-1);
@@ -99,24 +102,26 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         list.setVisible(false);
 
         // File control panel
-        JButton open = new JButton("Open file");
-        open.setBounds(5, 80, 110, 25);
-        JButton del = new JButton("Delete file");
+        openB.setBounds(5, 80, 110, 25);
         del.setBounds(120, 80, 110, 25);
         JButton view = new JButton("Inspect file");
         view.setBounds(235, 80, 110, 25);
+
+        openB.addActionListener(this);
+        del.addActionListener(this);
+        view.addActionListener(this);
 
         list.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
 
                 // Open file
-                openFile();
+                // openFile();
             }
         });
 
         res.add(view);
         res.add(del);
-        res.add(open);
+        res.add(openB);
         res.setLayout(null);
         res.add(box);
         res.add(title0);
@@ -254,6 +259,23 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     }
 
+    private void updateResources() {
+
+        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+        list.setVisible(true);
+        File spritesFolder = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]);
+        String[] files = new String[spritesFolder.listFiles().length];
+
+        int index = 0;
+        for (File f : spritesFolder.listFiles()) {
+
+            files[index] = f.getName();
+            index++;
+        }
+
+        list.setListData(files);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -287,20 +309,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
                     // Fetch sprites from
 
-                    String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
-                    list.setVisible(true);
-                    File spritesFolder = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]);
-                    String[] files = new String[spritesFolder.listFiles().length];
-
-                    int index = 0;
-                    for (File f : spritesFolder.listFiles()) {
-
-                        files[index] = f.getName();
-                        index++;
-                    }
-
-                    list.setListData(files);
-
+                    updateResources();
                     break;
             }
         } else if (e.getSource() == newObject) {
@@ -359,6 +368,25 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
             // Open website
             Functions.RunBatch("open_site.bat");
+        } else if (e.getSource() == openB) {
+
+            if (list.getSelectedIndex() == -1) {
+
+                JOptionPane.showMessageDialog(null, "No file was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            openFile();
+        } else if (e.getSource() == del) {
+
+            String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+            File file = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
+                    .getSelectedIndex()];
+
+            String command = "del " + file.getAbsolutePath();
+            Functions.WriteAndRun(command, "delete_file.bat");
+
+            updateResources();
         }
     }
 
