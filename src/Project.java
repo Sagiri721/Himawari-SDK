@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -17,10 +18,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import javax.swing.border.Border;
 
 import java.awt.event.*;
 
@@ -42,9 +43,13 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store");
     JMenuBar bar = new JMenuBar();
 
+    JTabbedPane functions = new JTabbedPane();
     JPanel control;
 
-    JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert");
+    JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert"),
+            run = new JButton("LAUCH PROJECT");
+    JButton website = new JButton("Website"), docs = new JButton("Documentation"), update = new JButton("Update"),
+            quit = new JButton("QUIT");
 
     Project(File path) {
 
@@ -53,8 +58,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         this.compiler = new File(path.getAbsolutePath() + "/../compile.bat");
 
         setTitle(getProjectTitle());
-        setSize(800, 600);
-        getContentPane().setBackground(new Color(255, 255, 153));
+        setSize(800, 620);
+        getContentPane().setBackground(Color.black);
 
         // Menu initialization
 
@@ -90,8 +95,16 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         title0.setForeground(Color.white);
 
         list.setName("erasable");
-        list.setBounds(5, 80, 340, 1000);
+        list.setBounds(5, 110, 340, 1000);
         list.setVisible(false);
+
+        // File control panel
+        JButton open = new JButton("Open file");
+        open.setBounds(5, 80, 110, 25);
+        JButton del = new JButton("Delete file");
+        del.setBounds(120, 80, 110, 25);
+        JButton view = new JButton("Inspect file");
+        view.setBounds(235, 80, 110, 25);
 
         list.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -101,37 +114,101 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             }
         });
 
+        res.add(view);
+        res.add(del);
+        res.add(open);
         res.setLayout(null);
         res.add(box);
         res.add(title0);
         res.add(list);
 
         control = new JPanel();
-        control.setBounds(360, 5, 420, 530);
+        functions.setBounds(360, 5, 420, 520);
         control.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         control.setLayout(null);
 
+        functions.add("Project", control);
+
         JLabel label0 = new JLabel("Control Panel");
-        label0.setBounds(5, 5, 100, 30);
+        label0.setFont(new Font("Monospace", Font.PLAIN, 22));
+        label0.setBounds(5, 5, 200, 30);
         control.add(label0);
 
-        newObject.setBounds(5, 30, 160, 20);
+        JLabel create = new JLabel("Create", SwingConstants.CENTER);
+        create.setBounds(5, 35, 160, 20);
+
+        newObject.setBounds(5, 55, 160, 20);
         newObject.addActionListener(this);
 
-        newAlert.setBounds(5, 55, 160, 20);
+        newAlert.setBounds(5, 80, 160, 20);
         newAlert.addActionListener(this);
 
+        control.add(create);
         control.add(newObject);
         control.add(newAlert);
         control.setLayout(null);
 
+        control.setBackground(Color.GRAY);
+
+        // Inspector initialization
+        JPanel inspector = new JPanel();
+
+        functions.add("Inspector", inspector);
+
+        // Footer
+        JLabel version = new JLabel("Version: " + Main.version);
+        version.setForeground(Color.white);
+        version.setBounds(5, 530, 100, 20);
+
+        Border b = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+
+        website.setBounds(140, 530, 110, 20);
+        website.setBackground(Color.gray);
+        website.setForeground(Color.white);
+        website.setBorder(b);
+
+        docs.setBounds(255, 530, 110, 20);
+        docs.setBackground(Color.gray);
+        docs.setForeground(Color.white);
+        docs.setBorder(b);
+
+        update.setBounds(400, 530, 110, 20);
+        update.setBackground(Color.gray);
+        update.setForeground(Color.white);
+        update.setBorder(b);
+
+        quit.setBounds(515, 530, 110, 20);
+        quit.setBackground(Color.red);
+        quit.setForeground(Color.black);
+        quit.setBorder(b);
+
+        run.setBounds(630, 530, 110, 20);
+        run.setBackground(Color.green);
+        run.setForeground(Color.black);
+        run.setBorder(b);
+
+        quit.addActionListener(this);
+        run.addActionListener(this);
+        website.addActionListener(this);
+        update.addActionListener(this);
+        docs.addActionListener(this);
+
         // Bullshit initialization
 
-        add(control);
+        // Add footer
+        add(website);
+        add(version);
+        add(update);
+        add(docs);
+        add(quit);
+        add(run);
+
+        // Add panels
+        add(functions);
         add(res);
 
         addKeyListener(this);
-        setFocusable(true);
+        setFocusable(false);
         setFocusTraversalKeysEnabled(false);
 
         setLayout(null);
@@ -180,7 +257,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == i0) {
+        if (e.getSource() == i0 || e.getSource() == run) {
 
             runGame();
         } else if (e.getSource() == i1) {
@@ -274,6 +351,14 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 Settings.file_open_definition = fc.getSelectedFile().getAbsolutePath();
                 Settings.updateFile();
             }
+        } else if (e.getSource() == quit) {
+
+            setVisible(false);
+            dispose();
+        } else if (e.getSource() == website) {
+
+            // Open website
+            Functions.RunBatch("open_site.bat");
         }
     }
 
@@ -360,7 +445,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         FileWriter fw = new FileWriter(f);
 
         String command = "D: \n cd " + compiler.getParentFile().getParentFile().getAbsolutePath()
-                + "\\src\\main\\java" + filePath + "\nNotepad " + file;
+                + "\\src\\main\\java" + filePath + "\n" + Settings.file_open_definition + " + file";
         fw.write(command);
         fw.close();
 

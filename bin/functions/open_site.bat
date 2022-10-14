@@ -1,0 +1,1 @@
+explorer "file:///D:/TIAGO/program/himawari-web/index.html"

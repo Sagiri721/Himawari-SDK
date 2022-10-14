@@ -6,6 +6,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -23,9 +25,11 @@ import java.util.Scanner;
 
 public class Window extends JFrame implements ActionListener {
 
-    JMenu menu = new JMenu("Project Manager Tool"), mapmenu = new JMenu("Map Editor Tool");
+    JMenu menu = new JMenu("Project Manager Tool"), mapmenu = new JMenu("Map Editor Tool"),
+            account = new JMenu("Account");
     JMenuItem i0 = new JMenuItem("New Map"), i1 = new JMenuItem("Load Map"),
-            createP = new JMenuItem("Create Project"), loadP = new JMenuItem("Load Project");
+            createP = new JMenuItem("Create Project"), loadP = new JMenuItem("Load Project"),
+            username = new JMenuItem("Change Username");
     JMenuBar mb = new JMenuBar();
 
     public static TileSet tileset;
@@ -37,8 +41,14 @@ public class Window extends JFrame implements ActionListener {
             java.awt.Image.SCALE_SMOOTH);
     JLabel label = new JLabel(new ImageIcon(netIcon));
 
+    // User Data
+    JLabel name_label = new JLabel("Hello there " + Settings.username);
+
+    JFrame window;
+
     Window() {
 
+        window = this;
         internet = InternetConnection();
 
         setTitle("Himawari tools");
@@ -62,18 +72,31 @@ public class Window extends JFrame implements ActionListener {
         menu.add(createP);
         menu.add(loadP);
 
-        label.setBounds(5, 5, 100, 100);
+        account.add(username);
+
+        JPanel user = new JPanel();
+        user.setLayout(null);
+        user.setBounds(0, 0, 500, 30);
+
+        name_label.setBounds(5, 5, 1000, 20);
+        name_label.setForeground(Color.black);
+        user.add(name_label);
+
+        label.setBounds(5, 50, 100, 100);
 
         i0.addActionListener(this);
         i1.addActionListener(this);
         createP.addActionListener(this);
         loadP.addActionListener(this);
+        username.addActionListener(this);
 
         mb.add(menu);
         mb.add(mapmenu);
+        mb.add(account);
 
         setJMenuBar(mb);
 
+        add(user);
         add(label);
     }
 
@@ -82,6 +105,15 @@ public class Window extends JFrame implements ActionListener {
         if (e.getSource() == i0) {
 
             new CreateMap(0);
+        } else if (e.getSource() == username) {
+
+            String name = JOptionPane.showInputDialog(null, "What's your username?");
+
+            Settings.username = name;
+            Settings.updateFile();
+
+            name_label.setText("Hello there " + Settings.username);
+
         } else if (e.getSource() == createP) {
 
             if (internet) {

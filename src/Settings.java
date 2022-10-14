@@ -1,5 +1,8 @@
 import java.awt.*;
+import java.io.File;
 import java.io.FileWriter;
+
+import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 
@@ -10,27 +13,22 @@ public class Settings {
 
     public static String username;
 
-    public static updateFile(){
+    public static void updateFile() {
 
-        Gson g = new Gson();
-        g.toJson(new SettingsRef(file_open_definition, background, username), new FileWriter("src/data/settings.json"));
-    }
+        try {
 
-    class SettingsRef {
+            Gson g = new Gson();
+            SettingsRef r = new SettingsRef(file_open_definition, background, username);
+            String text = g.toJson(r);
 
-        public String file_open_definition;
-        public int[] background_color;
+            FileWriter fw = new FileWriter(new File("src/data/settings.json"));
 
-        public String username;
+            fw.write(text);
+            fw.close();
 
-        public SettingsRef(String s, Color b, String u) {
+        } catch (Exception e) {
 
-            file_open_definition = s;
-
-            int[] temp = { b.getRed(), b.getBlue(), b.getGreen() };
-            background_color = temp;
-
-            username = u;
+            JOptionPane.showMessageDialog(null, "Error saving to local settings", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
