@@ -1,1 +1,1 @@
-D:\TIAGO\program\himawari\my-app\src\main\java\Assets\Sprites\a.jpg
+D:\TIAGO\program\himawari\my-app\src\main\java\Assets\Sounds\音楽.txt

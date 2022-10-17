@@ -33,14 +33,21 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     JList<String> list = new JList<>();
 
-    private File path, engineFiles;
+    public static File path, engineFiles;
     private File compiler;
 
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
-            other = new JMenu("Misc");
-    JMenuItem i0 = new JMenuItem("Run (f5)"), i1 = new JMenuItem("Open Game Code (f1)"),
+            addResources = new JMenu("Manage Resources"),
+            other = new JMenu("File");
+    JMenuItem i0 = new JMenuItem("Run"), i1 = new JMenuItem("Open Game Code"),
+            openFolder = new JMenuItem("Open game folder"),
+            openRes = new JMenuItem("Open Resources Folder"),
             settings = new JMenuItem("Set default code editor"),
             close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store");
+
+    // Menu items to add resources
+    JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound");
+
     JMenuBar bar = new JMenuBar();
 
     JTabbedPane functions = new JTabbedPane();
@@ -51,8 +58,12 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JButton website = new JButton("Website"), docs = new JButton("Documentation"), update = new JButton("Update"),
             quit = new JButton("QUIT");
 
-    JButton openB = new JButton("Open file");
-    JButton del = new JButton("Delete file");
+    JButton openB = new JButton("Open file"), del = new JButton("Delete file"), view = new JButton("Inspect file");
+
+    /*
+     * Inspector objects
+     */
+    JLabel objectName = new JLabel("Object name");
 
     Project(File path) {
 
@@ -67,16 +78,26 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         // Menu initialization
 
         gamemenu.add(i0);
+        gamemenu.add(openFolder);
         codeMenu.add(i1);
         settingsMenu.add(settings);
         other.add(open);
         other.add(close);
 
+        addResources.add(openRes);
+        addResources.add(addSprite);
+        addResources.add(addMusic);
+
         bar.add(other);
         bar.add(gamemenu);
         bar.add(codeMenu);
+        bar.add(addResources);
         bar.add(settingsMenu);
 
+        openRes.addActionListener(this);
+        openFolder.addActionListener(this);
+        addSprite.addActionListener(this);
+        addMusic.addActionListener(this);
         close.addActionListener(this);
         i0.addActionListener(this);
         i1.addActionListener(this);
@@ -104,7 +125,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         // File control panel
         openB.setBounds(5, 80, 110, 25);
         del.setBounds(120, 80, 110, 25);
-        JButton view = new JButton("Inspect file");
         view.setBounds(235, 80, 110, 25);
 
         openB.addActionListener(this);
@@ -157,7 +177,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         // Inspector initialization
         JPanel inspector = new JPanel();
+        objectName.setBounds(5, 5, 300, 20);
+        objectName.setFont(new Font("Monospace", Font.PLAIN, 22));
 
+        inspector.add(objectName);
         functions.add("Inspector", inspector);
 
         // Footer
@@ -379,6 +402,12 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             openFile();
         } else if (e.getSource() == del) {
 
+            if (list.getSelectedIndex() == -1) {
+
+                JOptionPane.showMessageDialog(null, "No file was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
             File file = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
                     .getSelectedIndex()];
@@ -387,7 +416,53 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             Functions.WriteAndRun(command, "delete_file.bat");
 
             updateResources();
+        } else if (e.getSource() == view) {
+
+            if (list.getSelectedIndex() == -1 || box.getSelectedIndex() != 2) {
+
+                JOptionPane.showMessageDialog(null, "No object was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            inspectObject(new File(engineFiles.getAbsolutePath() + "/Objects").listFiles()[list
+                    .getSelectedIndex()]);
+        } else if (e.getSource() == addSprite) {
+
+            try {
+
+                Functions.CopyFilesTo("Sprites");
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        } else if (e.getSource() == addMusic) {
+
+            try {
+
+                Functions.CopyFilesTo("Sounds");
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+        } else if (e.getSource() == openFolder) {
+
+            openFolder(path.getAbsolutePath());
+        } else if (e.getSource() == openRes) {
+
+            openFolder(engineFiles.getAbsolutePath());
         }
+    }
+
+    private void openFolder(String path) {
+
+        String command = "explorer " + path;
+        Functions.WriteAndRun(command, "open_explorer.bat");
+    }
+
+    private void inspectObject(File objFile) {
+
+        objectName.setText(objFile.getName());
     }
 
     public void openFile() {

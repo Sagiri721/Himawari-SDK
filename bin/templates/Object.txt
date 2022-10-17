@@ -18,7 +18,6 @@ public class [Object] extends Object implements StdBehaviour{
 
     protected [Object](String name) {
         super(name);
-        Object.objects.add(this);
     }
 
     /**
