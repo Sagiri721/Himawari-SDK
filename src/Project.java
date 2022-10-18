@@ -9,6 +9,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,17 +20,34 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 
 import java.awt.event.*;
 
 public class Project extends JFrame implements KeyListener, ActionListener {
 
-    String[] options = { "Sprites", "Sound", "Objects", "Maps" };
-    JComboBox<String> box = new JComboBox<String>(options);
-    JPanel res = new JPanel();
+    // List of all the folders the engine has to handle
+    protected static final String[] options = { "Sprites", "Sound", "Objects", "Maps" };
+    // List of all the components that can be added
+    protected static String[] components = {
+            "Transform",
+            "ImageRenderer",
+            "Animator",
+            "RectCollider",
+            "Body",
+            "Camera"
+    };
+
+    JComboBox<String> box = new JComboBox<String>(options),
+            compBox = new JComboBox<String>(components);
+    JPanel res = new JPanel(), control;
 
     JList<String> list = new JList<>();
 
@@ -51,24 +69,26 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JMenuBar bar = new JMenuBar();
 
     JTabbedPane functions = new JTabbedPane();
-    JPanel control;
 
     JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert"),
-            run = new JButton("LAUCH PROJECT");
-    JButton website = new JButton("Website"), docs = new JButton("Documentation"), update = new JButton("Update"),
-            quit = new JButton("QUIT");
-
-    JButton openB = new JButton("Open file"), del = new JButton("Delete file"), view = new JButton("Inspect file");
+            run = new JButton("LAUCH PROJECT"), website = new JButton("Website"), docs = new JButton("Documentation"),
+            update = new JButton("Update"),
+            quit = new JButton("QUIT"), openB = new JButton("Open file"), del = new JButton("Delete file"),
+            view = new JButton("Inspect file"), compSnippet = new JButton("Add component");
 
     /*
      * Inspector objects
      */
-    JLabel objectName = new JLabel("Object name");
+    public JTextArea snippetArea = new JTextArea();
+    JLabel objectName = new JLabel("Object name", SwingConstants.CENTER);
+    JButton copy = new JButton("Copy snippet");
+
+    public JComponent[] inpectors = { compSnippet, compBox, copy };
 
     Project(File path) {
 
-        this.path = path;
-        this.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/Assets");
+        Project.path = path;
+        Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/Assets");
         this.compiler = new File(path.getAbsolutePath() + "/../compile.bat");
 
         setTitle(getProjectTitle());
@@ -177,10 +197,31 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         // Inspector initialization
         JPanel inspector = new JPanel();
-        objectName.setBounds(5, 5, 300, 20);
+        objectName.setBounds(5, 5, 420, 20);
         objectName.setFont(new Font("Monospace", Font.PLAIN, 22));
+        compSnippet.setBounds(270, 40, 130, 20);
 
+        JLabel l = new JLabel("Add a component");
+        l.setBounds(5, 40, 200, 20);
+        compBox.setBounds(110, 40, 150, 20);
+
+        inspector.setLayout(null);
+        snippetArea.setBounds(5, 70, 405, 100);
+        snippetArea.setEditable(false);
+        snippetArea.setLineWrap(true);
+
+        compSnippet.addActionListener(this);
+
+        copy.setBounds(5, 175, 150, 30);
+        copy.addActionListener(this);
+
+        inspector.add(copy);
+        inspector.add(snippetArea);
+        inspector.add(compSnippet);
+        inspector.add(l);
+        inspector.add(compBox);
         inspector.add(objectName);
+        inspector.add(compBox);
         functions.add("Inspector", inspector);
 
         // Footer
@@ -244,6 +285,12 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+
+        // Make inspector unaccessible
+        for (JComponent c : inpectors) {
+
+            c.setEnabled(false);
+        }
     }
 
     private String getProjectTitle() {
@@ -451,7 +498,69 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == openRes) {
 
             openFolder(engineFiles.getAbsolutePath());
+        } else if (e.getSource() == compSnippet) {
+
+            getSnippet(compBox.getSelectedIndex());
+        } else if (e.getSource() == copy) {
+
+            StringSelection selection = new StringSelection(snippetArea.getText());
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+            cb.setContents(selection, null);
+            JOptionPane.showConfirmDialog(null, "Snippet copied to clipboard");
         }
+    }
+
+    public void getSnippet(int ind) {
+
+        String snippet = "";
+        switch (ind) {
+
+            case 0:
+                // Transform
+                int x = Integer.parseInt((JOptionPane.showInputDialog(null, "X Position?"))),
+                        y = Integer.parseInt((JOptionPane.showInputDialog(null, "Y Position?")));
+
+                snippet = "Transform transform = new Transform(new Vec2(" + x + ", " + y
+                        + "), 0, new Vec2(1, 1));\naddComponent(transform);";
+                break;
+            case 1:
+                // ImageRenderer
+                JFileChooser fc = new JFileChooser(engineFiles + "/Sprites");
+                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                int opt = fc.showDialog(null, "Choose");
+                if (opt == JFileChooser.APPROVE_OPTION) {
+
+                    snippet = "Sprite image = new Sprite(\"" + fc.getSelectedFile().getName()
+                            + "\");\nImageRenderer renderer = new ImageRenderer(image);\naddComponent(renderer);";
+                }
+
+                break;
+            case 2:
+                // Animator
+
+                break;
+            case 3:
+                // RectCollider
+                int width = Integer.parseInt((JOptionPane.showInputDialog(null, "X Scale?"))),
+                        height = Integer.parseInt((JOptionPane.showInputDialog(null, "Y Scale?")));
+
+                snippet = "RectCollider collider = new RectCollider(transform, new Vec2(" + width + ", " + height
+                        + "));\naddComponent(collider);";
+                break;
+            case 4:
+                // Body
+                int mass = Integer.parseInt((JOptionPane.showInputDialog(null, "Mass?")));
+
+                snippet = "Body body = new Body(transform, collider, " + mass + ");\naddComponent(body);";
+                break;
+            case 5:
+                // Camera
+                break;
+        }
+
+        snippetArea.setText(snippet);
     }
 
     private void openFolder(String path) {
@@ -463,6 +572,12 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     private void inspectObject(File objFile) {
 
         objectName.setText(objFile.getName());
+
+        // Show components and stuff
+        for (JComponent c : inpectors) {
+
+            c.setEnabled(true);
+        }
     }
 
     public void openFile() {
@@ -531,6 +646,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                     Map map = new Map(tileset, dimensions, dimensions);
                     MapEditor editor = new MapEditor(map);
 
+                    file.close();
                     editor.importMap(dirpath);
                 }
 
