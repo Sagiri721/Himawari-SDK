@@ -7,7 +7,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingConstants;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -42,7 +42,7 @@ public class Window extends JFrame implements ActionListener {
     JLabel label = new JLabel(new ImageIcon(netIcon));
 
     // User Data
-    JLabel name_label = new JLabel("Hello there " + Settings.username);
+    JLabel name_label = new JLabel("Hello there " + Settings.username, SwingConstants.CENTER);
 
     JFrame window;
 
@@ -52,7 +52,7 @@ public class Window extends JFrame implements ActionListener {
         internet = InternetConnection();
 
         setTitle("Himawari tools");
-        setSize(400, 600);
+        setSize(700, 600);
         setResizable(false);
 
         DefineComponents();
@@ -76,9 +76,9 @@ public class Window extends JFrame implements ActionListener {
 
         JPanel user = new JPanel();
         user.setLayout(null);
-        user.setBounds(0, 0, 500, 30);
+        user.setBounds(0, 0, 700, 30);
 
-        name_label.setBounds(5, 5, 1000, 20);
+        name_label.setBounds(5, 5, 700, 20);
         name_label.setForeground(Color.black);
         user.add(name_label);
 

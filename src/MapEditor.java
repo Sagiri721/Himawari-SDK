@@ -37,16 +37,31 @@ public class MapEditor {
 
     Object currentObject = null;
     BufferedImage oImg;
+    boolean showGrid = true;
 
     MapEditor(Map map) {
 
         try {
             oImg = ImageIO.read(new File("src/res/object.png"));
         } catch (IOException e1) {
+
             e1.printStackTrace();
+            return;
         }
 
-        this.map = map;
+        if (map.tileSet == null) {
+
+            try {
+
+                this.map = new Map(new TileSet("src/res/defaultTile.png", 16), map.w, map.h);
+            } catch (Exception e) {
+
+                e.printStackTrace();
+                return;
+            }
+        } else
+            this.map = map;
+
         displayX = map.w;
         displayY = map.h;
 
@@ -360,6 +375,22 @@ public class MapEditor {
 
         });
 
+        JToggleButton toggleGrid = new JToggleButton(new ImageIcon("src/res/swap.png"));
+        toggleGrid.setToolTipText("Toogle grid on off");
+        toggleGrid.setBounds(562, 0, 32, 32);
+
+        toggleGrid.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+
+                showGrid = !toggleGrid.isSelected();
+                // Repaint
+                main.getComponentAt(0, 32).repaint();
+            }
+
+        });
+
         JButton reset = new JButton(new ImageIcon("src/res/reset.png"));
         reset.setBounds(530, 0, 32, 32);
         reset.setToolTipText("Settings reset");
@@ -396,6 +427,7 @@ public class MapEditor {
         main.setResizable(false);
         main.setVisible(true);
 
+        main.add(toggleGrid);
         main.add(reset);
         main.add(b);
         main.add(prev);
@@ -472,6 +504,7 @@ public class MapEditor {
                     // Delete objects
 
                     for (Iterator<Object> iterator = objects.iterator(); iterator.hasNext();) {
+
                         Object integer = iterator.next();
                         if (integer.matches(tarX, tarY)) {
                             iterator.remove();
@@ -552,20 +585,23 @@ public class MapEditor {
             // The grid should extend for the entirety of the map
             // The grid cells should be the size of the tileset
 
-            for (int i = 0; i < 800; i += xx) {
+            if (showGrid) {
 
-                g.drawLine(0, i, 800, i);
-            }
+                for (int i = 0; i < 800; i += xx) {
+                    g.drawLine(0, i, 800, i);
+                }
 
-            for (int j = 0; j < 800; j += yy) {
-
-                g.drawLine(j, 0, j, 800);
+                for (int j = 0; j < 800; j += yy) {
+                    g.drawLine(j, 0, j, 800);
+                }
             }
 
             for (Object o : objects) {
 
-                g.drawImage(oImg, (o.x - x) * xx, (o.y - y) * yy, (xx * 2) / 3,
-                        (yy * 2) / 3, null);
+                g.drawImage(oImg, (o.x - x) * xx, (o.y - y) * yy,
+                        xx * o.w,
+                        yy * o.h,
+                        null);
             }
         }
     }
