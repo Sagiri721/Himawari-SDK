@@ -28,8 +28,9 @@ public class CreateMap extends JFrame implements ActionListener {
     void DrawOptions() {
         setSize(400, 200);
 
-        JLabel label0 = new JLabel("Create a tile set"), label1 = new JLabel("Set the tile size");
-        label0.setBounds(5, 5, 100, 20);
+        JLabel label0 = new JLabel("Create a tile set, just advance to start without tileset"),
+                label1 = new JLabel("Set the tile size");
+        label0.setBounds(5, 5, 300, 20);
         button1.setBounds(5, 100, 140, 30);
         button1.addActionListener(this);
         sp.setBounds(5, 60, 100, 30);
@@ -52,9 +53,6 @@ public class CreateMap extends JFrame implements ActionListener {
                 button1.setText("Start editing");
                 label1.setText("Width and height");
                 label1.setBounds(5, 25, 100, 50);
-
-                sp2.setBounds(120, 60, 100, 30);
-                add(sp2);
                 break;
         }
 
@@ -97,7 +95,14 @@ public class CreateMap extends JFrame implements ActionListener {
         if (e.getSource() == button1) {
 
             if (mode == 0) {
-                Window.tileset = new TileSet(f.getAbsolutePath(), (int) sp.getValue());
+
+                try {
+
+                    Window.tileset = new TileSet(f.getAbsolutePath(), (int) sp.getValue());
+                } catch (Exception ee) {
+
+                    Window.tileset = null;
+                }
 
                 new CreateMap(1);
 
@@ -105,7 +110,7 @@ public class CreateMap extends JFrame implements ActionListener {
                 dispose();
             } else {
                 // If its mode 1
-                if ((int) sp2.getValue() > 0 && (int) sp.getValue() > 0) {
+                if ((int) sp.getValue() > 0) {
 
                     if (((int) sp2.getValue() * (int) sp.getValue()) > 500 * 500) {
 
@@ -113,12 +118,12 @@ public class CreateMap extends JFrame implements ActionListener {
                     } else {
 
                         Map map = new Map(Window.tileset, (int) sp.getValue(),
-                                (int) sp2.getValue());
+                                (int) sp.getValue());
 
                         new MapEditor(map);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Can't create tile set");
+                    JOptionPane.showMessageDialog(this, "Can't create map");
                 }
 
             }

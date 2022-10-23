@@ -2,6 +2,9 @@ import java.awt.event.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 
 import java.awt.image.BufferedImage;
@@ -14,7 +17,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.awt.*;
 
-public class MapEditor {
+public class MapEditor implements KeyListener, ChangeListener {
 
     public Map map;
     JFrame main;
@@ -38,6 +41,19 @@ public class MapEditor {
     Object currentObject = null;
     BufferedImage oImg;
     boolean showGrid = true;
+
+    JTabbedPane panels = new JTabbedPane();
+    JPanel mapEditing = new JPanel(), dataEditor = new JPanel();
+
+    String[] objectModels = {};
+    int current = 0;
+
+    JTextArea box = new JTextArea();
+    JButton nextObject = new JButton("^"), importObjects = new JButton("Import Object List");
+
+    JSpinner scaleX = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)),
+            scaleY = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)),
+            rotation = new JSpinner(new SpinnerNumberModel(0, 0, 360, 90));
 
     MapEditor(Map map) {
 
@@ -72,11 +88,11 @@ public class MapEditor {
         main = new JFrame();
 
         main.setTitle("Map editing tool");
-        main.setSize(800, 800);
+        main.setSize(800, 830);
         main.setLayout(null);
 
         JPanel panel = new DrawPanel();
-        panel.setBounds(0, 32, 790, 790);
+        panel.setBounds(0, 62, 790, 790);
         panel.setBackground(Color.WHITE);
 
         JLabel tilePreview = new JLabel("Current tile: ");
@@ -125,6 +141,8 @@ public class MapEditor {
                         currentObject = o;
 
                         main.getComponentAt(0, 32).repaint();
+
+                        setEditorValues();
                     }
 
                 } catch (Exception ee) {
@@ -135,7 +153,7 @@ public class MapEditor {
 
         });
 
-        main.add(o);
+        mapEditing.add(o);
 
         l1.setBounds(139, 0, 32, 32);
         l1.setEnabled(false);
@@ -167,10 +185,10 @@ public class MapEditor {
 
         });
 
-        main.add(l1);
-        main.add(l2);
-        main.add(ll);
-        main.add(importB);
+        mapEditing.add(l1);
+        mapEditing.add(l2);
+        mapEditing.add(ll);
+        mapEditing.add(importB);
 
         export.setBounds(602, 0, 32, 32);
         export.setToolTipText("Export map");
@@ -252,7 +270,7 @@ public class MapEditor {
 
         });
 
-        main.add(export);
+        mapEditing.add(export);
 
         JButton settings = new JButton(new ImageIcon("src/res/settings.png")),
                 position = new JButton(new ImageIcon("src/res/position.png"));
@@ -265,9 +283,9 @@ public class MapEditor {
         pos = new JLabel("Root point: 0,0");
         pos.setBounds(420, 0, 100, 32);
 
-        main.add(pos);
-        main.add(position);
-        main.add(settings);
+        mapEditing.add(pos);
+        mapEditing.add(position);
+        mapEditing.add(settings);
 
         l1.addActionListener(new ActionListener() {
 
@@ -334,6 +352,7 @@ public class MapEditor {
                         displayX = size;
                         displayY = size;
                         main.getComponentAt(0, 32).repaint();
+                        main.requestFocus();
                     }
                 } catch (Exception ee) {
 
@@ -421,18 +440,97 @@ public class MapEditor {
 
         });
 
+        JLabel label0 = new JLabel("Object: "), label1 = new JLabel("Position X, Y: "),
+                label2 = new JLabel("Scale X, Y: "), label3 = new JLabel("Rotation: ");
+
+        label0.setBounds(5, 5, 300, 30);
+        label1.setBounds(330, 10, 200, 20);
+        label2.setBounds(510, 10, 300, 20);
+        label3.setBounds(675, 10, 300, 20);
+
+        box.setBounds(60, 10, 200, 20);
+        nextObject.setBounds(265, 10, 50, 20);
+
+        box.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+
+        try {
+
+            box.setText(objectModels[current]);
+        } catch (Exception e) {
+
+            box.setText("----");
+        }
+        box.setEditable(false);
+
+        nextObject.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (objectModels.length == 0)
+                    return;
+
+                current++;
+                try {
+
+                    box.setText(objectModels[current]);
+                } catch (Exception ee) {
+
+                    current = 0;
+                    box.setText(objectModels[current]);
+                }
+                updateObject();
+            }
+
+        });
+
+        scaleX.setBounds(580, 5, 40, 28);
+        scaleY.setBounds(630, 5, 40, 28);
+
+        rotation.setBounds(730, 5, 40, 28);
+
+        scaleX.addChangeListener(this);
+        scaleY.addChangeListener(this);
+        rotation.addChangeListener(this);
+
+        dataEditor.add(label3);
+        dataEditor.add(rotation);
+        dataEditor.add(scaleX);
+        dataEditor.add(scaleY);
+        dataEditor.add(nextObject);
+        dataEditor.add(label0);
+        dataEditor.add(box);
+        dataEditor.add(label1);
+        dataEditor.add(label2);
+
+        dataEditor.setLayout(null);
+        dataEditor.setBounds(0, 0, main.getWidth(), 32);
+
         main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         main.setLocationRelativeTo(null);
         // main.setLayout(null);
         main.setResizable(false);
         main.setVisible(true);
 
-        main.add(toggleGrid);
-        main.add(reset);
-        main.add(b);
-        main.add(prev);
-        main.add(tilePreview);
+        mapEditing.setLayout(null);
+        mapEditing.setBounds(0, 0, main.getWidth(), 32);
+
+        mapEditing.add(toggleGrid);
+        mapEditing.add(reset);
+        mapEditing.add(b);
+        mapEditing.add(prev);
+        mapEditing.add(tilePreview);
+
+        panels.setBounds(0, 0, main.getWidth(), 62);
+        panels.add("Tools", mapEditing);
+        panels.add("Objects Parameters", dataEditor);
+
+        main.add(panels);
         main.add(panel);
+
+        main.addKeyListener(this);
+        main.setFocusable(true);
+        main.requestFocus();
 
         main.getContentPane().setBackground(Color.white);
 
@@ -603,6 +701,9 @@ public class MapEditor {
                         yy * o.h,
                         null);
             }
+
+            pos.setText("Root point: " + x + "," + y);
+            main.requestFocus();
         }
     }
 
@@ -697,5 +798,63 @@ public class MapEditor {
             JOptionPane.showMessageDialog(null, "Unable to open files", "ERROR", JOptionPane.ERROR_MESSAGE);
             ee.printStackTrace();
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+        if (e.getKeyChar() == 'h') {
+
+            x--;
+        } else if (e.getKeyChar() == 'j') {
+
+            y--;
+        } else if (e.getKeyChar() == 'k') {
+
+            y++;
+        } else if (e.getKeyChar() == 'l') {
+
+            x++;
+        }
+
+        main.getComponentAt(0, 32).repaint();
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+
+        updateObject();
+    }
+
+    private void updateObject() {
+
+        if (currentObject == null) {
+            currentObject = new Object();
+        }
+
+        currentObject.angle = (int) rotation.getValue();
+        currentObject.w = (int) scaleX.getValue();
+        currentObject.h = (int) scaleY.getValue();
+
+        currentObject.name = box.getText();
+    }
+
+    private void setEditorValues() {
+
+        scaleX.setValue(currentObject.w);
+        scaleY.setValue(currentObject.h);
+        rotation.setValue(currentObject.angle);
+
+        box.setText(currentObject.name);
     }
 }
