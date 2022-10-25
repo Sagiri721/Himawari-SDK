@@ -19,7 +19,7 @@ import java.awt.*;
 
 public class MapEditor implements KeyListener, ChangeListener {
 
-    public Map map;
+    public static Map map;
     JFrame main;
     JLabel prev, ll, pos;
 
@@ -32,7 +32,9 @@ public class MapEditor implements KeyListener, ChangeListener {
             l2 = new JButton(new ImageIcon("src/res/layer2.png"));
 
     JButton export = new JButton(new ImageIcon("src/res/export.png")),
-            importB = new JButton(new ImageIcon("src/res/import.png"));
+            importB = new JButton(new ImageIcon("src/res/import.png")),
+            importTileset = new JButton("Import Tileset"),
+            importObjectList = new JButton("Import Objects");
 
     int[][] mapOutput;
     List<Object> objects = new ArrayList<>();
@@ -506,6 +508,72 @@ public class MapEditor implements KeyListener, ChangeListener {
         dataEditor.setLayout(null);
         dataEditor.setBounds(0, 0, main.getWidth(), 32);
 
+        JPanel tilesetPanel = new JPanel();
+        tilesetPanel.setBounds(0, 0, main.getWidth(), 32);
+
+        importTileset.setBounds(5, 5, 200, 20);
+        importObjectList.setBounds(210, 5, 200, 20);
+
+        tilesetPanel.add(importTileset);
+        tilesetPanel.add(importObjectList);
+
+        importTileset.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JFileChooser fc = new JFileChooser();
+                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                int o = fc.showOpenDialog(null);
+                if (o == JFileChooser.APPROVE_OPTION) {
+
+                    try {
+
+                        String s = JOptionPane.showInputDialog(null, "Tamanho das tiles");
+                        TileSet set = new TileSet(fc.getSelectedFile().getAbsolutePath(),
+                                Integer.parseInt(s));
+
+                        MapEditor.map = new Map(set, map.w, map.h);
+                        main.getComponentAt(0, 32).repaint();
+                        prev.setIcon(getPreview());
+
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+
+        });
+
+        importObjectList.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JFileChooser fc = new JFileChooser();
+                fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int o = fc.showDialog(null, "Object folder");
+                if (o == JFileChooser.APPROVE_OPTION) {
+
+                    List<String> results = new ArrayList<String>();
+
+                    File[] files = new File(fc.getSelectedFile().getAbsolutePath()).listFiles();
+
+                    for (File file : files) {
+                        if (file.getName().substring(file.getName().lastIndexOf(".")).contains(".java")) {
+                            results.add(file.getName());
+                        }
+                    }
+
+                    objectModels = results.toArray(new String[results.size()]);
+                    System.out.println(results.size());
+                }
+            }
+
+        });
+
         main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         main.setLocationRelativeTo(null);
         // main.setLayout(null);
@@ -524,6 +592,7 @@ public class MapEditor implements KeyListener, ChangeListener {
         panels.setBounds(0, 0, main.getWidth(), 62);
         panels.add("Tools", mapEditing);
         panels.add("Objects Parameters", dataEditor);
+        panels.add("Tileset and Project", tilesetPanel);
 
         main.add(panels);
         main.add(panel);
