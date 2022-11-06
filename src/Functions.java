@@ -8,7 +8,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class Functions {
 
@@ -92,5 +94,29 @@ public class Functions {
 
             Files.copy(oldpath.toPath(), newPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    public static void openMapEditor(Map map) {
+
+        JFrame mapEditor = new JFrame();
+        mapEditor.setSize(800, 830);
+        mapEditor.setTitle("Map editing tool");
+
+        MapEditor editor = new MapEditor(map);
+        editor.setBounds(0, 0, 800, 830);
+
+        mapEditor.setLayout(null);
+        mapEditor.setLayout(null);
+        mapEditor.add(editor);
+        mapEditor.setResizable(false);
+        mapEditor.setVisible(true);
+    }
+
+    public static JPanel getMapEditor(String path) {
+
+        MapEditor editor = new MapEditor(new Map(null, 100, 100));
+        editor.setObjectModelsFromFolder(path + "/Objects");
+        editor.spriteFolder = path + "/Sprites";
+        return editor;
     }
 }

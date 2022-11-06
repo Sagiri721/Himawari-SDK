@@ -17,10 +17,9 @@ import java.util.List;
 import java.util.Scanner;
 import java.awt.*;
 
-public class MapEditor implements KeyListener, ChangeListener {
+public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
     public static Map map;
-    JFrame main;
     JLabel prev, ll, pos;
 
     private int displayX, displayY, maxSize;
@@ -57,7 +56,12 @@ public class MapEditor implements KeyListener, ChangeListener {
             scaleY = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)),
             rotation = new JSpinner(new SpinnerNumberModel(0, 0, 360, 90));
 
+    public String spriteFolder = "";
+
     MapEditor(Map map) {
+
+        setBounds(0, 0, 800, 830);
+        setLayout(null);
 
         try {
             oImg = ImageIO.read(new File("src/res/object.png"));
@@ -87,11 +91,8 @@ public class MapEditor implements KeyListener, ChangeListener {
 
         mapOutput = new int[map.w][map.h];
 
-        main = new JFrame();
-
-        main.setTitle("Map editing tool");
-        main.setSize(800, 830);
-        main.setLayout(null);
+        // setTitle("Map editing tool");
+        // setSize(800, 830);
 
         JPanel panel = new DrawPanel();
         panel.setBounds(0, 62, 790, 790);
@@ -142,7 +143,7 @@ public class MapEditor implements KeyListener, ChangeListener {
 
                         currentObject = o;
 
-                        main.getComponentAt(0, 32).repaint();
+                        getComponentAt(0, 62).repaint();
 
                         setEditorValues();
                     }
@@ -353,8 +354,8 @@ public class MapEditor implements KeyListener, ChangeListener {
 
                         displayX = size;
                         displayY = size;
-                        main.getComponentAt(0, 32).repaint();
-                        main.requestFocus();
+                        getComponentAt(0, 62).repaint();
+                        requestFocus();
                     }
                 } catch (Exception ee) {
 
@@ -379,7 +380,7 @@ public class MapEditor implements KeyListener, ChangeListener {
                         x = xx;
                         y = yy;
 
-                        main.getComponentAt(0, 32).repaint();
+                        getComponentAt(0, 62).repaint();
                         pos.setText("Root point: " + x + "," + y);
                     } else {
 
@@ -407,7 +408,7 @@ public class MapEditor implements KeyListener, ChangeListener {
 
                 showGrid = !toggleGrid.isSelected();
                 // Repaint
-                main.getComponentAt(0, 32).repaint();
+                getComponentAt(0, 62).repaint();
             }
 
         });
@@ -437,7 +438,7 @@ public class MapEditor implements KeyListener, ChangeListener {
 
                 currentObject = null;
 
-                main.getComponentAt(0, 32).repaint();
+                getComponentAt(0, 62).repaint();
             }
 
         });
@@ -506,10 +507,10 @@ public class MapEditor implements KeyListener, ChangeListener {
         dataEditor.add(label2);
 
         dataEditor.setLayout(null);
-        dataEditor.setBounds(0, 0, main.getWidth(), 32);
+        dataEditor.setBounds(0, 0, getWidth(), 32);
 
         JPanel tilesetPanel = new JPanel();
-        tilesetPanel.setBounds(0, 0, main.getWidth(), 32);
+        tilesetPanel.setBounds(0, 0, getWidth(), 32);
 
         importTileset.setBounds(5, 5, 200, 20);
         importObjectList.setBounds(210, 5, 200, 20);
@@ -525,17 +526,25 @@ public class MapEditor implements KeyListener, ChangeListener {
                 JFileChooser fc = new JFileChooser();
                 fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
+                if (spriteFolder != "") {
+
+                    fc.setCurrentDirectory(new File(spriteFolder));
+                }
+
                 int o = fc.showOpenDialog(null);
                 if (o == JFileChooser.APPROVE_OPTION) {
 
                     try {
 
-                        String s = JOptionPane.showInputDialog(null, "Tamanho das tiles");
+                        String s = JOptionPane.showInputDialog(null, "Tile size");
                         TileSet set = new TileSet(fc.getSelectedFile().getAbsolutePath(),
                                 Integer.parseInt(s));
 
                         MapEditor.map = new Map(set, map.w, map.h);
-                        main.getComponentAt(0, 32).repaint();
+
+                        System.out.println(MapEditor.map.tileSet.tileSet);
+
+                        getComponentAt(0, 62).repaint();
                         prev.setIcon(getPreview());
 
                     } catch (Exception e1) {
@@ -557,31 +566,16 @@ public class MapEditor implements KeyListener, ChangeListener {
                 int o = fc.showDialog(null, "Object folder");
                 if (o == JFileChooser.APPROVE_OPTION) {
 
-                    List<String> results = new ArrayList<String>();
-
-                    File[] files = new File(fc.getSelectedFile().getAbsolutePath()).listFiles();
-
-                    for (File file : files) {
-                        if (file.getName().substring(file.getName().lastIndexOf(".")).contains(".java")) {
-                            results.add(file.getName());
-                        }
-                    }
-
-                    objectModels = results.toArray(new String[results.size()]);
-                    System.out.println(results.size());
+                    setObjectModelsFromFolder(fc.getSelectedFile().getAbsolutePath());
                 }
             }
 
         });
 
-        main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        main.setLocationRelativeTo(null);
-        // main.setLayout(null);
-        main.setResizable(false);
-        main.setVisible(true);
+        setVisible(true);
 
         mapEditing.setLayout(null);
-        mapEditing.setBounds(0, 0, main.getWidth(), 32);
+        mapEditing.setBounds(0, 0, getWidth(), 32);
 
         mapEditing.add(toggleGrid);
         mapEditing.add(reset);
@@ -589,19 +583,19 @@ public class MapEditor implements KeyListener, ChangeListener {
         mapEditing.add(prev);
         mapEditing.add(tilePreview);
 
-        panels.setBounds(0, 0, main.getWidth(), 62);
+        panels.setBounds(0, 0, getWidth(), 62);
         panels.add("Tools", mapEditing);
         panels.add("Objects Parameters", dataEditor);
         panels.add("Tileset and Project", tilesetPanel);
 
-        main.add(panels);
-        main.add(panel);
+        add(panels);
+        add(panel);
 
-        main.addKeyListener(this);
-        main.setFocusable(true);
-        main.requestFocus();
+        addKeyListener(this);
+        setFocusable(true);
+        requestFocus();
 
-        main.getContentPane().setBackground(Color.white);
+        setBackground(Color.white);
 
         b.setToolTipText("Change the current tile");
         l1.setToolTipText("Change to tile placing mode");
@@ -665,7 +659,7 @@ public class MapEditor implements KeyListener, ChangeListener {
                         }
                     }
 
-                    main.getComponentAt(0, 32).repaint();
+                    getComponentAt(0, 62).repaint();
                 } else if (e.getButton() == 3) {
 
                     // Delete objects
@@ -679,7 +673,7 @@ public class MapEditor implements KeyListener, ChangeListener {
                         }
                     }
 
-                    main.getComponentAt(0, 32).repaint();
+                    getComponentAt(0, 62).repaint();
                 } else if (e.getButton() == 2) {
 
                     // Display info
@@ -735,6 +729,8 @@ public class MapEditor implements KeyListener, ChangeListener {
         @Override
         public void paintComponent(Graphics g) {
 
+            g.clearRect(0, 0, this.getWidth(), this.getHeight());
+
             int xx = 800 / (displayX);
             int yy = 800 / (displayY);
 
@@ -772,7 +768,7 @@ public class MapEditor implements KeyListener, ChangeListener {
             }
 
             pos.setText("Root point: " + x + "," + y);
-            main.requestFocus();
+            requestFocus();
         }
     }
 
@@ -860,7 +856,7 @@ public class MapEditor implements KeyListener, ChangeListener {
                 }
             }
 
-            main.getComponentAt(0, 32).repaint();
+            getComponentAt(0, 62).repaint();
 
         } catch (Exception ee) {
 
@@ -886,7 +882,7 @@ public class MapEditor implements KeyListener, ChangeListener {
             x++;
         }
 
-        main.getComponentAt(0, 32).repaint();
+        getComponentAt(0, 62).repaint();
     }
 
     @Override
@@ -925,5 +921,20 @@ public class MapEditor implements KeyListener, ChangeListener {
         rotation.setValue(currentObject.angle);
 
         box.setText(currentObject.name);
+    }
+
+    public void setObjectModelsFromFolder(String folder) {
+
+        List<String> results = new ArrayList<String>();
+
+        File[] files = new File(folder).listFiles();
+
+        for (File file : files) {
+            if (file.getName().substring(file.getName().lastIndexOf(".")).contains(".java")) {
+                results.add(file.getName());
+            }
+        }
+
+        objectModels = results.toArray(new String[results.size()]);
     }
 }

@@ -70,14 +70,21 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     public JComponent[] inpectors = { compSnippet, compBox, copy };
 
+    private MapEditor preview;
+
     Project(File path) {
 
         Project.path = path;
         Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/Assets");
         this.compiler = new File(path.getAbsolutePath() + "/../compile.bat");
 
+        // Map preview
+        JPanel editor = Functions.getMapEditor(engineFiles.getAbsolutePath());
+        editor.setBounds(365, 0, editor.getWidth() - 10, editor.getHeight());
+        preview = (MapEditor) editor;
+
         setTitle(getProjectTitle());
-        setSize(800, 620);
+        setSize(1610, 930);
         getContentPane().setBackground(Color.black);
 
         // Menu initialization
@@ -111,7 +118,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setJMenuBar(bar);
 
         // User interface initization
-        res.setBounds(5, 5, 350, 520);
+        res.setBounds(5, 5, 350, 825);
         res.setBackground(Color.black);
 
         box.setSelectedIndex(-1);
@@ -124,7 +131,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         title0.setForeground(Color.white);
 
         list.setName("erasable");
-        list.setBounds(5, 110, 340, 1000);
+        list.setBounds(5, 110, 340, 900);
         list.setVisible(false);
 
         // File control panel
@@ -153,7 +160,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         res.add(list);
 
         control = new JPanel();
-        functions.setBounds(360, 5, 420, 520);
+        functions.setBounds(1170, 5, 420, 825);
         control.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         control.setLayout(null);
 
@@ -212,31 +219,31 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         // Footer
         JLabel version = new JLabel("Version: " + Main.version);
         version.setForeground(Color.white);
-        version.setBounds(5, 530, 100, 20);
+        version.setBounds(5, 840, 100, 20);
 
         Border b = BorderFactory.createBevelBorder(BevelBorder.RAISED);
 
-        website.setBounds(140, 530, 110, 20);
+        website.setBounds(140, 840, 110, 20);
         website.setBackground(Color.gray);
         website.setForeground(Color.white);
         website.setBorder(b);
 
-        docs.setBounds(255, 530, 110, 20);
+        docs.setBounds(255, 840, 110, 20);
         docs.setBackground(Color.gray);
         docs.setForeground(Color.white);
         docs.setBorder(b);
 
-        update.setBounds(400, 530, 110, 20);
+        update.setBounds(400, 840, 110, 20);
         update.setBackground(Color.gray);
         update.setForeground(Color.white);
         update.setBorder(b);
 
-        quit.setBounds(515, 530, 110, 20);
+        quit.setBounds(515, 840, 110, 20);
         quit.setBackground(Color.red);
         quit.setForeground(Color.black);
         quit.setBorder(b);
 
-        run.setBounds(630, 530, 110, 20);
+        run.setBounds(630, 840, 110, 20);
         run.setBackground(Color.green);
         run.setForeground(Color.black);
         run.setBorder(b);
@@ -258,6 +265,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         add(run);
 
         // Add panels
+        add(editor);
         add(functions);
         add(res);
 
@@ -629,10 +637,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                     Integer dimensions = file.nextLine().split(" ").length;
 
                     Map map = new Map(tileset, dimensions, dimensions);
-                    MapEditor editor = new MapEditor(map);
+                    MapEditor.map = map;
+                    preview.importMap(opened.getAbsolutePath());
 
                     file.close();
-                    editor.importMap(dirpath);
                 }
 
             } catch (Exception e) {

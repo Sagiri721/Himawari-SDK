@@ -120,7 +120,7 @@ public class CreateMap extends JFrame implements ActionListener {
                         Map map = new Map(Window.tileset, (int) sp.getValue(),
                                 (int) sp.getValue());
 
-                        new MapEditor(map);
+                        Functions.openMapEditor(map);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Can't create map");
