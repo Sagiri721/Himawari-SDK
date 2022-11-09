@@ -13,7 +13,7 @@ public class Main {
 
         openSettings();
 
-        // new Window();
+        new Window();
 
         /*
          * TileSet set = new TileSet("C:/Users/Utilizador/Desktop/Grass.png", 16);
@@ -21,7 +21,7 @@ public class Main {
         Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        new Project(new File("D:/TIAGO/program/himawari/my-app"));
+        // new Project(new File("D:/TIAGO/program/himawari/my-app"));
     }
 
     private static void openSettings() {

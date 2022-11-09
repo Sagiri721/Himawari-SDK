@@ -1,3 +1,4 @@
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -8,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -16,14 +18,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Window extends JFrame implements ActionListener {
+
+    public String version = "1.0.0";
 
     JMenu menu = new JMenu("Project Manager Tool"), mapmenu = new JMenu("Map Editor Tool"),
             account = new JMenu("Account");
@@ -39,7 +40,7 @@ public class Window extends JFrame implements ActionListener {
 
     Image netIcon = new ImageIcon("src/res/internet.png").getImage().getScaledInstance(100, 100,
             java.awt.Image.SCALE_SMOOTH);
-    JLabel label = new JLabel(new ImageIcon(netIcon));
+    JLabel label = new JLabel(new ImageIcon(netIcon), SwingConstants.CENTER);
 
     // User Data
     JLabel name_label = new JLabel("Hello there " + Settings.username, SwingConstants.CENTER);
@@ -52,7 +53,7 @@ public class Window extends JFrame implements ActionListener {
         internet = InternetConnection();
 
         setTitle("Himawari tools");
-        setSize(700, 600);
+        setSize(700, 610);
         setResizable(false);
 
         DefineComponents();
@@ -97,7 +98,49 @@ public class Window extends JFrame implements ActionListener {
         setJMenuBar(mb);
 
         add(user);
-        add(label);
+
+        JPanel main = new JPanel();
+        main.setBounds(0, 30, getWidth(), 500);
+        main.setBackground(Color.white);
+        main.setLayout(null);
+
+        if (!Window.internet)
+            add(label);
+        else {
+
+            // Add all the internet based components
+            JLabel explore = new JLabel(new ImageIcon("src/res/explore.jpg"));
+            explore.setBounds(0, 0, main.getWidth(), 200);
+
+            String[] versions = getVersions();
+            String logsList = "<html><h1>Version Logs</h1><ul>";
+            for (String log : versions)
+                logsList += ("<li>" + log + "</li>");
+
+            logsList += "</ul></html>";
+            JLabel listLabel = new JLabel(logsList);
+
+            Border border = BorderFactory.createLineBorder(Color.black, 2);
+            listLabel.setBorder(border);
+            listLabel.setBounds(0, 200, getWidth() / 2, 150);
+
+            main.add(listLabel);
+            main.add(explore);
+        }
+
+        JLabel versionLabel = new JLabel("version " + String.valueOf(version));
+        versionLabel.setBounds(3, 530, 100, 20);
+
+        add(versionLabel);
+        add(main);
+    }
+
+    public String[] getVersions() {
+
+        String[] logs = { "1.0.0: First version, allows basic project management",
+                "1.1.0: Main page with information" };
+
+        return logs;
     }
 
     @Override
@@ -275,21 +318,22 @@ public class Window extends JFrame implements ActionListener {
 
     private boolean InternetConnection() {
 
+        Process process;
         try {
-            URL url = new URL("https://www.google.com");
-            URLConnection conn = url.openConnection();
-            conn.connect();
+            process = java.lang.Runtime.getRuntime().exec("ping www.google.com");
 
-            return true;
+            int x = process.waitFor();
+            if (x == 0) {
+                return true;
+            } else {
+                return false;
+            }
 
-        } catch (MalformedURLException e) {
-
-            return false;
         } catch (IOException e) {
-
-            return false;
+        } catch (InterruptedException e) {
         }
 
+        return false;
     }
 
     public void refactorAll(String path, String pack, String origin) {

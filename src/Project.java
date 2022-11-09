@@ -500,7 +500,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 
             cb.setContents(selection, null);
-            JOptionPane.showConfirmDialog(null, "Snippet copied to clipboard");
+            JOptionPane.showMessageDialog(null, "Snippet copied to clipboard");
         }
     }
 
