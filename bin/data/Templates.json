@@ -1,0 +1,14 @@
+{
+    "projects": [
+        {
+            "name": "EMPTY PROJECT",
+            "image": "empty.png",
+            "desc": "An empty canvas for you to create your games upon"
+        },
+        {
+            "name": "2D PLATFORMER",
+            "image": "platformer.png",
+            "desc": "Creates a little game set up with 2D physics and platforming movement"
+        }
+    ]
+}

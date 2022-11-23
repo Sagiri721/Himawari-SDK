@@ -1,7 +1,9 @@
+package Components.Structs;
+
 public class Object {
 
-    String name;
-    int x, y, angle, w, h;
+    public String name;
+    public int x, y, angle, w, h;
 
     public boolean matches(int x, int y) {
 

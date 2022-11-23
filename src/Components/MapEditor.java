@@ -1,3 +1,5 @@
+package Components;
+
 import java.awt.event.*;
 
 import javax.imageio.ImageIO;
@@ -6,6 +8,10 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
+
+import Components.Structs.Object;
+import Components.Structs.Map;
+import Components.Structs.TileSet;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -58,7 +64,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
     public String spriteFolder = "";
 
-    MapEditor(Map map) {
+    public MapEditor(Map map) {
 
         setBounds(0, 0, 800, 830);
         setLayout(null);
@@ -585,7 +591,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
         panels.setBounds(0, 0, getWidth(), 62);
         panels.add("Tools", mapEditing);
-        panels.add("Objects Parameters", dataEditor);
+        panels.add("Object Parameters", dataEditor);
         panels.add("Tileset and Project", tilesetPanel);
 
         add(panels);
@@ -925,9 +931,12 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
     public void setObjectModelsFromFolder(String folder) {
 
-        List<String> results = new ArrayList<String>();
-
         File[] files = new File(folder).listFiles();
+
+        if (files == null)
+            return;
+
+        List<String> results = new ArrayList<String>();
 
         for (File file : files) {
             if (file.getName().substring(file.getName().lastIndexOf(".")).contains(".java")) {

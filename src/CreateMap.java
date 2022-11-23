@@ -1,9 +1,13 @@
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
+
+import Components.Structs.Map;
+import Components.Structs.TileSet;
 
 import java.awt.event.*;
 import java.io.File;
@@ -19,7 +23,7 @@ public class CreateMap extends JFrame implements ActionListener {
     JButton button0 = new JButton("Import tile set image"), button1 = new JButton("Create tile set");
     JSpinner sp = new JSpinner(), sp2 = new JSpinner();
 
-    CreateMap(int mode) {
+    public CreateMap(int mode) {
         this.mode = mode;
 
         DrawOptions();

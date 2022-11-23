@@ -1,0 +1,5 @@
+{
+    "MapEditor": {
+        "1.0.0": "Basic editing features, simple tile selection and placement, 2 layers for objects and tiles, object placement, simple zoom and movement features. Import and export possibility"
+    }
+}

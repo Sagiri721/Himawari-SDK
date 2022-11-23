@@ -1,3 +1,5 @@
+package Components.Structs;
+
 public class Map {
 
     public TileSet tileSet;

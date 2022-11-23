@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -10,6 +11,10 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
+import Components.MapEditor;
+import Components.Structs.Map;
+import Components.Structs.TileSet;
+
 import java.awt.datatransfer.StringSelection;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -18,8 +23,6 @@ import java.awt.event.*;
 
 public class Project extends JFrame implements KeyListener, ActionListener {
 
-    // List of all the folders the engine has to handle
-    protected static final String[] options = { "Sprites", "Sound", "Objects", "Maps" };
     // List of all the components that can be added
     protected static String[] components = {
             "Transform",
@@ -30,11 +33,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             "Camera"
     };
 
-    JComboBox<String> box = new JComboBox<String>(options),
-            compBox = new JComboBox<String>(components);
+    JComboBox<String> compBox = new JComboBox<String>(components);
     JPanel res = new JPanel(), control;
-
-    JList<String> list = new JList<>();
 
     public static File path, engineFiles;
     private File compiler;
@@ -58,8 +58,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert"),
             run = new JButton("LAUCH PROJECT"), website = new JButton("Website"), docs = new JButton("Documentation"),
             update = new JButton("Update"),
-            quit = new JButton("QUIT"), openB = new JButton("Open file"), del = new JButton("Delete file"),
-            view = new JButton("Inspect file"), compSnippet = new JButton("Add component");
+            quit = new JButton("QUIT"), compSnippet = new JButton("Add component");
 
     /*
      * Inspector objects
@@ -70,7 +69,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     public JComponent[] inpectors = { compSnippet, compBox, copy };
 
-    private MapEditor preview;
+    public static MapEditor preview;
 
     Project(File path) {
 
@@ -118,46 +117,11 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setJMenuBar(bar);
 
         // User interface initization
+        res = new ResourceExplorer();
         res.setBounds(5, 5, 350, 825);
-        res.setBackground(Color.black);
-
-        box.setSelectedIndex(-1);
-        box.setBounds(0, 30, 350, 30);
-
-        box.addActionListener(this);
-
-        JLabel title0 = new JLabel("Resource Manager");
-        title0.setBounds(5, 5, 300, 20);
-        title0.setForeground(Color.white);
-
-        list.setName("erasable");
-        list.setBounds(5, 110, 340, 900);
-        list.setVisible(false);
+        res.setBackground(Style.FILE_EXPLORER_BACKGROUND);
 
         // File control panel
-        openB.setBounds(5, 80, 110, 25);
-        del.setBounds(120, 80, 110, 25);
-        view.setBounds(235, 80, 110, 25);
-
-        openB.addActionListener(this);
-        del.addActionListener(this);
-        view.addActionListener(this);
-
-        list.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-
-                // Open file
-                // openFile();
-            }
-        });
-
-        res.add(view);
-        res.add(del);
-        res.add(openB);
-        res.setLayout(null);
-        res.add(box);
-        res.add(title0);
-        res.add(list);
 
         control = new JPanel();
         functions.setBounds(1170, 5, 420, 825);
@@ -322,23 +286,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     }
 
-    private void updateResources() {
-
-        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
-        list.setVisible(true);
-        File spritesFolder = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]);
-        String[] files = new String[spritesFolder.listFiles().length];
-
-        int index = 0;
-        for (File f : spritesFolder.listFiles()) {
-
-            files[index] = f.getName();
-            index++;
-        }
-
-        list.setListData(files);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -360,21 +307,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
             setVisible(false);
             dispose();
-        } else if (e.getSource() == box) {
-
-            switch (box.getSelectedIndex()) {
-
-                case -1:
-
-                    // Erase
-                    break;
-                default:
-
-                    // Fetch sprites from
-
-                    updateResources();
-                    break;
-            }
         } else if (e.getSource() == newObject) {
 
             try {
@@ -431,41 +363,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
             // Open website
             Functions.RunBatch("open_site.bat");
-        } else if (e.getSource() == openB) {
-
-            if (list.getSelectedIndex() == -1) {
-
-                JOptionPane.showMessageDialog(null, "No file was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            openFile();
-        } else if (e.getSource() == del) {
-
-            if (list.getSelectedIndex() == -1) {
-
-                JOptionPane.showMessageDialog(null, "No file was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
-            File file = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
-                    .getSelectedIndex()];
-
-            String command = "del " + file.getAbsolutePath();
-            Functions.WriteAndRun(command, "delete_file.bat");
-
-            updateResources();
-        } else if (e.getSource() == view) {
-
-            if (list.getSelectedIndex() == -1 || box.getSelectedIndex() != 2) {
-
-                JOptionPane.showMessageDialog(null, "No object was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            inspectObject(new File(engineFiles.getAbsolutePath() + "/Objects").listFiles()[list
-                    .getSelectedIndex()]);
         } else if (e.getSource() == addSprite) {
 
             try {
@@ -570,84 +467,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         for (JComponent c : inpectors) {
 
             c.setEnabled(true);
-        }
-    }
-
-    public void openFile() {
-
-        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
-        File opened = new File(engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
-                .getSelectedIndex()];
-
-        if (box.getSelectedIndex() != 3) {
-
-            try {
-
-                File openfile = new File("src/functions/output/open_file.bat");
-                FileWriter fw = new FileWriter(openfile);
-
-                String command = opened.getAbsolutePath();
-                fw.write(command);
-                fw.close();
-
-                Runtime.getRuntime().exec(openfile.getAbsolutePath());
-
-            } catch (Exception e) {
-
-                JOptionPane.showMessageDialog(null, "Trouble opening file", "ERROR",
-                        JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
-        } else {
-
-            String dirpath = opened.getAbsolutePath();
-            String tilesetPath = "";
-
-            try {
-
-                JFileChooser fc = new JFileChooser();
-                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fc.setCurrentDirectory(new File(path + "/src/main/java/Assets/Sprites"));
-
-                int option = fc.showDialog(null, "Choose tileset");
-
-                // Import tileset
-                if (option == JFileChooser.APPROVE_OPTION) {
-
-                    File f = fc.getSelectedFile();
-
-                    String s = f.getName().substring(f.getName().length() - 4);
-
-                    if (s.equals(".png") || s.equals(".jpg")) {
-                        // Valid image file
-                        tilesetPath = f.getAbsolutePath();
-
-                        tilesetPath = tilesetPath.replace("\\", "/");
-
-                        JOptionPane.showMessageDialog(this, "Image succefully imported");
-                    } else
-                        JOptionPane.showMessageDialog(this, "Invalid image file");
-
-                    TileSet tileset = new TileSet(tilesetPath,
-                            Integer.parseInt(JOptionPane.showInputDialog(null, "Tile set size?")));
-
-                    // Get map measures
-
-                    Scanner file = new Scanner(dirpath + "/room-tiles.txt");
-                    Integer dimensions = file.nextLine().split(" ").length;
-
-                    Map map = new Map(tileset, dimensions, dimensions);
-                    MapEditor.map = map;
-                    preview.importMap(opened.getAbsolutePath());
-
-                    file.close();
-                }
-
-            } catch (Exception e) {
-
-                JOptionPane.showMessageDialog(null, "There was a problem opening the map editor", "ERROR",
-                        JOptionPane.ERROR_MESSAGE);
-            }
         }
     }
 

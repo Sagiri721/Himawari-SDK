@@ -1,1 +1,1 @@
-del D:\TIAGO\program\himawari\my-app\src\main\java\Assets\Sounds\音楽.txt
+del D:\TIAGO\program\himawari\my-app\src\main\java\Assets\Sprites\OpenSans-Bold.ttf

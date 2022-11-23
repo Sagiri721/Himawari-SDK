@@ -5,12 +5,15 @@ import javax.swing.JOptionPane;
 import java.awt.*;
 import com.google.gson.Gson;
 
+import Components.Structs.Map;
+
 public class Main {
 
     public static final String version = "pre-build";
 
     public static void main(String[] args) {
 
+        Style.LoadResources();
         openSettings();
 
         new Window();

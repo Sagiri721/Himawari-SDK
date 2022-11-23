@@ -11,16 +11,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import Components.Structs.Map;
+import Components.Structs.TileSet;
+
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 public class Window extends JFrame implements ActionListener {
 
@@ -63,10 +61,12 @@ public class Window extends JFrame implements ActionListener {
         setLayout(null);
         setVisible(true);
 
-        getContentPane().setBackground(Color.white);
+        getContentPane().setBackground(Style.MAIN_BACKGROUND);
     }
 
     private void DefineComponents() {
+
+        name_label.setFont(Style.CONTENT_FONT);
         mapmenu.add(i0);
         mapmenu.add(i1);
 
@@ -101,7 +101,7 @@ public class Window extends JFrame implements ActionListener {
 
         JPanel main = new JPanel();
         main.setBounds(0, 30, getWidth(), 500);
-        main.setBackground(Color.white);
+        main.setBackground(Style.MAIN_BACKGROUND);
         main.setLayout(null);
 
         if (!Window.internet)
@@ -119,9 +119,7 @@ public class Window extends JFrame implements ActionListener {
 
             logsList += "</ul></html>";
             JLabel listLabel = new JLabel(logsList);
-
-            Border border = BorderFactory.createLineBorder(Color.black, 2);
-            listLabel.setBorder(border);
+            listLabel.setFont(Style.CONTENT_FONT);
             listLabel.setBounds(0, 200, getWidth() / 2, 150);
 
             main.add(listLabel);
@@ -161,129 +159,11 @@ public class Window extends JFrame implements ActionListener {
 
             if (internet) {
 
-                File folder, script = new File("src\\functions\\project_creation.bat"),
-                        script2 = new File("src\\functions\\engine_retrieve.bat");
-                String company, name, artifact;
-
-                JFileChooser fc = new JFileChooser();
-                fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int o = fc.showOpenDialog(null);
-
-                if (o == JFileChooser.APPROVE_OPTION) {
-
-                    folder = fc.getSelectedFile();
-
-                    company = JOptionPane.showInputDialog(null, "Company:");
-                    name = JOptionPane.showInputDialog(null, "Name:");
-                    artifact = JOptionPane.showInputDialog(null, "artifact:");
-
-                    if (company.trim() == "" || name.trim() == "" || artifact.trim() == "") {
-
-                        JOptionPane.showMessageDialog(null, "Creation failed", "ERROR", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    Scanner scanner;
-                    try {
-                        scanner = new Scanner(script);
-
-                        String command = "", command2 = "";
-                        while (scanner.hasNext()) {
-                            command += scanner.nextLine() + "\n";
-                        }
-
-                        scanner.close();
-                        scanner = new Scanner(script2);
-                        while (scanner.hasNext()) {
-                            command2 += scanner.nextLine() + "\n";
-                        }
-
-                        scanner.close();
-
-                        command = command.replace("[folder]", folder.getAbsolutePath());
-                        command = command.replace("[company]", company);
-                        command = command.replace("[name]", name);
-                        command = command.replace("[artifact]", artifact);
-
-                        command2 = command2.replace("[folder]", folder.getAbsolutePath());
-                        command2 = command2.replace("[company]", company);
-                        command2 = command2.replace("[name]", name);
-                        command2 = command2.replace("[artifact]", artifact);
-
-                        FileWriter fw = new FileWriter(new File("src/functions/output/out.bat"));
-                        fw.write(command);
-                        fw.close();
-
-                        fw = new FileWriter(new File("src/functions/output/clone.bat"));
-                        fw.write(command2);
-                        fw.close();
-
-                        // Execute command
-                        Runtime run = Runtime.getRuntime();
-                        Process pr = run.exec(new File("src/functions/output/out.bat").getAbsolutePath());
-
-                        pr.waitFor();
-
-                        JOptionPane.showMessageDialog(null, "Maven project creation: status " + pr.exitValue());
-
-                        pr = run.exec(new File("src/functions/output/clone.bat").getAbsolutePath());
-
-                        pr.waitFor();
-
-                        JOptionPane.showMessageDialog(null, "Engine import: status " + pr.exitValue());
-
-                        String path = folder.getAbsolutePath() + "\\" + artifact + "\\src\\main\\java\\com\\" + company
-                                + "\\" + name;
-
-                        refactorAll(path + "\\Himawari-2d", "com." + company + "." + name,
-                                folder.getAbsolutePath() + "\\" + artifact);
-
-                        JOptionPane.showMessageDialog(null, "Refactoring completed");
-
-                        File enginefolder = new File(path + "\\Himawari-2d\\Engine"),
-                                assetsfolder = new File(path + "\\Himawari-2d\\Assets"),
-                                mainfile = new File(path + "\\Himawari-2d\\Main.java");
-
-                        // Move the files
-                        Files.move(Paths.get(enginefolder.getAbsolutePath()), Paths.get(path + "\\Engine"));
-
-                        Files.move(Paths.get(assetsfolder.getAbsolutePath()), Paths.get(path + "\\Assets"));
-
-                        Files.move(Paths.get(mainfile.getAbsolutePath()), Paths.get(path + "\\Main.java"));
-
-                        deleteDirectory(new File(path + "\\Himawari-2d"));
-                        deleteDirectory(new File(path + "\\App.java"));
-
-                        JOptionPane.showMessageDialog(null, "Project files organized");
-
-                        String pack = "com." + company + "." + name;
-                        // Refactor main file
-                        try {
-
-                            Scanner s = new Scanner(new File(path + "\\Main.java"));
-
-                            String contents = "";
-                            while (s.hasNextLine()) {
-                                contents += s.nextLine() + "\n";
-                            }
-
-                            contents = contents.replace("package", "package " + pack);
-                            contents = contents.replace("import Engine", "import " + pack + ".Engine");
-                            contents = contents.replace("import Assets", "import " + pack + ".Assets");
-
-                            s.close();
-                            fw = new FileWriter(new File(path + "\\Main.java"));
-                            fw.write(contents);
-                            fw.close();
-
-                        } catch (Exception ee) {
-
-                        }
-
-                    } catch (IOException | InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                }
+                Functions.OpenPanelAsFrame(500, 400, "Project Wizard", new ProjectWizard(this), false);
+                /*
+                 * 
+                 * 
+                 */
 
             } else {
 
@@ -334,90 +214,5 @@ public class Window extends JFrame implements ActionListener {
         }
 
         return false;
-    }
-
-    public void refactorAll(String path, String pack, String origin) {
-
-        // Refactor engine files
-        searchFolder(path + "\\Engine", pack);
-        searchFolder(path + "\\Assets", pack);
-        // Refactor pom.xml
-        File pom = new File(origin + "\\pom.xml");
-        Scanner s;
-        try {
-
-            s = new Scanner(pom);
-            String contents = "";
-
-            while (s.hasNextLine())
-                contents += s.nextLine() + "\n";
-            s.close();
-
-            contents.replace("</dependencies>", "    <dependency>\n" +
-                    "<groupId>com.googlecode.json-simple</groupId>\n" +
-                    "<artifactId>json-simple</artifactId>\n" +
-                    "<version>1.1</version>" +
-                    "</dependency>" +
-                    "</dependencies>\n");
-
-            FileWriter fw = new FileWriter(pom);
-            fw.write(contents);
-            fw.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void searchFolder(String folder, String pack) {
-
-        File[] f = new File(folder).listFiles();
-        for (File file : f) {
-
-            if (file.getName().contains(".")) {
-
-                if (file.getName().contains(".java")) {
-                    try {
-
-                        // Refactor this
-                        Scanner s = new Scanner(file);
-                        String contents = "";
-
-                        while (s.hasNextLine())
-                            contents += s.nextLine() + "\n";
-
-                        s.close();
-
-                        contents = contents.replace("import Engine", "import " + pack + ".Engine");
-                        contents = contents.replace("import Assets", "import " + pack + ".Assets");
-                        contents = contents.replace("package ", "package " + pack + ".");
-
-                        FileWriter fw = new FileWriter(file);
-                        fw.write(contents);
-                        fw.close();
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-
-                searchFolder(folder + "\\" + file.getName(), pack);
-            }
-        }
-    }
-
-    boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
     }
 }
