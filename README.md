@@ -1,4 +1,3 @@
 # Himawari Tools
 
-Project Manager Version: ---
-Map Editor version: 1.0.0
+Himawari tools is a desktop app with functions and tools to create an easier and interactive aid to game development using the Himawari2D framework
