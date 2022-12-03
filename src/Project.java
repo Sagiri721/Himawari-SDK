@@ -12,31 +12,16 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import Components.MapEditor;
-import Components.Structs.Map;
-import Components.Structs.TileSet;
-
-import java.awt.datatransfer.StringSelection;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 
 import java.awt.event.*;
 
 public class Project extends JFrame implements KeyListener, ActionListener {
 
-    // List of all the components that can be added
-    protected static String[] components = {
-            "Transform",
-            "ImageRenderer",
-            "Animator",
-            "RectCollider",
-            "Body",
-            "Camera"
-    };
-
-    JComboBox<String> compBox = new JComboBox<String>(components);
     JPanel res = new JPanel(), control;
 
+    public static Inspector inspector = new Inspector();
     public static File path, engineFiles;
+    public static String projectName = "com/com/nonamerhythmgame";
     private File compiler;
 
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
@@ -49,7 +34,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store");
 
     // Menu items to add resources
-    JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound");
+    JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
+            addFont = new JMenuItem("Add Font");
 
     JMenuBar bar = new JMenuBar();
 
@@ -58,23 +44,14 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert"),
             run = new JButton("LAUCH PROJECT"), website = new JButton("Website"), docs = new JButton("Documentation"),
             update = new JButton("Update"),
-            quit = new JButton("QUIT"), compSnippet = new JButton("Add component");
-
-    /*
-     * Inspector objects
-     */
-    public JTextArea snippetArea = new JTextArea();
-    JLabel objectName = new JLabel("Object name", SwingConstants.CENTER);
-    JButton copy = new JButton("Copy snippet");
-
-    public JComponent[] inpectors = { compSnippet, compBox, copy };
+            quit = new JButton("QUIT");
 
     public static MapEditor preview;
 
     Project(File path) {
 
         Project.path = path;
-        Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/Assets");
+        Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/" + projectName + "/Assets");
         this.compiler = new File(path.getAbsolutePath() + "/../compile.bat");
 
         // Map preview
@@ -98,6 +75,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         addResources.add(openRes);
         addResources.add(addSprite);
         addResources.add(addMusic);
+        addResources.add(addFont);
 
         bar.add(other);
         bar.add(gamemenu);
@@ -113,6 +91,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         i0.addActionListener(this);
         i1.addActionListener(this);
         settings.addActionListener(this);
+        addFont.addActionListener(this);
 
         setJMenuBar(bar);
 
@@ -152,32 +131,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         control.setBackground(Color.GRAY);
 
         // Inspector initialization
-        JPanel inspector = new JPanel();
-        objectName.setBounds(5, 5, 420, 20);
-        objectName.setFont(new Font("Monospace", Font.PLAIN, 22));
-        compSnippet.setBounds(270, 40, 130, 20);
-
-        JLabel l = new JLabel("Add a component");
-        l.setBounds(5, 40, 200, 20);
-        compBox.setBounds(110, 40, 150, 20);
-
-        inspector.setLayout(null);
-        snippetArea.setBounds(5, 70, 405, 100);
-        snippetArea.setEditable(false);
-        snippetArea.setLineWrap(true);
-
-        compSnippet.addActionListener(this);
-
-        copy.setBounds(5, 175, 150, 30);
-        copy.addActionListener(this);
-
-        inspector.add(copy);
-        inspector.add(snippetArea);
-        inspector.add(compSnippet);
-        inspector.add(l);
-        inspector.add(compBox);
-        inspector.add(objectName);
-        inspector.add(compBox);
         functions.add("Inspector", inspector);
 
         // Footer
@@ -242,12 +195,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-
-        // Make inspector unaccessible
-        for (JComponent c : inpectors) {
-
-            c.setEnabled(false);
-        }
     }
 
     private String getProjectTitle() {
@@ -382,92 +329,29 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 e1.printStackTrace();
             }
 
+        } else if (e.getSource() == addFont) {
+
+            try {
+
+                Functions.CopyFilesTo("Fonts");
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
         } else if (e.getSource() == openFolder) {
 
             openFolder(path.getAbsolutePath());
         } else if (e.getSource() == openRes) {
 
             openFolder(engineFiles.getAbsolutePath());
-        } else if (e.getSource() == compSnippet) {
-
-            getSnippet(compBox.getSelectedIndex());
-        } else if (e.getSource() == copy) {
-
-            StringSelection selection = new StringSelection(snippetArea.getText());
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-            cb.setContents(selection, null);
-            JOptionPane.showMessageDialog(null, "Snippet copied to clipboard");
         }
-    }
-
-    public void getSnippet(int ind) {
-
-        String snippet = "";
-        switch (ind) {
-
-            case 0:
-                // Transform
-                int x = Integer.parseInt((JOptionPane.showInputDialog(null, "X Position?"))),
-                        y = Integer.parseInt((JOptionPane.showInputDialog(null, "Y Position?")));
-
-                snippet = "Transform transform = new Transform(new Vec2(" + x + ", " + y
-                        + "), 0, new Vec2(1, 1));\naddComponent(transform);";
-                break;
-            case 1:
-                // ImageRenderer
-                JFileChooser fc = new JFileChooser(engineFiles + "/Sprites");
-                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-                int opt = fc.showDialog(null, "Choose");
-                if (opt == JFileChooser.APPROVE_OPTION) {
-
-                    snippet = "Sprite image = new Sprite(\"" + fc.getSelectedFile().getName()
-                            + "\");\nImageRenderer renderer = new ImageRenderer(image);\naddComponent(renderer);";
-                }
-
-                break;
-            case 2:
-                // Animator
-
-                break;
-            case 3:
-                // RectCollider
-                int width = Integer.parseInt((JOptionPane.showInputDialog(null, "X Scale?"))),
-                        height = Integer.parseInt((JOptionPane.showInputDialog(null, "Y Scale?")));
-
-                snippet = "RectCollider collider = new RectCollider(transform, new Vec2(" + width + ", " + height
-                        + "));\naddComponent(collider);";
-                break;
-            case 4:
-                // Body
-                int mass = Integer.parseInt((JOptionPane.showInputDialog(null, "Mass?")));
-
-                snippet = "Body body = new Body(transform, collider, " + mass + ");\naddComponent(body);";
-                break;
-            case 5:
-                // Camera
-                break;
-        }
-
-        snippetArea.setText(snippet);
     }
 
     private void openFolder(String path) {
 
         String command = "explorer " + path;
         Functions.WriteAndRun(command, "open_explorer.bat");
-    }
-
-    private void inspectObject(File objFile) {
-
-        objectName.setText(objFile.getName());
-
-        // Show components and stuff
-        for (JComponent c : inpectors) {
-
-            c.setEnabled(true);
-        }
     }
 
     public void openCodeFile(String filePath, String file) throws Exception {

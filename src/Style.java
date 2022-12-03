@@ -1,9 +1,16 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
@@ -25,7 +32,7 @@ public class Style {
     public static Color LAUCH_BUTTON_COLOR = Color.GREEN;
     public static Color CLOSE_BUTTON_COLOR = Color.GREEN;
 
-    public static Color FILE_EXPLORER_BACKGROUND = Color.BLUE;
+    public static Color FILE_EXPLORER_BACKGROUND = Color.BLACK;
 
     public static final Border BUTTON_BORDER = BorderFactory.createBevelBorder(BevelBorder.RAISED);
     public static final Border SIMPLE_BORDER = BorderFactory.createLineBorder(Color.BLACK, 2);
@@ -61,5 +68,18 @@ public class Style {
         button.setForeground(MAIN_TEXT_COLOR);
 
         return button;
+    }
+
+    public static JPanel getPanel(String text) {
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.PLAIN, 12));
+        label.setForeground(Color.white);
+
+        panel.setBackground(new Color(33, 29, 28));
+
+        panel.add(label);
+
+        return panel;
     }
 }

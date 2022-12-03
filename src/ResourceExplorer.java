@@ -1,6 +1,7 @@
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import Components.*;
@@ -17,7 +18,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
     protected static final String[] options = { "Sprites", "Sound", "Objects", "Maps" };
 
     JButton openB = Style.GetStyledButton("Open file"), del = Style.GetStyledButton("Delete file"),
-            view = Style.GetStyledButton("Inspect file");
+            view = Style.GetStyledButton("Inspect file"), add = Style.GetStyledButton("+");
 
     JComboBox<String> box = new JComboBox<String>(options);
     JList<String> list = new JList<>();
@@ -34,6 +35,23 @@ public class ResourceExplorer extends JPanel implements ActionListener {
         list.setName("erasable");
         list.setBounds(5, 110, 340, 900);
         list.setVisible(false);
+        list.addMouseListener(new MouseAdapter() {
+
+            public void mouseClicked(MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+
+                    if (box.getSelectedIndex() != 2)
+                        return;
+
+                    // Double-click detected
+                    String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+                    File opened = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()])
+                            .listFiles()[list.getSelectedIndex()];
+
+                    new CodeEditor(opened);
+                }
+            }
+        });
 
         openB.setBounds(5, 80, 110, 25);
         del.setBounds(120, 80, 110, 25);
@@ -44,10 +62,13 @@ public class ResourceExplorer extends JPanel implements ActionListener {
         view.addActionListener(this);
 
         box.setSelectedIndex(-1);
-        box.setBounds(0, 30, 350, 30);
+        box.setBounds(0, 30, 350 - 32 - 5, 30);
 
         box.addActionListener(this);
+        add.setBounds(350 - 32, 30, 32, 32);
+        add.addActionListener(this);
 
+        add(add);
         add(view);
         add(del);
         add(openB);
@@ -105,8 +126,82 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                 return;
             }
 
-            // inspectObject(new File(Project.engineFiles.getAbsolutePath() +
-            // "/Objects").listFiles()[list.getSelectedIndex()]);
+            Project.inspector.inspectObject(new File(Project.engineFiles.getAbsolutePath() +
+                    "/Objects").listFiles()[list.getSelectedIndex()]);
+        } else if (e.getSource() == add) {
+
+            JFrame chooser = new JFrame("Media chooser");
+            chooser.setSize(335, 200);
+
+            JLabel titLabel = new JLabel("Choose a media to upload");
+            titLabel.setFont(Style.HEADER_FONT);
+            titLabel.setBounds(5, 5, 350, 25);
+
+            JButton sprite = new JButton(new ImageIcon("src/res/utils/sprite.png")),
+                    sound = new JButton(new ImageIcon("src/res/utils/sound.png")),
+                    fonts = new JButton(new ImageIcon("src/res/utils/font.png"));
+
+            sprite.setBounds(5, 50, 100, 100);
+            sound.setBounds(110, 50, 100, 100);
+            fonts.setBounds(215, 50, 100, 100);
+
+            sprite.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    try {
+                        Functions.CopyFilesTo("Sprites");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+
+                    chooser.setVisible(false);
+                    chooser.dispose();
+                }
+            });
+
+            sound.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    try {
+                        Functions.CopyFilesTo("Sprites");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+
+                    chooser.setVisible(false);
+                    chooser.dispose();
+                }
+            });
+
+            fonts.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    try {
+                        Functions.CopyFilesTo("Sprites");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+
+                    chooser.setVisible(false);
+                    chooser.dispose();
+                }
+            });
+
+            chooser.add(sprite);
+            chooser.add(sound);
+            chooser.add(fonts);
+            chooser.add(titLabel);
+
+            chooser.setResizable(false);
+            chooser.setLocationRelativeTo(null);
+            chooser.setLayout(null);
+            chooser.setVisible(true);
         }
     }
 

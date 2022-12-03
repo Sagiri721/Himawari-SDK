@@ -128,7 +128,7 @@ public class Functions {
 
         JFrame project = new JFrame();
         project.setTitle(name);
-        project.setSize(500, 400);
+        project.setSize(w, h);
         project.setLocationRelativeTo(null);
         project.setResizable(resizable);
         project.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

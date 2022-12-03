@@ -28,7 +28,7 @@ public class Window extends JFrame implements ActionListener {
             account = new JMenu("Account");
     JMenuItem i0 = new JMenuItem("New Map"), i1 = new JMenuItem("Load Map"),
             createP = new JMenuItem("Create Project"), loadP = new JMenuItem("Load Project"),
-            username = new JMenuItem("Change Username");
+            username = new JMenuItem("Change Username"), login = new JMenuItem("Login");
     JMenuBar mb = new JMenuBar();
 
     public static TileSet tileset;
@@ -74,6 +74,7 @@ public class Window extends JFrame implements ActionListener {
         menu.add(loadP);
 
         account.add(username);
+        account.add(login);
 
         JPanel user = new JPanel();
         user.setLayout(null);
@@ -85,6 +86,7 @@ public class Window extends JFrame implements ActionListener {
 
         label.setBounds(5, 50, 100, 100);
 
+        login.addActionListener(this);
         i0.addActionListener(this);
         i1.addActionListener(this);
         createP.addActionListener(this);
@@ -160,10 +162,6 @@ public class Window extends JFrame implements ActionListener {
             if (internet) {
 
                 Functions.OpenPanelAsFrame(500, 400, "Project Wizard", new ProjectWizard(this), false);
-                /*
-                 * 
-                 * 
-                 */
 
             } else {
 
@@ -191,6 +189,15 @@ public class Window extends JFrame implements ActionListener {
 
                     // Open the project
                     new Project(folder);
+                }
+            } else if (e.getSource() == login) {
+
+                if (internet) {
+
+                    Functions.OpenPanelAsFrame(420, 200, "Login activity", new Login(), false);
+                } else {
+
+                    JOptionPane.showMessageDialog(null, "No internet connection", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

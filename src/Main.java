@@ -1,11 +1,8 @@
 import java.io.File;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
 import java.awt.*;
 import com.google.gson.Gson;
-
-import Components.Structs.Map;
 
 public class Main {
 
@@ -21,10 +18,10 @@ public class Main {
         /*
          * TileSet set = new TileSet("C:/Users/Utilizador/Desktop/Grass.png", 16);
          */
-        Map map = new Map(null, 100, 100);
+        // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        // new Project(new File("D:/TIAGO/program/himawari/my-app"));
+        new Project(new File("C:/Users/Utilizador/Desktop/my-game/art"));
     }
 
     private static void openSettings() {
