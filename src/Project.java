@@ -1,11 +1,8 @@
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 import java.awt.Color;
-import java.awt.Font;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -17,8 +14,6 @@ import java.awt.event.*;
 
 public class Project extends JFrame implements KeyListener, ActionListener {
 
-    JPanel res = new JPanel(), control;
-
     public static Inspector inspector = new Inspector();
     public static File path, engineFiles;
     public static String projectName = "com/com/nonamerhythmgame";
@@ -26,12 +21,14 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
             addResources = new JMenu("Manage Resources"),
-            other = new JMenu("File");
+            other = new JMenu("File"),
+            build = new JMenu("Build Project");
     JMenuItem i0 = new JMenuItem("Run"), i1 = new JMenuItem("Open Game Code"),
             openFolder = new JMenuItem("Open game folder"),
             openRes = new JMenuItem("Open Resources Folder"),
-            settings = new JMenuItem("Set default code editor"),
-            close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store");
+            settings = new JMenuItem("Set default code editor"), buildSettings = new JMenuItem("Tweak build settings"),
+            close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store"),
+            buildJar = new JMenuItem("Build .JAR File (recomended)"), buildExe = new JMenuItem("Build .EXE File");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -41,8 +38,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     JTabbedPane functions = new JTabbedPane();
 
-    JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert"),
-            run = new JButton("LAUCH PROJECT"), website = new JButton("Website"), docs = new JButton("Documentation"),
+    JButton run = new JButton("LAUCH PROJECT"), website = new JButton("Website"), docs = new JButton("Documentation"),
             update = new JButton("Update"),
             quit = new JButton("QUIT");
 
@@ -68,9 +64,14 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         gamemenu.add(i0);
         gamemenu.add(openFolder);
         codeMenu.add(i1);
+        settingsMenu.add(buildSettings);
         settingsMenu.add(settings);
         other.add(open);
         other.add(close);
+        build.add(buildJar);
+        build.add(buildExe);
+
+        other.add(build);
 
         addResources.add(openRes);
         addResources.add(addSprite);
@@ -83,6 +84,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         bar.add(addResources);
         bar.add(settingsMenu);
 
+        buildSettings.addActionListener(this);
         openRes.addActionListener(this);
         openFolder.addActionListener(this);
         addSprite.addActionListener(this);
@@ -96,39 +98,16 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setJMenuBar(bar);
 
         // User interface initization
-        res = new ResourceExplorer();
+        JPanel res = new ResourceExplorer();
         res.setBounds(5, 5, 350, 825);
         res.setBackground(Style.FILE_EXPLORER_BACKGROUND);
 
         // File control panel
 
-        control = new JPanel();
+        JPanel control = new ProjectControl();
         functions.setBounds(1170, 5, 420, 825);
-        control.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        control.setLayout(null);
 
         functions.add("Project", control);
-
-        JLabel label0 = new JLabel("Control Panel");
-        label0.setFont(new Font("Monospace", Font.PLAIN, 22));
-        label0.setBounds(5, 5, 200, 30);
-        control.add(label0);
-
-        JLabel create = new JLabel("Create", SwingConstants.CENTER);
-        create.setBounds(5, 35, 160, 20);
-
-        newObject.setBounds(5, 55, 160, 20);
-        newObject.addActionListener(this);
-
-        newAlert.setBounds(5, 80, 160, 20);
-        newAlert.addActionListener(this);
-
-        control.add(create);
-        control.add(newObject);
-        control.add(newAlert);
-        control.setLayout(null);
-
-        control.setBackground(Color.GRAY);
 
         // Inspector initialization
         functions.add("Inspector", inspector);
@@ -193,7 +172,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setLayout(null);
         setLocationRelativeTo(null);
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
 
@@ -254,41 +232,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
             setVisible(false);
             dispose();
-        } else if (e.getSource() == newObject) {
-
-            try {
-
-                Scanner s = new Scanner(new File("src/templates/Object.txt"));
-
-                String text = "";
-                while (s.hasNextLine())
-                    text += s.nextLine() + "\n";
-
-                String object_name = JOptionPane.showInputDialog(null, "Object name?", "Create Object",
-                        JOptionPane.INFORMATION_MESSAGE);
-                text = text.replace("[Object]", object_name);
-
-                Integer option = JOptionPane.showConfirmDialog(null, "Go to advanced configuration panel?",
-                        "Advanced Configuration", JOptionPane.YES_NO_OPTION);
-                // No: 1 Yes: 0
-
-                if (option == 0) {
-                    // Do some more stuff
-                }
-
-                File newFile = new File(path + "/src/main/java/Assets/Objects/" + object_name + ".java");
-                FileWriter fw = new FileWriter(newFile);
-
-                fw.write(text);
-                fw.close();
-
-                JOptionPane.showMessageDialog(null, "Object Created");
-
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
         } else if (e.getSource() == settings) {
 
             JFileChooser fc = new JFileChooser();
@@ -345,6 +288,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == openRes) {
 
             openFolder(engineFiles.getAbsolutePath());
+        } else if (e.getSource() == buildSettings) {
+
+            Functions.OpenPanelAsFrame(650, 400, "Build settings", new BuildSettings(), false);
         }
     }
 

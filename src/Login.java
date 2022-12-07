@@ -3,6 +3,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class Login extends JPanel {
 
@@ -17,6 +18,7 @@ public class Login extends JPanel {
         JPasswordField password = new JPasswordField();
 
         JButton login = Style.GetStyledButton("Login");
+        login.setAlignmentX(SwingConstants.CENTER);
 
         label.setBounds(5, 55, 400, 20);
         label1.setBounds(5, 80, 400, 20);

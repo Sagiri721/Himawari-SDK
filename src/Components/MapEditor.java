@@ -39,7 +39,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
     JButton export = new JButton(new ImageIcon("src/res/export.png")),
             importB = new JButton(new ImageIcon("src/res/import.png")),
             importTileset = new JButton("Import Tileset"),
-            importObjectList = new JButton("Import Objects");
+            importObjectList = new JButton("Import Objects"), shotcuts = new JButton("Shortcuts");
 
     int[][] mapOutput;
     List<Object> objects = new ArrayList<>();
@@ -521,6 +521,25 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         importTileset.setBounds(5, 5, 200, 20);
         importObjectList.setBounds(210, 5, 200, 20);
 
+        shotcuts.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JFrame frame = new JFrame("Shortcuts");
+
+                frame.setSize(510, 520);
+                JLabel img = new JLabel(new ImageIcon("src/res/quick shortcuts.png"));
+                img.setBounds(0, 0, 500, 500);
+
+                frame.setLayout(null);
+                frame.add(img);
+
+                frame.setVisible(true);
+            }
+
+        });
+        tilesetPanel.add(shotcuts);
         tilesetPanel.add(importTileset);
         tilesetPanel.add(importObjectList);
 
@@ -548,7 +567,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
                         MapEditor.map = new Map(set, map.w, map.h);
 
-                        System.out.println(MapEditor.map.tileSet.tileSet);
+                        // System.out.println(MapEditor.map.tileSet.tileSet);
 
                         getComponentAt(0, 62).repaint();
                         prev.setIcon(getPreview());
@@ -672,8 +691,12 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
                     for (Iterator<Object> iterator = objects.iterator(); iterator.hasNext();) {
 
-                        Object integer = iterator.next();
-                        if (integer.matches(tarX, tarY)) {
+                        Object o = iterator.next();
+
+                        int realTileX = o.x - x;
+                        int realTileY = o.y - y;
+
+                        if ((_x / (800 / displayX)) == realTileX && (_y / (800 / displayY)) == realTileY) {
                             iterator.remove();
                             break;
                         }
@@ -686,7 +709,12 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                     for (Iterator<Object> i = objects.iterator(); i.hasNext();) {
                         Object o = i.next();
 
-                        if (o.matches(tarX, tarY)) {
+                        int realTileX = o.x - x;
+                        int realTileY = o.y - y;
+
+                        // System.out.println(tarX + " | " + tarY);
+
+                        if ((_x / (800 / displayX)) == realTileX && (_y / (800 / displayY)) == realTileY) {
 
                             String info = o.infoDump();
                             JOptionPane.showMessageDialog(null, info, "OBJECT INFO", JOptionPane.INFORMATION_MESSAGE);
@@ -808,6 +836,10 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
             for (String line : inObj.split("\n")) {
 
                 String[] info = line.split(" ");
+
+                // System.out.println(info.length);
+                if (info.length < 3)
+                    continue;
 
                 Object oo = new Object();
                 oo.name = info[0];

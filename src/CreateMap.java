@@ -66,7 +66,6 @@ public class CreateMap extends JFrame implements ActionListener {
         add(label1);
 
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
         setVisible(true);

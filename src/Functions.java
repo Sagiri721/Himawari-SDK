@@ -124,18 +124,19 @@ public class Functions {
         return editor;
     }
 
-    public static void OpenPanelAsFrame(int w, int h, String name, JPanel contents, boolean resizable) {
+    public static JFrame OpenPanelAsFrame(int w, int h, String name, JPanel contents, boolean resizable) {
 
         JFrame project = new JFrame();
         project.setTitle(name);
         project.setSize(w, h);
         project.setLocationRelativeTo(null);
         project.setResizable(resizable);
-        project.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         project.add(contents);
 
         project.setVisible(true);
+
+        return project;
     }
 
     /**

@@ -11,14 +11,21 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import com.google.gson.Gson;
+
 import Components.Structs.Map;
 import Components.Structs.TileSet;
+import Components.Structs.Versions;
 
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class Window extends JFrame implements ActionListener {
 
@@ -137,10 +144,22 @@ public class Window extends JFrame implements ActionListener {
 
     public String[] getVersions() {
 
-        String[] logs = { "1.0.0: First version, allows basic project management",
-                "1.1.0: Main page with information" };
+        Versions versions = null;
 
-        return logs;
+        try {
+
+            Gson gson = new Gson();
+            Reader reader = Files
+                    .newBufferedReader(Paths.get(new File("src/data/EngineVersions.json").getAbsolutePath()));
+            versions = gson.fromJson(reader, Versions.class);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }
+
+        return versions.versions;
     }
 
     @Override

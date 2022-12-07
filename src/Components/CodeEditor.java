@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class CodeEditor extends JFrame implements ActionListener {
@@ -12,12 +14,12 @@ public class CodeEditor extends JFrame implements ActionListener {
 
     JMenuBar mb = new JMenuBar();
     JMenu fileMenu = new JMenu("File");
-    JMenuItem close = new JMenuItem("Close File");
+    JMenuItem close = new JMenuItem("Close File"), save = new JMenuItem("Save File");
+    JTextArea textArea = new JTextArea();
 
     public CodeEditor(File file) {
 
         this.file = file;
-        JTextArea textArea = new JTextArea();
         textArea.setBounds(0, 0, getWidth(), getHeight());
 
         add(textArea);
@@ -26,7 +28,11 @@ public class CodeEditor extends JFrame implements ActionListener {
 
         add(scroll);
 
+        fileMenu.add(save);
         fileMenu.add(close);
+
+        save.addActionListener(this);
+        close.addActionListener(this);
 
         mb.add(fileMenu);
         setJMenuBar(mb);
@@ -58,8 +64,32 @@ public class CodeEditor extends JFrame implements ActionListener {
         return text;
     }
 
+    private void saveFile() throws IOException {
+
+        String text = textArea.getText();
+
+        FileWriter fw = new FileWriter(file);
+        fw.write(text);
+        fw.close();
+
+        JOptionPane.showMessageDialog(null, "FILE SAVED", "Status", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        if (e.getSource() == close) {
+
+            setVisible(false);
+            dispose();
+        } else if (e.getSource() == save) {
+
+            try {
+                saveFile();
+            } catch (Exception e1) {
+
+                JOptionPane.showMessageDialog(null, "No file was found", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

@@ -1,1 +1,7 @@
-{}
+{
+    "versions": [
+        "1.0.0: First version, allows basic project management",
+        "1.1.0: Main page with information",
+        "1.1.1: Allocates logins to seperate database"
+    ]
+}
