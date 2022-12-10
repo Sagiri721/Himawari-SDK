@@ -224,6 +224,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
         }
 
         list.setListData(files);
+        list.repaint();
     }
 
     public void openFile() {

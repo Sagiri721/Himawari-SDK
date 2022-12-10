@@ -25,7 +25,7 @@ public class [Object] extends Object implements StdBehaviour{
      */
     @Override
     public void Start() {
-        
+        [Start]
     }
 
     /**

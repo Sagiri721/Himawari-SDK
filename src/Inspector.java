@@ -12,7 +12,7 @@ import java.awt.datatransfer.Clipboard;
 public class Inspector extends JPanel implements ActionListener {
 
     // List of all the components that can be added
-    protected static String[] components = {
+    public static String[] components = {
             "Transform",
             "ImageRenderer",
             "Animator",
@@ -84,7 +84,7 @@ public class Inspector extends JPanel implements ActionListener {
 
         if (e.getSource() == compSnippet) {
 
-            getSnippet(compBox.getSelectedIndex());
+            snippetArea.setText(Components.getSnippet(compBox.getSelectedIndex())[0]);
         } else if (e.getSource() == copy) {
 
             StringSelection selection = new StringSelection(snippetArea.getText());
@@ -95,55 +95,4 @@ public class Inspector extends JPanel implements ActionListener {
         }
     }
 
-    public void getSnippet(int ind) {
-
-        String snippet = "";
-        switch (ind) {
-
-            case 0:
-                // Transform
-                int x = Integer.parseInt((JOptionPane.showInputDialog(null, "X Position?"))),
-                        y = Integer.parseInt((JOptionPane.showInputDialog(null, "Y Position?")));
-
-                snippet = "Transform transform = new Transform(new Vec2(" + x + ", " + y
-                        + "), 0, new Vec2(1, 1));\naddComponent(transform);";
-                break;
-            case 1:
-                // ImageRenderer
-                JFileChooser fc = new JFileChooser(Project.engineFiles + "/Sprites");
-                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-                int opt = fc.showDialog(null, "Choose");
-                if (opt == JFileChooser.APPROVE_OPTION) {
-
-                    snippet = "Sprite image = new Sprite(\"" + fc.getSelectedFile().getName()
-                            + "\");\nImageRenderer renderer = new ImageRenderer(image);\naddComponent(renderer);";
-                }
-
-                break;
-            case 2:
-                // Animator
-
-                break;
-            case 3:
-                // RectCollider
-                int width = Integer.parseInt((JOptionPane.showInputDialog(null, "X Scale?"))),
-                        height = Integer.parseInt((JOptionPane.showInputDialog(null, "Y Scale?")));
-
-                snippet = "RectCollider collider = new RectCollider(transform, new Vec2(" + width + ", " + height
-                        + "));\naddComponent(collider);";
-                break;
-            case 4:
-                // Body
-                int mass = Integer.parseInt((JOptionPane.showInputDialog(null, "Mass?")));
-
-                snippet = "Body body = new Body(transform, collider, " + mass + ");\naddComponent(body);";
-                break;
-            case 5:
-                // Camera
-                break;
-        }
-
-        snippetArea.setText(snippet);
-    }
 }

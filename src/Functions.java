@@ -59,7 +59,7 @@ public class Functions {
             fw.write(command);
             fw.close();
 
-            Runtime.getRuntime().exec(f.getAbsolutePath());
+            Runtime.getRuntime().exec(f.getAbsolutePath()).waitFor();
 
         } catch (Exception e) {
             e.printStackTrace();

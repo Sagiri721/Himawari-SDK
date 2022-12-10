@@ -1,1 +1,1 @@
-C:\Users\Utilizador\Desktop\my-game\art\src\main\java\com\com\nonamerhythmgame\Assets\Objects\Player.java
+C:\Users\Utilizador\Desktop\my-game\art\src\main\java\com\com\nonamerhythmgame\Assets\Objects\Wall.java

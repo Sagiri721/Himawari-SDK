@@ -56,26 +56,50 @@ public class ProjectControl extends JPanel implements ActionListener {
                 while (s.hasNextLine())
                     text += s.nextLine() + "\n";
 
+                s.close();
+
                 String object_name = JOptionPane.showInputDialog(null, "Object name?", "Create Object",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                if (object_name == null || object_name.trim() == "") {
+
+                    JOptionPane.showMessageDialog(null, "Object name can't be empty", "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 text = text.replace("[Object]", object_name);
+                text = text.replace("[Start]", "");
 
                 Integer option = JOptionPane.showConfirmDialog(null, "Go to advanced configuration panel?",
                         "Advanced Configuration", JOptionPane.YES_NO_OPTION);
                 // No: 1 Yes: 0
 
                 if (option == 0) {
-                    // Do some more stuff
+
+                    Functions.OpenPanelAsFrame(400, 600, "Advanced Object Creation", new ObjectWizard(object_name),
+                            false);
+
+                    return;
+                } else {
+
+                    File newFile = new File(Project.path + "/src/main/java/" + Project.projectName + "/Assets/Objects/"
+                            + object_name + ".java");
+                    if (newFile.exists()) {
+
+                        JOptionPane.showMessageDialog(null, "There already exists an object with this name", "ERROR",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    FileWriter fw = new FileWriter(newFile);
+
+                    fw.write(text);
+                    fw.close();
+
+                    JOptionPane.showMessageDialog(null, "Object Created");
+
                 }
-
-                File newFile = new File(Project.path + "/src/main/java/" + Project.projectName + "/Assets/Objects/"
-                        + object_name + ".java");
-                FileWriter fw = new FileWriter(newFile);
-
-                fw.write(text);
-                fw.close();
-
-                JOptionPane.showMessageDialog(null, "Object Created");
 
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
