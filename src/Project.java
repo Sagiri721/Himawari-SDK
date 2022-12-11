@@ -2,6 +2,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.function.Function;
 import java.awt.Color;
 
 import javax.swing.*;
@@ -22,13 +23,18 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
             addResources = new JMenu("Manage Resources"),
             other = new JMenu("File"),
-            build = new JMenu("Build Project");
+            build = new JMenu("Build Project"), git = new JMenu("Git");
+
     JMenuItem i0 = new JMenuItem("Run"), i1 = new JMenuItem("Open Game Code"),
             openFolder = new JMenuItem("Open game folder"),
             openRes = new JMenuItem("Open Resources Folder"),
             settings = new JMenuItem("Set default code editor"), buildSettings = new JMenuItem("Tweak build settings"),
             close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store"),
-            buildJar = new JMenuItem("Build .JAR File (recomended)"), buildExe = new JMenuItem("Build .EXE File");
+            buildJar = new JMenuItem("Build .JAR File (recomended)"), buildExe = new JMenuItem("Build .EXE File"),
+            commit = new JMenuItem("Commit to Git"), push = new JMenuItem("Push to GitHub"),
+            pull = new JMenuItem("Pull from GitHub"), init = new JMenuItem("Initialize Git repository"),
+            remote = new JMenuItem("Add remote repository"), branch = new JMenuItem("Change branch"),
+            readdremote = new JMenuItem("Change remote repository url");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -61,6 +67,18 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         // Menu initialization
 
+        git.add(init);
+        git.add(remote);
+        git.add(readdremote);
+        git.addSeparator();
+
+        git.add(commit);
+        git.add(push);
+        git.add(pull);
+        git.addSeparator();
+
+        git.add(branch);
+
         gamemenu.add(i0);
         gamemenu.add(openFolder);
         codeMenu.add(i1);
@@ -82,8 +100,16 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         bar.add(gamemenu);
         bar.add(codeMenu);
         bar.add(addResources);
+        bar.add(git);
         bar.add(settingsMenu);
 
+        readdremote.addActionListener(this);
+        init.addActionListener(this);
+        remote.addActionListener(this);
+        push.addActionListener(this);
+        commit.addActionListener(this);
+        pull.addActionListener(this);
+        branch.addActionListener(this);
         buildSettings.addActionListener(this);
         openRes.addActionListener(this);
         openFolder.addActionListener(this);
@@ -291,6 +317,113 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == buildSettings) {
 
             Functions.OpenPanelAsFrame(650, 400, "Build settings", new BuildSettings(), false);
+
+        } else if (e.getSource() == init) {
+
+            // Check for git
+            File gitfolder = new File(Project.path + "\\..\\.git");
+            if (gitfolder.exists()) {
+
+                int opt = JOptionPane.showConfirmDialog(null,
+                        "There is already a git repository initialized on this folder.\nDo you want to reinitialize it?",
+                        "WARNING", JOptionPane.YES_NO_OPTION);
+
+                if (opt == 1) {
+
+                    return;
+                }
+            }
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit init", "git/init.bat");
+            Functions.RunBatchCmd("git/init.bat");
+
+        } else if (e.getSource() == remote) {
+
+            String link = JOptionPane.showInputDialog(null,
+                    "Input the link to your GitHub repository (.git is optional)", "Git Connection");
+
+            if (link == null) {
+                return;
+            }
+
+            if (link.length() <= 4) {
+
+                JOptionPane.showMessageDialog(null, "Invalid link", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (link.substring(link.length() - 4, link.length()) != ".git") {
+
+                link += ".git";
+            }
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit remote add origin " + link, "git/remote.bat");
+            Functions.RunBatchCmd("git/remote.bat");
+        } else if (e.getSource() == commit) {
+
+            String commit = JOptionPane.showInputDialog(null,
+                    "Commit message", "Commit");
+
+            if (commit == null) {
+                return;
+            }
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit commit -m\"" + commit + "\"",
+                    "git/commit.bat");
+            Functions.RunBatchCmd("git/commit.bat");
+
+        } else if (e.getSource() == push) {
+
+            String branch = JOptionPane.showInputDialog(null,
+                    "Input the branch you want to push to", "master");
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit push origin " + branch,
+                    "git/push.bat");
+            Functions.RunBatchCmd("git/push.bat");
+
+        } else if (e.getSource() == pull) {
+
+            String branch = JOptionPane.showInputDialog(null,
+                    "Input the branch you want to pull from", "master");
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit pull origin " + branch,
+                    "git/pull.bat");
+            Functions.RunBatchCmd("git/pull.bat");
+
+        } else if (e.getSource() == branch) {
+
+            String branch = JOptionPane.showInputDialog(null,
+                    "Input the branch you want to checkout", "master");
+
+            if (branch == null) {
+                return;
+            }
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit checkout \"" + branch + "\"",
+                    "git/branch.bat");
+            Functions.RunBatchCmd("git/branch.bat");
+        } else if (e.getSource() == readdremote) {
+
+            String link = JOptionPane.showInputDialog(null,
+                    "Input the link to your new GitHub repository (.git is optional)", "Git Connection");
+
+            if (link == null) {
+                return;
+            }
+
+            if (link.length() <= 4) {
+
+                JOptionPane.showMessageDialog(null, "Invalid link", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (link.substring(link.length() - 4, link.length()) != ".git") {
+
+                link += ".git";
+            }
+
+            Functions.Write("C:\ncd " + Project.path + "\\..\ngit remote set-url origin " + link, "git/re-remote.bat");
+            Functions.RunBatchCmd("git/re-remote.bat");
         }
     }
 

@@ -36,7 +36,22 @@ public class Functions {
 
         try {
 
-            Runtime.getRuntime().exec(f.getAbsolutePath());
+            Process p = Runtime.getRuntime().exec(f.getAbsolutePath());
+            p.waitFor();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void RunBatchCmd(String file) {
+
+        File f = new File("src/functions/" + file);
+
+        try {
+
+            Process p = Runtime.getRuntime().exec("cmd /c start \"\" " + f.getAbsolutePath());
+            p.waitFor();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,6 +75,21 @@ public class Functions {
             fw.close();
 
             Runtime.getRuntime().exec(f.getAbsolutePath()).waitFor();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void Write(String command, String file) {
+
+        File f = new File("src/functions/" + file);
+
+        try {
+
+            FileWriter fw = new FileWriter(f);
+            fw.write(command);
+            fw.close();
 
         } catch (Exception e) {
             e.printStackTrace();
