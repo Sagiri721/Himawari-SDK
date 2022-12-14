@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -10,9 +12,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-
-import Components.Structs.Map;
 
 import java.awt.Image;
 import java.awt.event.*;
@@ -25,6 +26,7 @@ public class ObjectWizard extends JPanel implements ActionListener {
     JButton done;
 
     JPanel compPanel = new JPanel();
+    JScrollPane scrollFrame;
 
     JButton imageB = Style.GetStyledButton("Add Image"), addComp = Style.GetStyledButton("Add Component");
     JLabel image = new JLabel();
@@ -51,28 +53,39 @@ public class ObjectWizard extends JPanel implements ActionListener {
 
         nameLabel.setBounds(5, 5, 200, 30);
         comps.setBounds(5, 80, 200, 30);
-        addComp.setBounds(220, 80, 170, 30);
+        addComp.setBounds(220, 80, 150, 30);
         addComp.addActionListener(this);
 
         JLabel compJLabel = new JLabel("Components");
         compJLabel.setBounds(5, 40, 200, 30);
 
-        compPanel.setBounds(5, 130, 360, 200);
+        compPanel.setBounds(5, 130, 375, 300);
+        compPanel.setPreferredSize(new Dimension(375, 300));
+
+        scrollFrame = new JScrollPane(compPanel);
+        scrollFrame.setBounds(compPanel.getBounds());
+        compPanel.setAutoscrolls(true);
+        scrollFrame.setPreferredSize(new Dimension(375, 300));
+        scrollFrame.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollFrame.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         compPanel.setLayout(null);
         compPanel.setBackground(Style.MAIN_BACKGROUND);
 
         done = Style.GetStyledButton("Create Object");
-        done.setBounds(5, 530, 360, 30);
+        done.setBounds(5, 530, 375, 30);
 
         done.addActionListener(this);
 
         add(done);
         add(compJLabel);
-        add(compPanel);
+        add(scrollFrame);
         add(addComp);
         add(comps);
         add(nameLabel);
         setLayout(null);
+
+        setSize(getWidth() + 1, getHeight());
     }
 
     @Override
@@ -100,12 +113,29 @@ public class ObjectWizard extends JPanel implements ActionListener {
             Components c = Components.getComponentbyString(String.valueOf(comps.getSelectedItem()));
 
             Component cc = new Component(c, (55) * comMap.size());
+
+            // Before putting check if already exists
+            for (Entry<Components, String> entry : comMap.entrySet()) {
+
+                if (entry.getKey() == c) {
+
+                    JOptionPane.showMessageDialog(null, "This component was already added", "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
             cc.setDetails(info[1]);
 
             compPanel.add(cc);
             compPanel.repaint();
 
             comMap.put(c, snippet);
+
+            compPanel.setPreferredSize(new Dimension((int) compPanel.getSize().getWidth(), (55) * comMap.size() + 5));
+            scrollFrame.revalidate();
+            scrollFrame.repaint();
+
         } else if (e.getSource() == done) {
 
             String startMethod = "";
@@ -154,6 +184,8 @@ public class ObjectWizard extends JPanel implements ActionListener {
         JLabel name = new JLabel();
         JLabel details = new JLabel();
 
+        JButton delete = Style.GetStyledButton("X");
+
         Component(Components comp, int y) {
 
             this.comp = comp;
@@ -163,7 +195,7 @@ public class ObjectWizard extends JPanel implements ActionListener {
             JLabel icon = new JLabel(new ImageIcon("src/res/icons/" + comp.getName() + ".png"));
             setBackground(Style.SECONDARY_BACKGROUND);
 
-            setBounds(5, y, 330, 50);
+            setBounds(5, y, 350, 50);
 
             name.setFont(Style.CONTENT_FONT);
             name.setForeground(Color.white);
@@ -174,10 +206,22 @@ public class ObjectWizard extends JPanel implements ActionListener {
             details.setFont(Style.CONTENT_FONT);
             details.setBounds(5, 20, 300, 20);
 
+            delete.setBounds(292, 10, 55, 32);
+            delete.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    removeComponent(comp);
+                }
+
+            });
+
             setBorder(Style.BUTTON_BORDER);
 
             setLayout(null);
 
+            add(delete);
             add(icon);
             add(details);
             add(name);
@@ -187,5 +231,27 @@ public class ObjectWizard extends JPanel implements ActionListener {
 
             this.details.setText(details);
         }
+    }
+
+    public void removeComponent(Components c) {
+
+        String type = c.getName();
+
+        int index = 0;
+        boolean found = false;
+        for (int i = 5; i < comMap.size() + 1; i += 50 + (index * i)) {
+
+            JPanel component = (JPanel) compPanel.getComponentAt(5, i);
+
+            if (found)
+                component.setBounds(5, i - 50 + (index * i), (int) component.getBounds().getWidth(),
+                        (int) component.getBounds().getHeight());
+
+            if (((JLabel) component.getComponentAt(5, 5)).getText() == type)
+                found = true;
+            index++;
+        }
+
+        comMap.remove(c);
     }
 }

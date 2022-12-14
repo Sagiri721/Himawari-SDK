@@ -218,6 +218,17 @@ public class Window extends JFrame implements ActionListener {
 
                     JOptionPane.showMessageDialog(null, "No internet connection", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
+            } else if (e.getSource() == i1) {
+
+                JFileChooser fc = new JFileChooser();
+                fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int opt = fc.showDialog(null, "Choose map");
+
+                if (opt == JFileChooser.APPROVE_OPTION) {
+
+                    Functions.openMapEditorEducated(new Map(null, 100, 100), fc.getSelectedFile());
+                }
             }
         }
     }

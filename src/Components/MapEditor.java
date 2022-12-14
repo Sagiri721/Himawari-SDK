@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.awt.*;
 
@@ -64,7 +65,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
     public String spriteFolder = "";
 
-    public MapEditor(Map map) {
+    public MapEditor(Map map, Optional<File> mapLocation) {
 
         setBounds(0, 0, 800, 830);
         setLayout(null);
@@ -81,14 +82,53 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
             try {
 
-                this.map = new Map(new TileSet("src/res/defaultTile.png", 16), map.w, map.h);
+                // Search for tile file, if it doesn't exist then create with default tile set
+                TileSet tiles = new TileSet("src/res/defaultTile.png", 16);
+                File file = null;
+                Integer size = 0;
+
+                findtiles: if (mapLocation.isPresent()) {
+
+                    File[] f = mapLocation.get().listFiles();
+                    for (File file2 : f) {
+
+                        if (file2.getName().contains("tiles-"))
+                            file = file2;
+                    }
+
+                    if (file == null)
+                        break findtiles;
+
+                    if (file.getName().contains("tiles-")) {
+
+                        try {
+
+                            String[] split = file.getName().split("tiles-");
+                            size = Integer.valueOf(
+                                    split[split.length - 1].substring(0, split[split.length - 1].lastIndexOf(".")));
+
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                            break findtiles;
+                        }
+
+                    } else {
+                        break findtiles;
+                    }
+
+                    tiles = new TileSet(file.getAbsolutePath(), size);
+                }
+
+                MapEditor.map = new Map(tiles, map.w, map.h);
+
             } catch (Exception e) {
 
                 e.printStackTrace();
                 return;
             }
         } else
-            this.map = map;
+            MapEditor.map = map;
 
         displayX = map.w;
         displayY = map.h;
@@ -218,10 +258,14 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                     String outTiles = "";
                     String outObjects = "";
 
-                    for (int i = 0; i < map.h; i++) {
-                        for (int j = 0; j < map.w; j++) {
+                    for (int i = 0; i < mapOutput[0].length; i++) {
+                        for (int j = 0; j < mapOutput[0].length; j++) {
 
-                            outTiles += mapOutput[j][i] + (j < map.w - 1 ? " " : "");
+                            try {
+                                outTiles += mapOutput[j][i] + (j < map.w - 1 ? " " : "");
+                            } catch (Exception ee) {
+                                // ee.printStackTrace();
+                            }
                         }
 
                         outTiles += "\n";
@@ -258,6 +302,11 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                                 fw.write(outObjects);
                                 fw.close();
                             }
+
+                            // Save the tileset file to the folder
+                            String name = "tiles-" + MapEditor.map.tileSet.size;
+                            File out = new File(dir.getAbsolutePath() + "\\" + name + ".png");
+                            ImageIO.write(MapEditor.map.tileSet.tileSet, "png", out);
 
                             JOptionPane.showMessageDialog(null, "Export complete", "SUCCESS",
                                     JOptionPane.INFORMATION_MESSAGE);
@@ -820,15 +869,25 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
             String inTiles = "";
             String inObj = "";
 
-            Scanner s = new Scanner(tiles);
-            while (s.hasNextLine())
-                inTiles += s.nextLine() + "\n";
+            Scanner s = null;
 
-            s.close();
-            s = new Scanner(obj);
-            while (s.hasNextLine())
-                inObj += s.nextLine() + "\n";
-            s.close();
+            if (tiles.exists()) {
+                s = new Scanner(tiles);
+
+                while (s.hasNextLine())
+                    inTiles += s.nextLine() + "\n";
+
+                s.close();
+            }
+
+            if (obj.exists()) {
+                s = new Scanner(obj);
+
+                while (s.hasNextLine())
+                    inObj += s.nextLine() + "\n";
+
+                s.close();
+            }
 
             // Get the info from the objects
             objects.clear();

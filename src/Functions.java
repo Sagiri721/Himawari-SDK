@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -136,7 +137,25 @@ public class Functions {
         mapEditor.setSize(800, 830);
         mapEditor.setTitle("Map editing tool");
 
-        MapEditor editor = new MapEditor(map);
+        MapEditor editor = new MapEditor(map, Optional.<File>empty());
+        editor.setBounds(0, 0, 800, 830);
+
+        mapEditor.setLayout(null);
+        mapEditor.setLayout(null);
+        mapEditor.add(editor);
+        mapEditor.setResizable(false);
+        mapEditor.setVisible(true);
+    }
+
+    public static void openMapEditorEducated(Map map, File mapPath) {
+
+        JFrame mapEditor = new JFrame();
+        mapEditor.setSize(800, 830);
+        mapEditor.setTitle("Map editing tool");
+
+        MapEditor editor = new MapEditor(map, Optional.<File>of(mapPath));
+        editor.importMap(mapPath.getAbsolutePath());
+
         editor.setBounds(0, 0, 800, 830);
 
         mapEditor.setLayout(null);
@@ -148,7 +167,7 @@ public class Functions {
 
     public static JPanel getMapEditor(String path) {
 
-        MapEditor editor = new MapEditor(new Map(null, 100, 100));
+        MapEditor editor = new MapEditor(new Map(null, 100, 100), Optional.<File>empty());
         editor.setObjectModelsFromFolder(path + "/Objects");
         editor.spriteFolder = path + "/Sprites";
         return editor;
