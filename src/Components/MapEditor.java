@@ -40,7 +40,8 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
     JButton export = new JButton(new ImageIcon("src/res/export.png")),
             importB = new JButton(new ImageIcon("src/res/import.png")),
             importTileset = new JButton("Import Tileset"),
-            importObjectList = new JButton("Import Objects"), shotcuts = new JButton("Shortcuts");
+            importObjectList = new JButton("Import Objects"), shotcuts = new JButton("Shortcuts"),
+            objectList = new JButton(new ImageIcon("src/res/objectlist.png"));
 
     int[][] mapOutput;
     List<Object> objects = new ArrayList<>();
@@ -378,16 +379,18 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String newTile = JOptionPane.showInputDialog(null, "New tile id:", curTile);
+                JFrame main = new JFrame("Tile selector");
 
-                try {
+                TilesetPreview preview = new TilesetPreview();
+                JScrollPane scroll = new JScrollPane(preview, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-                    curTile = Integer.parseInt(newTile);
-                    prev.setIcon(getPreview());
-                } catch (Exception ee) {
+                main.add(scroll);
 
-                    JOptionPane.showMessageDialog(null, "Invalid id", "ERROR", JOptionPane.ERROR_MESSAGE);
-                }
+                main.setSize(240, 500);
+                main.setResizable(false);
+                main.setLocationRelativeTo(null);
+                main.setVisible(true);
             }
 
         });
@@ -541,6 +544,41 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
             }
 
         });
+
+        objectList.setBounds(680, 0, 32, 32);
+        objectList.setToolTipText("Lists all the objects on the map");
+        objectList.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JFrame frame = new JFrame();
+
+                JTextArea text = new JTextArea();
+                text.setEditable(false);
+
+                String objs = "";
+                int index = 0;
+                for (Object o : objects) {
+
+                    objs += (index + 1) + ": " + o.infoDump() + "\n\n";
+                    index++;
+                }
+
+                text.setText(objs);
+                JScrollPane scroll = new JScrollPane(text,
+                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+                frame.add(scroll);
+
+                frame.setTitle("Output");
+                frame.setSize(400, 400);
+                frame.setVisible(true);
+            }
+
+        });
+
+        mapEditing.add(objectList);
 
         scaleX.setBounds(580, 5, 40, 28);
         scaleY.setBounds(630, 5, 40, 28);
@@ -1036,5 +1074,82 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         }
 
         objectModels = results.toArray(new String[results.size()]);
+    }
+
+    private class TilesetPreview extends JPanel {
+
+        public TilesetPreview() {
+
+            setBounds(0, 0, 220, 500);
+
+            JButton quickButton = new JButton("Quick Selection");
+            quickButton.setBounds(5, 5, 150, 25);
+
+            quickButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    try {
+
+                        curTile = Integer.valueOf(JOptionPane.showInputDialog(null, "Tile index"));
+                        prev.setIcon(getPreview());
+
+                    } catch (Exception ee) {
+                    }
+                }
+
+            });
+
+            add(quickButton);
+
+            BufferedImage[] images = MapEditor.map.tileSet.sprites;
+            int index = 0;
+            for (BufferedImage icon : images) {
+
+                Tile t = new Tile(index, icon);
+                t.setBounds(5, (69 * index) + 30, 200, 64);
+
+                add(t);
+                index++;
+            }
+
+            setPreferredSize(new Dimension(220, 69 * index + 5));
+
+            repaint();
+            setLayout(null);
+        }
+
+        private class Tile extends JPanel {
+
+            public Tile(int i, BufferedImage preview) {
+
+                JLabel name = new JLabel("Tile number " + i);
+                JLabel icon = new JLabel(new ImageIcon(preview.getScaledInstance(64, 64, Image.SCALE_SMOOTH)));
+
+                JButton choose = new JButton("Choose tile");
+
+                name.setBounds(5, 5, 300, 20);
+                icon.setBounds(120, 5, 64, 64);
+                choose.setBounds(5, 30, 100, 30);
+
+                choose.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+
+                        curTile = i;
+                        prev.setIcon(getPreview());
+                    }
+
+                });
+
+                add(name);
+                add(icon);
+                add(choose);
+
+                setLayout(null);
+            }
+        }
     }
 }
