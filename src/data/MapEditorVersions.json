@@ -1,5 +1,7 @@
 {
     "MapEditor": {
-        "1.0.0": "Basic editing features, simple tile selection and placement, 2 layers for objects and tiles, object placement, simple zoom and movement features. Import and export possibility"
+        "1.0.0": "Basic editing features, simple tile selection and placement, 2 layers for objects and tiles, object placement, simple zoom and movement features. Import and export possibility",
+        "1.0.1": "Bug fixes related to object deleting and object information display",
+        "1.2.0": "New tile selection mode supporting previews and a complete visible list as long as a quick select tool, object listing."
     }
 }
