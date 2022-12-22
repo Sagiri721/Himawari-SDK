@@ -21,14 +21,15 @@ public class Inspector extends JPanel implements ActionListener {
             "Camera"
     };
 
+    File curFile = null;
     JComboBox<String> compBox = new JComboBox<String>(components);
 
-    JButton compSnippet = new JButton("Add component");
+    JButton compSnippet = Style.GetStyledButton("Add component");
     public JTextArea snippetArea = new JTextArea();
     JLabel objectName = new JLabel("Object name", SwingConstants.CENTER);
-    JButton copy = new JButton("Copy snippet");
+    JButton copy = Style.GetStyledButton("Copy snippet"), details = Style.GetStyledButton("See file details");
 
-    public JComponent[] inpectors = { compSnippet, compBox, copy };
+    public JComponent[] inpectors = { compSnippet, compBox, copy, details };
 
     public Inspector() {
 
@@ -52,11 +53,15 @@ public class Inspector extends JPanel implements ActionListener {
         snippetArea.setEditable(false);
         snippetArea.setLineWrap(true);
 
+        details.setBounds(5, 220, 405, 30);
+
+        details.addActionListener(this);
         compSnippet.addActionListener(this);
 
         copy.setBounds(5, 175, 150, 30);
         copy.addActionListener(this);
 
+        add(details);
         add(copy);
         add(snippetArea);
         add(compSnippet);
@@ -70,6 +75,7 @@ public class Inspector extends JPanel implements ActionListener {
 
     public void inspectObject(File objFile) {
 
+        curFile = objFile;
         objectName.setText(objFile.getName());
 
         // Show components and stuff
@@ -92,6 +98,9 @@ public class Inspector extends JPanel implements ActionListener {
 
             cb.setContents(selection, null);
             JOptionPane.showMessageDialog(null, "Snippet copied to clipboard");
+        } else if (e.getSource() == details) {
+
+            new FileDetailsWindow(curFile);
         }
     }
 

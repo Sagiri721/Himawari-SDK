@@ -1,7 +1,9 @@
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.awt.Color;
 
@@ -34,7 +36,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             commit = new JMenuItem("Commit to Git"), push = new JMenuItem("Push to GitHub"),
             pull = new JMenuItem("Pull from GitHub"), init = new JMenuItem("Initialize Git repository"),
             remote = new JMenuItem("Add remote repository"), branch = new JMenuItem("Change branch"),
-            readdremote = new JMenuItem("Change remote repository url");
+            readdremote = new JMenuItem("Change remote repository url"),
+            importLibrary = new JMenuItem("Import himawari libraries"), addDepend = new JMenuItem("Add dependencies"),
+            newComp = new JMenuItem("Import scriptable components");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -65,6 +69,14 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         setSize(1610, 930);
         getContentPane().setBackground(Color.black);
 
+        // Find the main room and open it
+
+        File[] rooms = new File(Project.engineFiles + "/Rooms").listFiles();
+        if (rooms.length > 0) {
+
+            preview.importMap(rooms[0].getAbsolutePath());
+        }
+
         // Menu initialization
 
         git.add(init);
@@ -92,6 +104,11 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         other.add(build);
 
         addResources.add(openRes);
+        addResources.addSeparator();
+        addResources.add(addDepend);
+        addResources.add(importLibrary);
+        addResources.add(newComp);
+        addResources.addSeparator();
         addResources.add(addSprite);
         addResources.add(addMusic);
         addResources.add(addFont);
@@ -103,6 +120,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         bar.add(git);
         bar.add(settingsMenu);
 
+        addDepend.addActionListener(this);
+        importLibrary.addActionListener(this);
+        newComp.addActionListener(this);
         readdremote.addActionListener(this);
         init.addActionListener(this);
         remote.addActionListener(this);
@@ -259,18 +279,18 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             setVisible(false);
             dispose();
         } else if (e.getSource() == settings) {
+            String[] options = new String[] { "Visual Studio Code", "Vim" };
+            String[] alias = new String[] { "code", "vim" };
 
-            JFileChooser fc = new JFileChooser();
-            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            int response = JOptionPane.showOptionDialog(null, "What editor integration would you like you use",
+                    "Editor",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                    null, options, options[0]);
 
-            int option = fc.showDialog(null, "Set app");
+            // Write to settings
+            Settings.open_alias = alias[response];
+            Settings.updateFile();
 
-            if (option == JFileChooser.APPROVE_OPTION) {
-
-                // Write to settings
-                Settings.file_open_definition = fc.getSelectedFile().getAbsolutePath();
-                Settings.updateFile();
-            }
         } else if (e.getSource() == quit) {
 
             setVisible(false);
@@ -424,6 +444,65 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
             Functions.Write("C:\ncd " + Project.path + "\\..\ngit remote set-url origin " + link, "git/re-remote.bat");
             Functions.RunBatchCmd("git/re-remote.bat");
+        } else if (e.getSource() == addDepend) {
+
+            JFrame frame = new JFrame();
+
+            JTextArea text = new JTextArea();
+            text.setBounds(0, 0, 400, 200);
+            JScrollPane scroll = new JScrollPane(text,
+                    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+            JButton depen = Style.GetStyledButton("Append Dependencies");
+            depen.setBounds(0, 312, 367, 30);
+
+            frame.add(depen);
+            frame.add(scroll);
+
+            depen.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    File pom = new File(Project.path.getAbsolutePath() + "\\pom.xml");
+
+                    try {
+
+                        Scanner s = new Scanner(pom);
+
+                        String newText = "";
+                        while (s.hasNext()) {
+
+                            String line = s.nextLine();
+                            if (line.contains("<dependencies>"))
+                                line = "<dependencies>\n" + text.getText();
+
+                            newText += line + "\n";
+                        }
+
+                        s.close();
+                        FileWriter fw = new FileWriter(pom);
+                        fw.write(newText);
+                        fw.close();
+
+                        JOptionPane.showMessageDialog(null, "pom.xml file was updated successfully", "SUCCESS",
+                                JOptionPane.INFORMATION_MESSAGE);
+
+                        frame.setVisible(false);
+                        frame.dispose();
+                    } catch (IOException e1) {
+
+                        e1.printStackTrace();
+                    }
+
+                }
+
+            });
+
+            frame.setTitle("Input");
+            frame.setSize(400, 400);
+            frame.setVisible(true);
+            frame.setLayout(null);
         }
     }
 
@@ -438,12 +517,13 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         File f = new File("src/functions/output/open_code.bat");
         FileWriter fw = new FileWriter(f);
 
-        String command = "D: \n cd " + compiler.getParentFile().getParentFile().getAbsolutePath()
-                + "\\src\\main\\java" + filePath + "\n" + Settings.file_open_definition + " + file";
+        String command = "C: \n cd " + compiler.getParentFile().getParentFile().getAbsolutePath()
+                + "\\src\\main\\java\\" + projectName + "\\" + filePath + "\n" + Settings.open_alias
+                + " Main.java";
         fw.write(command);
         fw.close();
 
-        Runtime.getRuntime().exec(f.getAbsolutePath());
+        Functions.RunBatchCmd("output\\" + f.getName());
     }
 
     public void runGame() {
@@ -453,7 +533,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
                 // Run compiler
 
-                String command = "D: \n cd " + compiler.getParentFile().getAbsolutePath() + "\ncmd /c start \"\" "
+                String command = "C: \n cd " + compiler.getParentFile().getAbsolutePath() + "\ncmd /c start \"\" "
                         + compiler.getAbsolutePath();
 
                 File c = new File("src/functions/output/run.bat");

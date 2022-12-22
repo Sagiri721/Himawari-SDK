@@ -120,14 +120,26 @@ public class ResourceExplorer extends JPanel implements ActionListener {
             updateResources();
         } else if (e.getSource() == view) {
 
-            if (list.getSelectedIndex() == -1 || box.getSelectedIndex() != 2) {
+            if (list.getSelectedIndex() == -1) {
 
                 JOptionPane.showMessageDialog(null, "No object was selected", "ERROR", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Project.inspector.inspectObject(new File(Project.engineFiles.getAbsolutePath() +
-                    "/Objects").listFiles()[list.getSelectedIndex()]);
+            if (box.getSelectedIndex() == 2) {
+
+                Project.inspector.inspectObject(new File(Project.engineFiles.getAbsolutePath() +
+                        "/Objects").listFiles()[list.getSelectedIndex()]);
+            } else {
+
+                String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+                File file = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()])
+                        .listFiles()[list
+                                .getSelectedIndex()];
+
+                new FileDetailsWindow(file);
+            }
+
         } else if (e.getSource() == add) {
 
             JFrame chooser = new JFrame("Media chooser");

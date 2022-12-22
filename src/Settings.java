@@ -10,6 +10,7 @@ public class Settings {
 
     public static String file_open_definition;
     public static Color background;
+    public static String open_alias;
 
     public static String username;
 
@@ -18,7 +19,7 @@ public class Settings {
         try {
 
             Gson g = new Gson();
-            SettingsRef r = new SettingsRef(file_open_definition, background, username);
+            SettingsRef r = new SettingsRef(file_open_definition, background, username, open_alias);
             String text = g.toJson(r);
 
             FileWriter fw = new FileWriter(new File("src/data/settings.json"));

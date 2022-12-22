@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import java.awt.*;
 import com.google.gson.Gson;
 
@@ -21,7 +23,7 @@ public class Main {
         // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        // new Project(new File("C:/Users/Utilizador/Desktop/my-game/art"));
+        new Project(new File("C:/Users/Utilizador/Desktop/my-game/art"));
     }
 
     private static void openSettings() {
@@ -36,6 +38,7 @@ public class Main {
             while (s.hasNextLine())
                 json += s.nextLine();
 
+            s.close();
             Gson g = new Gson();
 
             SettingsRef settings = g.fromJson(json, SettingsRef.class);
@@ -44,6 +47,7 @@ public class Main {
             Settings.background = new Color(settings.background_color[0], settings.background_color[1],
                     settings.background_color[2]);
             Settings.username = settings.username;
+            Settings.open_alias = settings.open_alias;
 
         } catch (Exception e) {
 
@@ -58,5 +62,6 @@ public class Main {
         public int[] background_color;
 
         public String username;
+        public String open_alias;
     }
 }

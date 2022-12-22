@@ -991,6 +991,54 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                 }
             }
 
+            // Import tileset
+            try {
+
+                TileSet tileset = new TileSet("src/res/defaultTile.png", 16);
+                findtiles: {
+                    // Search for tile file, if it doesn't exist then create with default tile set
+                    File file = null;
+                    Integer size = 0;
+
+                    File[] f = new File(dirPath).listFiles();
+                    for (File file2 : f) {
+
+                        if (file2.getName().contains("tiles-"))
+                            file = file2;
+                    }
+
+                    if (file == null)
+                        break findtiles;
+
+                    if (file.getName().contains("tiles-")) {
+
+                        try {
+
+                            String[] split = file.getName().split("tiles-");
+                            size = Integer.valueOf(
+                                    split[split.length - 1].substring(0, split[split.length - 1].lastIndexOf(".")));
+
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                            break findtiles;
+                        }
+
+                    } else {
+                        break findtiles;
+                    }
+
+                    tileset = new TileSet(file.getAbsolutePath(), size);
+                }
+
+                map.tileSet = tileset;
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+                return;
+            }
+
             getComponentAt(0, 62).repaint();
 
         } catch (Exception ee) {
