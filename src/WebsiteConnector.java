@@ -12,14 +12,29 @@ public class WebsiteConnector {
 
     public static final String url = "http://localhost:5000/";
 
-    public static JsonObject getLibrariesFromSite() throws IOException {
+    public static JsonObject[] getLibrariesFromSite() throws IOException {
 
         String final_url = url + "recordLibraries";
 
-        String doc = Jsoup.connect(final_url).ignoreContentType(true).execute().body();
-        JsonObject jo = (JsonObject) ((JsonArray) JsonParser.parseString(doc)).get(0);
+        String doc;
+        try {
 
-        return jo;
+            doc = Jsoup.connect(final_url).ignoreContentType(true).execute().body();
+        } catch (Exception e) {
+
+            return null;
+        }
+
+        JsonArray jo = (JsonArray) JsonParser.parseString(doc);
+
+        JsonObject[] libs = new JsonObject[jo.size()];
+
+        for (int i = 0; i < libs.length; i++) {
+
+            libs[i] = (JsonObject) jo.get(i);
+        }
+
+        return libs;
     }
 
 }

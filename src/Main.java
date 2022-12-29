@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Style.LoadResources();
+        new Style();
         openSettings();
 
         new Window();

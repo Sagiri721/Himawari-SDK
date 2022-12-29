@@ -72,7 +72,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         // Find the main room and open it
 
         File[] rooms = new File(Project.engineFiles + "/Rooms").listFiles();
-        if (rooms.length > 0) {
+        if (rooms != null && rooms.length > 0) {
 
             preview.importMap(rooms[0].getAbsolutePath());
         }
@@ -464,37 +464,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
-                    File pom = new File(Project.path.getAbsolutePath() + "\\pom.xml");
-
-                    try {
-
-                        Scanner s = new Scanner(pom);
-
-                        String newText = "";
-                        while (s.hasNext()) {
-
-                            String line = s.nextLine();
-                            if (line.contains("<dependencies>"))
-                                line = "<dependencies>\n" + text.getText();
-
-                            newText += line + "\n";
-                        }
-
-                        s.close();
-                        FileWriter fw = new FileWriter(pom);
-                        fw.write(newText);
-                        fw.close();
-
-                        JOptionPane.showMessageDialog(null, "pom.xml file was updated successfully", "SUCCESS",
-                                JOptionPane.INFORMATION_MESSAGE);
-
-                        frame.setVisible(false);
-                        frame.dispose();
-                    } catch (IOException e1) {
-
-                        e1.printStackTrace();
-                    }
-
+                    Project.addDependendyString(text.getText());
+                    frame.setVisible(false);
+                    frame.dispose();
                 }
 
             });
@@ -503,6 +475,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             frame.setSize(400, 400);
             frame.setVisible(true);
             frame.setLayout(null);
+        } else if (e.getSource() == importLibrary) {
+
+            new LibraryManager();
         }
     }
 
@@ -524,6 +499,37 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         fw.close();
 
         Functions.RunBatchCmd("output\\" + f.getName());
+    }
+
+    public static void addDependendyString(String depen) {
+
+        File pom = new File(Project.path.getAbsolutePath() + "\\pom.xml");
+
+        try {
+
+            Scanner s = new Scanner(pom);
+
+            String newText = "";
+            while (s.hasNext()) {
+
+                String line = s.nextLine();
+                if (line.contains("<dependencies>"))
+                    line = line.replace("<dependencies>", "<dependencies>\n" + depen);
+
+                newText += line + "\n";
+            }
+
+            s.close();
+            FileWriter fw = new FileWriter(pom);
+            fw.write(newText);
+            fw.close();
+
+            JOptionPane.showMessageDialog(null, "pom.xml file was updated successfully", "SUCCESS",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e1) {
+
+            e1.printStackTrace();
+        }
     }
 
     public void runGame() {

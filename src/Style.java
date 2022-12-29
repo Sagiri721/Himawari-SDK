@@ -43,15 +43,19 @@ public class Style {
     public static Font CONTENT_FONT;
     public static Font HEADER_FONT;
 
-    public static void LoadResources() {
+    public Style() {
 
         try {
 
-            Style.CONTENT_FONT = Font.createFont(Font.TRUETYPE_FONT, new File("res/fonts/Roboto-Light.ttf"));
-            Style.HEADER_FONT = Font.createFont(Font.TRUETYPE_FONT, new File("res/fonts/OpenSans-SemiBold.ttf"));
+            Style.CONTENT_FONT = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream("res/fonts/Roboto-Light.ttf"));
+            Style.HEADER_FONT = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream("res/fonts/OpenSans-SemiBold.ttf"));
 
-            Style.CONTENT_FONT.deriveFont(Style.MAIN_TEXT_SIZE);
-            Style.HEADER_FONT.deriveFont(Style.HEADER_SIZE);
+            /*
+             * Style.CONTENT_FONT.deriveFont(Style.MAIN_TEXT_SIZE);
+             * Style.HEADER_FONT.deriveFont(Style.HEADER_SIZE);
+             */
 
         } catch (Exception e) {
         }

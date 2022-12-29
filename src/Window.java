@@ -128,7 +128,6 @@ public class Window extends JFrame implements ActionListener {
 
             logsList += "</ul></html>";
             JLabel listLabel = new JLabel(logsList);
-            listLabel.setFont(Style.CONTENT_FONT);
             listLabel.setBounds(0, 200, getWidth() / 2, 150);
 
             main.add(listLabel);
