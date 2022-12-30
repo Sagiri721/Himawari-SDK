@@ -29,7 +29,7 @@ public class FileDetailsWindow extends JFrame {
         }
 
         JLabel name = new JLabel("Inspecting " + file.getName()),
-                size = new JLabel("<html><body>File size: " + file.length() + " bytes<br>(" + (file.length() / 1000)
+                size = new JLabel("<html><body>File size: " + file.length() + " bytes(" + (file.length() / 1000)
                         + " KB)</body></html>");
 
         JLabel time = null;
@@ -54,14 +54,14 @@ public class FileDetailsWindow extends JFrame {
         if (extension != "") {
 
             JLabel icon = new JLabel(new ImageIcon("src/res/file-icons/icon-" + extension + ".png"));
-            icon.setBounds(5, 100, 108, 108);
+            icon.setBounds(5, 130, 108, 108);
 
             add(icon);
         }
 
         name.setFont(Style.HEADER_FONT);
-        name.setBounds(5, 5, 200, 20);
-        size.setBounds(5, 25, 200, 30);
+        name.setBounds(5, 5, 600, 30);
+        size.setBounds(5, 50, 300, 30);
 
         add(name);
         add(size);

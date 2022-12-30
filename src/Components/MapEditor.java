@@ -9,7 +9,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 
-import Components.Structs.Object;
 import Components.Structs.Map;
 import Components.Structs.TileSet;
 
@@ -24,7 +23,10 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.awt.*;
 
-public class MapEditor extends JPanel implements KeyListener, ChangeListener {
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+
+public class MapEditor extends JPanel implements ChangeListener {
 
     public static Map map;
     JLabel prev, ll, pos;
@@ -35,16 +37,20 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
     int layer = 0;
 
     JButton l1 = new JButton(new ImageIcon("src/res/layer1.png")),
-            l2 = new JButton(new ImageIcon("src/res/layer2.png"));
+            l2 = new JButton(new ImageIcon("src/res/layer2.png")),
+            l3 = new JButton(new ImageIcon("src/res/layer3.png"));
 
     JButton export = new JButton(new ImageIcon("src/res/export.png")),
             importB = new JButton(new ImageIcon("src/res/import.png")),
             importTileset = new JButton("Import Tileset"),
             importObjectList = new JButton("Import Objects"), shotcuts = new JButton("Shortcuts"),
-            objectList = new JButton(new ImageIcon("src/res/objectlist.png"));
+            objectList = new JButton(new ImageIcon("src/res/objectlist.png")),
+            parent = new JButton(new ImageIcon("src/res/parent.png"));
 
     int[][] mapOutput;
-    List<Object> objects = new ArrayList<>();
+    static List<Object> objects = new ArrayList<>();
+    Object selected = null;
+    double sensibility = 5;
     int curTile = 0;
 
     Object currentObject = null;
@@ -156,7 +162,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
         JButton o = new JButton(new ImageIcon("src/res/objects.png"));
         o.setToolTipText("Choose an object to place");
-        o.setBounds(303, 0, 32, 32);
+        o.setBounds(303 + 37, 0, 32, 32);
 
         o.addActionListener(new ActionListener() {
 
@@ -183,7 +189,8 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                     } else {
 
                         Object o = new Object();
-                        o.name = name;
+
+                        o.setName(name);
                         o.angle = angle;
                         o.w = scaleX;
                         o.h = scaleY;
@@ -208,11 +215,14 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         l1.setBounds(139, 0, 32, 32);
         l1.setEnabled(false);
         l2.setBounds(176, 0, 32, 32);
+        l3.setBounds(213, 0, 32, 32);
+
+        l3.setToolTipText("Sets the current layer to edit, meaning object's position can be edited");
 
         ll = new JLabel((layer == 0 ? "Layer: Tiles" : "Layer: Objects"));
-        ll.setBounds(211, 0, 100, 32);
+        ll.setBounds(211 + 37, 0, 100, 32);
 
-        importB.setBounds(639, 0, 32, 32);
+        importB.setBounds(639 + 37, 0, 32, 32);
         importB.setToolTipText("Import map");
 
         importB.addActionListener(new ActionListener() {
@@ -240,7 +250,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         mapEditing.add(ll);
         mapEditing.add(importB);
 
-        export.setBounds(602, 0, 32, 32);
+        export.setBounds(602 + 37, 0, 32, 32);
         export.setToolTipText("Export map");
 
         export.addActionListener(new ActionListener() {
@@ -275,7 +285,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                     for (Object oo : objects) {
 
                         outObjects += oo.name + " " + getRealCoords(oo.x) + "-" + getRealCoords(oo.y) + " "
-                                + oo.angle + " " + oo.w + "-" + oo.h
+                                + oo.angle + " " + oo.w + "-" + oo.h + " " + (oo.parent == null ? "" : oo.parent)
                                 + "\n";
                     }
 
@@ -333,14 +343,14 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
         JButton settings = new JButton(new ImageIcon("src/res/settings.png")),
                 position = new JButton(new ImageIcon("src/res/position.png"));
-        settings.setBounds(345, 0, 32, 32);
-        position.setBounds(383, 0, 32, 32);
+        settings.setBounds(345 + 37, 0, 32, 32);
+        position.setBounds(383 + 37, 0, 32, 32);
 
         position.setToolTipText("Change display position");
         settings.setToolTipText("Change window settings");
 
         pos = new JLabel("Root point: 0,0");
-        pos.setBounds(420, 0, 100, 32);
+        pos.setBounds(420 + 37, 0, 100, 32);
 
         mapEditing.add(pos);
         mapEditing.add(position);
@@ -352,10 +362,11 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
             public void actionPerformed(ActionEvent e) {
 
                 layer = 0;
-                l2.setEnabled(true);
                 l1.setEnabled(false);
+                l2.setEnabled(true);
+                l3.setEnabled(true);
 
-                ll.setText((layer == 0 ? "Layer: Tiles" : "Layer: Objects"));
+                ll.setText("Layer: Tiles");
             }
 
         });
@@ -366,10 +377,26 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
             public void actionPerformed(ActionEvent e) {
 
                 layer = 1;
-                l1.setEnabled(true);
                 l2.setEnabled(false);
+                l1.setEnabled(true);
+                l3.setEnabled(true);
 
-                ll.setText((layer == 0 ? "Layer: Tiles" : "Layer: Objects"));
+                ll.setText("Layer: Objects");
+            }
+
+        });
+
+        l3.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                layer = 2;
+                l3.setEnabled(false);
+                l1.setEnabled(true);
+                l2.setEnabled(true);
+
+                ll.setText("Layer: Editable");
             }
 
         });
@@ -457,7 +484,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
         JToggleButton toggleGrid = new JToggleButton(new ImageIcon("src/res/swap.png"));
         toggleGrid.setToolTipText("Toogle grid on off");
-        toggleGrid.setBounds(562, 0, 32, 32);
+        toggleGrid.setBounds(562 + 37, 0, 32, 32);
 
         toggleGrid.addItemListener(new ItemListener() {
 
@@ -472,7 +499,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         });
 
         JButton reset = new JButton(new ImageIcon("src/res/reset.png"));
-        reset.setBounds(530, 0, 32, 32);
+        reset.setBounds(530 + 37, 0, 32, 32);
         reset.setToolTipText("Settings reset");
 
         reset.addActionListener(new ActionListener() {
@@ -545,7 +572,45 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
         });
 
-        objectList.setBounds(680, 0, 32, 32);
+        parent.setBounds(718 + 37, 0, 32, 32);
+        parent.setToolTipText("Add parent to selected object");
+        parent.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (selected == null) {
+
+                    JOptionPane.showMessageDialog(null, "No object selected", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String[] names = new String[objects.size()];
+                int index = 0;
+                for (Object obj : objects) {
+
+                    if (obj == selected)
+                        continue;
+
+                    names[index] = obj.name;
+                    index++;
+                }
+
+                JComboBox<String> comboBox = new JComboBox<String>(names);
+                comboBox.setSelectedIndex(-1);
+                JOptionPane.showMessageDialog(null, comboBox, "Parent?", JOptionPane.QUESTION_MESSAGE);
+
+                if (comboBox.getSelectedIndex() == -1)
+                    return;
+
+                selected.parent = comboBox.getSelectedItem().toString();
+                JOptionPane.showMessageDialog(null, "Parent set", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        mapEditing.add(parent);
+
+        objectList.setBounds(680 + 37, 0, 32, 32);
         objectList.setToolTipText("Lists all the objects on the map");
         objectList.addActionListener(new ActionListener() {
 
@@ -694,6 +759,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         mapEditing.add(b);
         mapEditing.add(prev);
         mapEditing.add(tilePreview);
+        mapEditing.add(l3);
 
         panels.setBounds(0, 0, getWidth(), 62);
         panels.add("Tools", mapEditing);
@@ -703,15 +769,82 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         add(panels);
         add(panel);
 
-        addKeyListener(this);
-        setFocusable(true);
-        requestFocus();
+        panel.setFocusable(true);
+        panel.requestFocus();
 
         setBackground(Color.white);
 
         b.setToolTipText("Change the current tile");
         l1.setToolTipText("Change to tile placing mode");
         l2.setToolTipText("Change to object placing mode");
+
+        panel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+                if (e.getKeyChar() == 'h') {
+
+                    x--;
+                } else if (e.getKeyChar() == 'j') {
+
+                    y--;
+                } else if (e.getKeyChar() == 'k') {
+
+                    y++;
+                } else if (e.getKeyChar() == 'l') {
+
+                    x++;
+                }
+
+                getComponentAt(0, 62).repaint();
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if (e.getKeyCode() == 37) {
+
+                    x--;
+                } else if (e.getKeyCode() == 40) {
+
+                    y++;
+                } else if (e.getKeyCode() == 38) {
+
+                    y--;
+                } else if (e.getKeyCode() == 39) {
+
+                    x++;
+                }
+
+                getComponentAt(0, 62).repaint();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+
+        });
+
+        panel.addMouseWheelListener(new MouseWheelListener() {
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+
+                if (layer == 2 && selected != null) {
+
+                    selected.angle += e.getWheelRotation() * sensibility;
+
+                    if (selected.angle > 360)
+                        selected.angle -= 360;
+                    if (selected.angle < 0)
+                        selected.angle = 360 + selected.angle;
+
+                    getComponentAt(0, 62).repaint();
+                }
+            }
+
+        });
 
         panel.addMouseListener(new MouseInputListener() {
 
@@ -731,12 +864,12 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                 int tarX = x_ - (x_ % (800 / displayX));
                 int tarY = y_ - (y_ % (800 / displayY));
 
+                int xx = _x / (800 / (displayX));
+                int yy = _y / (800 / (displayY));
+
                 if (e.getButton() == 1) {
 
                     // Get relative position position
-
-                    int xx = _x / (800 / (displayX));
-                    int yy = _y / (800 / (displayY));
 
                     if (layer == 0) {
 
@@ -748,7 +881,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                             JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
                                     JOptionPane.ERROR_MESSAGE);
                         }
-                    } else {
+                    } else if (layer == 1) {
 
                         if (currentObject != null) {
 
@@ -758,7 +891,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                             objects.add(currentObject);
 
                             Object o = new Object();
-                            o.name = currentObject.name;
+                            o.setName(currentObject.name);
                             o.h = currentObject.h;
                             o.w = currentObject.w;
                             o.angle = currentObject.angle;
@@ -769,24 +902,58 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                             JOptionPane.showMessageDialog(null, "No object specified", "ERROR",
                                     JOptionPane.ERROR_MESSAGE);
                         }
+                    } else if (layer == 2) {
+
+                        move: {
+
+                            for (Iterator<Object> iterator = objects.iterator(); iterator.hasNext();) {
+
+                                Object o = iterator.next();
+
+                                int realTileX = o.x - x;
+                                int realTileY = o.y - y;
+
+                                if ((_x / (800 / displayX)) == realTileX && (_y / (800 / displayY)) == realTileY) {
+
+                                    selected = o;
+                                    break move;
+                                }
+                            }
+
+                            if (!(selected == null)) {
+
+                                // Move object
+
+                                selected.x = xx;
+                                selected.y = yy;
+                            }
+
+                        }
+
                     }
 
                     getComponentAt(0, 62).repaint();
                 } else if (e.getButton() == 3) {
 
-                    // Delete objects
+                    if (layer == 1) {
 
-                    for (Iterator<Object> iterator = objects.iterator(); iterator.hasNext();) {
+                        // Delete objects
 
-                        Object o = iterator.next();
+                        for (Iterator<Object> iterator = objects.iterator(); iterator.hasNext();) {
 
-                        int realTileX = o.x - x;
-                        int realTileY = o.y - y;
+                            Object o = iterator.next();
 
-                        if ((_x / (800 / displayX)) == realTileX && (_y / (800 / displayY)) == realTileY) {
-                            iterator.remove();
-                            break;
+                            int realTileX = o.x - x;
+                            int realTileY = o.y - y;
+
+                            if ((_x / (800 / displayX)) == realTileX && (_y / (800 / displayY)) == realTileY) {
+                                iterator.remove();
+                                break;
+                            }
                         }
+                    } else if (layer == 2) {
+
+                        selected = null;
                     }
 
                     getComponentAt(0, 62).repaint();
@@ -882,10 +1049,26 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
 
             for (Object o : objects) {
 
-                g.drawImage(oImg, (o.x - x) * xx, (o.y - y) * yy,
+                double rotationRequired = Math.toRadians(o.angle);
+                double locationX = oImg.getWidth() / 2;
+                double locationY = oImg.getHeight() / 2;
+                AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
+                AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+
+                g.drawImage(op.filter(oImg, null), (o.x - x) * xx, (o.y - y) * yy,
                         xx * o.w,
                         yy * o.h,
                         null);
+
+                if (selected == o) {
+
+                    Graphics2D g2d = (Graphics2D) g;
+                    g2d.setColor(Color.RED);
+
+                    Stroke stroke = new BasicStroke(5);
+                    g2d.setStroke(stroke);
+                    g.drawRect((o.x - x) * xx, (o.y - y) * yy, xx * o.w, yy * o.h);
+                }
             }
 
             pos.setText("Root point: " + x + "," + y);
@@ -939,12 +1122,19 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
                     continue;
 
                 Object oo = new Object();
-                oo.name = info[0];
+                oo.setName(info[0]);
                 oo.x = (Integer.parseInt(info[1].split("-")[0])) / map.tileSet.size;
                 oo.y = (Integer.parseInt(info[1].split("-")[1])) / map.tileSet.size;
 
                 oo.w = Integer.parseInt(info[3].split("-")[0]);
                 oo.h = Integer.parseInt(info[3].split("-")[1]);
+
+                try {
+
+                    oo.parent = info[4];
+
+                } catch (Exception e) {
+                }
 
                 oo.angle = Integer.parseInt(info[2]);
 
@@ -1049,36 +1239,6 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-
-        if (e.getKeyChar() == 'h') {
-
-            x--;
-        } else if (e.getKeyChar() == 'j') {
-
-            y--;
-        } else if (e.getKeyChar() == 'k') {
-
-            y++;
-        } else if (e.getKeyChar() == 'l') {
-
-            x++;
-        }
-
-        getComponentAt(0, 62).repaint();
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
-
-    @Override
     public void stateChanged(ChangeEvent e) {
 
         updateObject();
@@ -1094,7 +1254,7 @@ public class MapEditor extends JPanel implements KeyListener, ChangeListener {
         currentObject.w = (int) scaleX.getValue();
         currentObject.h = (int) scaleY.getValue();
 
-        currentObject.name = box.getText();
+        currentObject.setName(box.getText().substring(0, box.getText().length() - 5));
     }
 
     private void setEditorValues() {

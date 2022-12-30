@@ -48,14 +48,12 @@ public class Style {
         try {
 
             Style.CONTENT_FONT = Font.createFont(Font.TRUETYPE_FONT,
-                    getClass().getResourceAsStream("res/fonts/Roboto-Light.ttf"));
+                    getClass().getResource("res/fonts/Roboto-Light.ttf").openStream());
             Style.HEADER_FONT = Font.createFont(Font.TRUETYPE_FONT,
-                    getClass().getResourceAsStream("res/fonts/OpenSans-SemiBold.ttf"));
+                    getClass().getResource("res/fonts/OpenSans-SemiBold.ttf").openStream());
 
-            /*
-             * Style.CONTENT_FONT.deriveFont(Style.MAIN_TEXT_SIZE);
-             * Style.HEADER_FONT.deriveFont(Style.HEADER_SIZE);
-             */
+            Style.CONTENT_FONT = Style.CONTENT_FONT.deriveFont(Style.MAIN_TEXT_SIZE);
+            Style.HEADER_FONT = Style.HEADER_FONT.deriveFont(Style.HEADER_SIZE);
 
         } catch (Exception e) {
         }
@@ -67,7 +65,7 @@ public class Style {
         button.setBorderPainted(false);
         button.setFocusPainted(false);
 
-        button.setFont(HEADER_FONT);
+        button.setFont(CONTENT_FONT);
         button.setBackground(MAIN_BACKGROUND);
         button.setForeground(MAIN_TEXT_COLOR);
 

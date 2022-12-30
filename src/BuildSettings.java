@@ -100,19 +100,19 @@ public class BuildSettings extends JPanel implements ActionListener {
         int i = 0;
         for (JLabel l : labels) {
 
-            l.setBounds(5, 30 + i * 32, 300, 30);
+            l.setBounds(5, 35 + i * 32, 300, 30);
 
             if (component[i] == v1) {
 
                 component[i].setBounds(100, 30 + i * 32, 50, 30);
-                v2.setBounds(160, 30 + i * 32, 50, 30);
-                v3.setBounds(220, 30 + i * 32, 50, 30);
+                v2.setBounds(160, 35 + i * 32, 50, 30);
+                v3.setBounds(220, 35 + i * 32, 50, 30);
 
                 add(v2);
                 add(v3);
             } else {
 
-                component[i].setBounds(100, 30 + i * 32, 300, 30);
+                component[i].setBounds(100, 35 + i * 32, 300, 30);
             }
 
             add(l);
@@ -120,7 +120,7 @@ public class BuildSettings extends JPanel implements ActionListener {
             i++;
         }
 
-        done.setBounds(5, 30 + i * 32 + 5, 300 + 95, 30);
+        done.setBounds(5, 35 + i * 32 + 5, 300 + 95, 30);
         add(done);
 
         setLayout(null);

@@ -287,6 +287,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                     null, options, options[0]);
 
+            if (response == -1)
+                return;
+
             // Write to settings
             Settings.open_alias = alias[response];
             Settings.updateFile();
