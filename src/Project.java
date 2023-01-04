@@ -38,7 +38,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             remote = new JMenuItem("Add remote repository"), branch = new JMenuItem("Change branch"),
             readdremote = new JMenuItem("Change remote repository url"),
             importLibrary = new JMenuItem("Import himawari libraries"), addDepend = new JMenuItem("Add dependencies"),
-            newComp = new JMenuItem("Import scriptable components");
+            newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -58,7 +58,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         Project.path = path;
         Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/" + projectName + "/Assets");
-        this.compiler = new File(path.getAbsolutePath() + "/../compile.bat");
+        this.compiler = new File(path.getParentFile().getAbsolutePath() + "/compile.bat");
 
         // Map preview
         JPanel editor = Functions.getMapEditor(engineFiles.getAbsolutePath());
@@ -93,7 +93,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         gamemenu.add(i0);
         gamemenu.add(openFolder);
+
         codeMenu.add(i1);
+        codeMenu.add(recompile);
+
         settingsMenu.add(buildSettings);
         settingsMenu.add(settings);
         other.add(open);
@@ -120,6 +123,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         bar.add(git);
         bar.add(settingsMenu);
 
+        recompile.addActionListener(this);
         addDepend.addActionListener(this);
         importLibrary.addActionListener(this);
         newComp.addActionListener(this);
@@ -481,6 +485,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == importLibrary) {
 
             new LibraryManager();
+        } else if (e.getSource() == recompile) {
+
+            Functions.Write("C:\ncd " + path.getAbsolutePath() + "\nmvn compiler:compile", "recompile_objs.bat");
+            Functions.RunBatchCmd("recompile_objs.bat");
         }
     }
 
@@ -537,34 +545,29 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     public void runGame() {
 
-        if (compiler.exists()) {
-            try {
+        try {
 
-                // Run compiler
+            // Run compiler
 
-                String command = "C: \n cd " + compiler.getParentFile().getAbsolutePath() + "\ncmd /c start \"\" "
-                        + compiler.getAbsolutePath();
+            String command = "C: \n cd " + compiler.getParentFile().getAbsolutePath() + "\ncmd /c start \"\" "
+                    + compiler.getAbsolutePath();
 
-                File c = new File("src/functions/output/run.bat");
-                FileWriter fw = new FileWriter(c);
-                fw.write(command);
-                fw.close();
+            File c = new File("src/functions/output/run.bat");
+            FileWriter fw = new FileWriter(c);
+            fw.write(command);
+            fw.close();
 
-                Process p = Runtime.getRuntime().exec(c.getAbsolutePath());
-                p.waitFor();
+            Process p = Runtime.getRuntime().exec(c.getAbsolutePath());
+            p.waitFor();
 
-            } catch (IOException e1) {
+        } catch (IOException e1) {
 
-                JOptionPane.showMessageDialog(null, "Error executing Scripts", "ERROR", JOptionPane.ERROR_MESSAGE);
-                e1.printStackTrace();
-            } catch (InterruptedException e1) {
+            JOptionPane.showMessageDialog(null, "Error executing Scripts", "ERROR", JOptionPane.ERROR_MESSAGE);
+            e1.printStackTrace();
+        } catch (InterruptedException e1) {
 
-                e1.printStackTrace();
-            }
-
-        } else {
-
-            JOptionPane.showMessageDialog(null, "No compiler found!", "ERROR", JOptionPane.ERROR_MESSAGE);
+            e1.printStackTrace();
         }
+
     }
 }

@@ -2,6 +2,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Scanner;
 
 import Components.*;
@@ -268,46 +269,69 @@ public class ResourceExplorer extends JPanel implements ActionListener {
 
             String dirpath = opened.getAbsolutePath();
             String tilesetPath = "";
+            int tilesetSize = 32;
 
             try {
 
-                JFileChooser fc = new JFileChooser();
-                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fc.setCurrentDirectory(new File(Project.path + "/src/main/java/Assets/Sprites"));
+                File[] mapdata = opened.listFiles();
+                File img = null;
+                for (File f : mapdata) {
 
-                int option = fc.showDialog(null, "Choose tileset");
+                    if (f.getName().contains("tiles-")) {
 
-                // Import tileset
-                if (option == JFileChooser.APPROVE_OPTION) {
+                        img = f;
 
-                    File f = fc.getSelectedFile();
-
-                    String s = f.getName().substring(f.getName().length() - 4);
-
-                    if (s.equals(".png") || s.equals(".jpg")) {
-                        // Valid image file
                         tilesetPath = f.getAbsolutePath();
-
-                        tilesetPath = tilesetPath.replace("\\", "/");
-
-                        JOptionPane.showMessageDialog(this, "Image succefully imported");
-                    } else
-                        JOptionPane.showMessageDialog(this, "Invalid image file");
-
-                    TileSet tileset = new TileSet(tilesetPath,
-                            Integer.parseInt(JOptionPane.showInputDialog(null, "Tile set size?")));
-
-                    // Get map measures
-
-                    Scanner file = new Scanner(dirpath + "/room-tiles.txt");
-                    Integer dimensions = file.nextLine().split(" ").length;
-
-                    Map map = new Map(tileset, dimensions, dimensions);
-                    MapEditor.map = map;
-                    Project.preview.importMap(opened.getAbsolutePath());
-
-                    file.close();
+                        tilesetSize = Integer.parseInt(f.getName().substring(f.getName().lastIndexOf("-") + 1));
+                    }
                 }
+
+                if (img == null) {
+
+                    JFileChooser fc = new JFileChooser();
+                    fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    fc.setCurrentDirectory(new File(
+                            Project.path.getAbsolutePath() + "/src/main/java/" + Project.projectName
+                                    + "/Assets/Sprites"));
+
+                    int option = fc.showDialog(null, "Choose tileset");
+
+                    // Import tileset
+                    if (option == JFileChooser.APPROVE_OPTION) {
+
+                        File f = fc.getSelectedFile();
+
+                        String s = f.getName().substring(f.getName().length() - 4);
+
+                        if (s.equals(".png") || s.equals(".jpg")) {
+                            // Valid image file
+                            tilesetPath = f.getAbsolutePath();
+
+                            tilesetPath = tilesetPath.replace("\\", "/");
+
+                            JOptionPane.showMessageDialog(this, "Image succefully imported");
+                        } else
+                            JOptionPane.showMessageDialog(this, "Invalid image file");
+
+                        tilesetSize = Integer.parseInt(JOptionPane.showInputDialog(null, "Tile set size?"));
+
+                    } else {
+
+                        return;
+                    }
+                }
+
+                // Get map measures
+                TileSet tileset = new TileSet(tilesetPath, tilesetSize);
+
+                Scanner file = new Scanner(dirpath + "/room-tiles.txt");
+                Integer dimensions = file.nextLine().split(" ").length;
+
+                Map map = new Map(tileset, dimensions, dimensions);
+                MapEditor.map = map;
+                Project.preview.importMap(opened.getAbsolutePath());
+
+                file.close();
 
             } catch (Exception e) {
 

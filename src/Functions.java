@@ -1,11 +1,14 @@
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -42,6 +45,57 @@ public class Functions {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static HashMap<Components, String> FindCompiledComponents(File frontObject) {
+
+        // Get .class directory
+        String path = frontObject.getAbsolutePath();
+        path = path.replace("src\\main\\java", "target\\classes").replace(".java", ".class");
+
+        File classFile = new File(path);
+
+        if (classFile.exists()) {
+
+            // Find components
+            try {
+
+                Functions.Write(
+                        "C: \ncd " + classFile.getParentFile().getAbsolutePath() + "\njavap -private "
+                                + classFile.getName(),
+                        "precompile_object.bat");
+                Process proc = Runtime.getRuntime()
+                        .exec("src\\functions\\precompile_object.bat");
+                BufferedReader outReader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+                HashMap<Components, String> compMap = new HashMap<Components, String>();
+
+                String s = null;
+                while ((s = outReader.readLine()) != null) {
+
+                    if (s.contains("Engine.Components.")) {
+
+                        String type = s.substring(s.lastIndexOf('.') + 1, s.lastIndexOf(' '));
+                        String name = s.substring(s.lastIndexOf(' '));
+                        name.substring(0, name.length() - 1);
+
+                        compMap.put(Components.getComponentbyString(type), name);
+                    }
+                }
+
+                outReader.close();
+
+                return compMap;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+                return null;
+            }
+        } else {
+
+            return null;
         }
     }
 

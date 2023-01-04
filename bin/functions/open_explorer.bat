@@ -1,1 +1,1 @@
-explorer C:\Users\Utilizador\Desktop\my-game\art
+explorer C:\my-game\mygame\src\main\java\com\com\nonamerhythmgame\Assets

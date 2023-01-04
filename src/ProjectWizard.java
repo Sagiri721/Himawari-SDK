@@ -3,6 +3,8 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.awt.image.*;
 
@@ -39,6 +41,16 @@ public class ProjectWizard extends JPanel {
         add(title);
 
         JButton createProject = Style.GetStyledButton("Create Project");
+        createProject.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                Functions.CreateProject(0);
+            }
+
+        });
+
         JPanel templates = new JPanel();
         templates.setBounds(5, 100, 475, 255);
         templates.setBackground(Style.SECONDARY_BACKGROUND);

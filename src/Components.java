@@ -45,7 +45,9 @@ public enum Components {
 
         for (Components c : Components.values()) {
 
-            if (c.getName() == name)
+            // System.out.println(name + " | " + c.getName() + " | " +
+            // c.getName().equals(name));
+            if (c.getName().equals(name))
                 return c;
         }
 

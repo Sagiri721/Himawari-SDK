@@ -23,7 +23,7 @@ public class Main {
         // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        new Project(new File("C:/Users/Utilizador/Desktop/my-game/art"));
+        new Project(new File("C:\\my-game\\mygame"));
     }
 
     private static void openSettings() {
