@@ -62,7 +62,7 @@ public class Functions {
             try {
 
                 Functions.Write(
-                        "C: \ncd " + classFile.getParentFile().getAbsolutePath() + "\njavap -private "
+                        Project.disk + " \ncd " + classFile.getParentFile().getAbsolutePath() + "\njavap -private "
                                 + classFile.getName(),
                         "precompile_object.bat");
                 Process proc = Runtime.getRuntime()
@@ -465,5 +465,26 @@ public class Functions {
             }
         }
         return directoryToBeDeleted.delete();
+    }
+
+    public static void OpenFile(File file) {
+
+        try {
+
+            File openfile = new File("src/functions/output/open_file.bat");
+            FileWriter fw = new FileWriter(openfile);
+
+            String command = file.getAbsolutePath();
+            fw.write(command);
+            fw.close();
+
+            Runtime.getRuntime().exec(openfile.getAbsolutePath());
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(null, "Trouble opening file", "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 }

@@ -16,8 +16,8 @@ import Engine.Utils.Geom.*;
 
 public class [Object] extends Object implements StdBehaviour{
 
-    protected [Object](String name) {
-        super(name);
+    public [Object]() {
+        super([Object]);
     }
 
     /**

@@ -109,6 +109,11 @@ public class Inspector extends JPanel implements ActionListener {
         }
 
         // Get the components of object
+        // Remove child components of panel
+        compPanel.removeAll();
+        // Clear snippet area
+        snippetArea.setText("");
+
         HashMap<Components, String> comps = Functions.FindCompiledComponents(objFile);
 
         int index = 0;

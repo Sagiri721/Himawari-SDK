@@ -1,8 +1,11 @@
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.management.ThreadInfo;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.awt.Color;
@@ -10,6 +13,14 @@ import java.awt.Color;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import Components.MapEditor;
 
@@ -19,7 +30,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     public static Inspector inspector = new Inspector();
     public static File path, engineFiles;
-    public static String projectName = "com/com/nonamerhythmgame";
+    public static String projectName = "", disk = "C:";
     private File compiler;
 
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
@@ -38,7 +49,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             remote = new JMenuItem("Add remote repository"), branch = new JMenuItem("Change branch"),
             readdremote = new JMenuItem("Change remote repository url"),
             importLibrary = new JMenuItem("Import himawari libraries"), addDepend = new JMenuItem("Add dependencies"),
-            newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects");
+            newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects"),
+            openPomFile = new JMenuItem("Open pom.xml"), plugin = new JMenuItem("Import plugin");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -57,6 +69,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     Project(File path) {
 
         Project.path = path;
+        fetchProjectLocalConfig();
         Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/" + projectName + "/Assets");
         this.compiler = new File(path.getParentFile().getAbsolutePath() + "/compile.bat");
 
@@ -94,6 +107,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         gamemenu.add(i0);
         gamemenu.add(openFolder);
 
+        codeMenu.add(openPomFile);
         codeMenu.add(i1);
         codeMenu.add(recompile);
 
@@ -115,6 +129,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         addResources.add(addSprite);
         addResources.add(addMusic);
         addResources.add(addFont);
+        addResources.add(new JSeparator());
+        addResources.add(plugin);
 
         bar.add(other);
         bar.add(gamemenu);
@@ -123,6 +139,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         bar.add(git);
         bar.add(settingsMenu);
 
+        openPomFile.addActionListener(this);
+        plugin.addActionListener(this);
         recompile.addActionListener(this);
         addDepend.addActionListener(this);
         importLibrary.addActionListener(this);
@@ -361,7 +379,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 }
             }
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit init", "git/init.bat");
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit init", "git/init.bat");
             Functions.RunBatchCmd("git/init.bat");
 
         } else if (e.getSource() == remote) {
@@ -384,7 +402,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 link += ".git";
             }
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit remote add origin " + link, "git/remote.bat");
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit remote add origin " + link, "git/remote.bat");
             Functions.RunBatchCmd("git/remote.bat");
         } else if (e.getSource() == commit) {
 
@@ -395,7 +413,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 return;
             }
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit commit -m\"" + commit + "\"",
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit add .\ngit commit -m\"" + commit + "\"",
                     "git/commit.bat");
             Functions.RunBatchCmd("git/commit.bat");
 
@@ -404,7 +422,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             String branch = JOptionPane.showInputDialog(null,
                     "Input the branch you want to push to", "master");
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit push origin " + branch,
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit add .\ngit push origin " + branch,
                     "git/push.bat");
             Functions.RunBatchCmd("git/push.bat");
 
@@ -413,7 +431,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             String branch = JOptionPane.showInputDialog(null,
                     "Input the branch you want to pull from", "master");
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit pull origin " + branch,
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit add .\ngit pull origin " + branch,
                     "git/pull.bat");
             Functions.RunBatchCmd("git/pull.bat");
 
@@ -426,7 +444,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 return;
             }
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit add .\ngit checkout \"" + branch + "\"",
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit add .\ngit checkout \"" + branch + "\"",
                     "git/branch.bat");
             Functions.RunBatchCmd("git/branch.bat");
         } else if (e.getSource() == readdremote) {
@@ -449,7 +467,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
                 link += ".git";
             }
 
-            Functions.Write("C:\ncd " + Project.path + "\\..\ngit remote set-url origin " + link, "git/re-remote.bat");
+            Functions.Write(disk + "\ncd " + Project.path + "\\..\ngit remote set-url origin " + link,
+                    "git/re-remote.bat");
             Functions.RunBatchCmd("git/re-remote.bat");
         } else if (e.getSource() == addDepend) {
 
@@ -487,8 +506,13 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             new LibraryManager();
         } else if (e.getSource() == recompile) {
 
-            Functions.Write("C:\ncd " + path.getAbsolutePath() + "\nmvn compiler:compile", "recompile_objs.bat");
+            Functions.Write(disk + "\ncd " + path.getAbsolutePath() + "\nmvn compiler:compile", "recompile_objs.bat");
             Functions.RunBatchCmd("recompile_objs.bat");
+        } else if (e.getSource() == openPomFile) {
+
+            Functions.OpenFile(new File(path + "\\pom.xml"));
+        } else if (e.getSource() == plugin) {
+
         }
     }
 
@@ -503,7 +527,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         File f = new File("src/functions/output/open_code.bat");
         FileWriter fw = new FileWriter(f);
 
-        String command = "C: \n cd " + compiler.getParentFile().getParentFile().getAbsolutePath()
+        String command = disk + " \n cd " + compiler.getParentFile().getParentFile().getAbsolutePath()
                 + "\\src\\main\\java\\" + projectName + "\\" + filePath + "\n" + Settings.open_alias
                 + " Main.java";
         fw.write(command);
@@ -549,7 +573,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
             // Run compiler
 
-            String command = "C: \n cd " + compiler.getParentFile().getAbsolutePath() + "\ncmd /c start \"\" "
+            String command = disk + " \n cd " + compiler.getParentFile().getAbsolutePath() + "\ncmd /c start \"\" "
                     + compiler.getAbsolutePath();
 
             File c = new File("src/functions/output/run.bat");
@@ -569,5 +593,43 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             e1.printStackTrace();
         }
 
+    }
+
+    private void fetchProjectLocalConfig() {
+
+        String text;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        // Get folder structure from pom.xml
+        try {
+
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            text = Functions.getFileContents(new File(Project.path + "\\pom.xml"));
+
+            // get the xml object
+            StringBuilder xmlBuilder = new StringBuilder();
+            xmlBuilder.append(text);
+            ByteArrayInputStream input = new ByteArrayInputStream(
+                    xmlBuilder.toString().getBytes("UTF-8"));
+
+            Document doc = builder.parse(input);
+            Element root = doc.getDocumentElement();
+
+            Node name = root.getElementsByTagName("groupId").item(0);
+            Project.projectName = name.getTextContent().replace(".", "/");
+
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "No pom.xml file was found, various errors might be thrown", "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (SAXException | IOException | ParserConfigurationException e) {
+            JOptionPane.showMessageDialog(null, "There seems to be an error within your pom.xml file", "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        // Get local harddrive project partition
+        // D:\TIAGO\school\Estagio RFA
+        Project.disk = Project.path.getAbsolutePath().split(":")[0] + ":";
     }
 }
