@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Reader;
@@ -20,6 +21,10 @@ import java.awt.Color;
 import java.awt.event.*;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import Components.Structs.Settings;
 
@@ -42,7 +47,6 @@ public class BuildSettings extends JPanel implements ActionListener {
         JLabel title = new JLabel("Build Settings");
         title.setFont(Style.HEADER_FONT);
         title.setBounds(5, 0, 300, 40);
-        title.setForeground(Style.MAIN_TEXT_COLOR);
 
         JLabel pictute = new JLabel(new ImageIcon("src/res/buildsettings.png"));
         pictute.setBounds(430, 120, 150, 150);
@@ -51,27 +55,39 @@ public class BuildSettings extends JPanel implements ActionListener {
         add(title);
         try {
 
-            Gson gson = new Gson();
             File newFile = new File(
                     Project.path + "/src/main/java/" + Project.projectName + "/Assets/Options/engine-options.json");
 
-            Reader reader = Files.newBufferedReader(Paths.get(newFile.getAbsolutePath()));
-
-            set = gson.fromJson(reader, Settings.class);
-
-            if (set == null) {
+            if (!newFile.exists()) {
 
                 JOptionPane.showMessageDialog(null, "No options file found", "ERROR", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
+            Reader reader = Files.newBufferedReader(Paths.get(newFile.getAbsolutePath()));
+            JsonElement tree = JsonParser.parseReader(reader);
+
+            JsonObject obj = tree.getAsJsonObject();
+
+            // System.out.println(obj.toString());
+
+            set.allow_fullscreen = obj.get("allow_fullscreen").getAsBoolean();
+            set.company = obj.get("company").getAsString();
+            set.display_cursor = obj.get("display_cursor").getAsBoolean();
+            // set.icon = obj.get("icon").getAsString();
+            set.name = obj.get("name").getAsString();
+            set.product_info = obj.get("product_info").getAsString();
+            set.resize_window = obj.get("resize_window").getAsBoolean();
+            // set.splashscreen_path = obj.get("splashscreen_path").getAsString();
+            // set.use_splashscreen = obj.get("use_splashscreen").getAsBoolean();
+            // set.version = obj.get("version").getAsString().split(".");
+
         } catch (Exception e) {
 
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "No File was found exception", "ERROR", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Options file unreadable", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
 
-        setBackground(new Color(244, 207, 223));
         JLabel name = new JLabel("Name: "), company = new JLabel("Company: "), version = new JLabel("Version: "),
                 info = new JLabel("Product info: "), cursor = new JLabel("Show cursor: "),
                 start = new JLabel("Start fullscreen: "), allowF = new JLabel("Allow fullscreen: "),
@@ -104,7 +120,7 @@ public class BuildSettings extends JPanel implements ActionListener {
 
             if (component[i] == v1) {
 
-                component[i].setBounds(100, 30 + i * 32, 50, 30);
+                component[i].setBounds(100, 35 + i * 32, 50, 30);
                 v2.setBounds(160, 35 + i * 32, 50, 30);
                 v3.setBounds(220, 35 + i * 32, 50, 30);
 
@@ -158,7 +174,8 @@ public class BuildSettings extends JPanel implements ActionListener {
             settings.allow_fullscreen = allowBox.isSelected();
             settings.resize_window = resBox.isSelected();
 
-            settings.icon = icon.getAbsolutePath();
+            if (icon != null)
+                settings.icon = icon.getAbsolutePath();
 
             // Save to file
 

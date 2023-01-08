@@ -1,4 +1,4 @@
 C:
-cd C:\Users\Utilizador\Desktop\my-game\art\..
+cd C:\my-game\mygame\..
 git add .
-git pull origin master
+git pull origin null

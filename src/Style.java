@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
@@ -19,20 +20,22 @@ public class Style {
     public enum Theme {
 
         LIGHT,
-        DARK
+        DARK,
+        INTELLIJ,
+        NONE,
     }
 
     public static Theme currentTheme = Theme.LIGHT;
-    public static Color MAIN_BACKGROUND = Color.WHITE;
-    public static Color SECONDARY_BACKGROUND = new Color(190, 190, 190);
-    public static Color MAIN_TEXT_COLOR = Color.BLACK;
-    public static Color MAP_EDITOR_TAB_COLOR = Color.GRAY.darker();
-    public static Color MAP_EDITOR_GRID = Color.WHITE;
-    public static Color MAIN_BUTTON_COLOR = Color.WHITE;
-    public static Color LAUCH_BUTTON_COLOR = Color.GREEN;
-    public static Color CLOSE_BUTTON_COLOR = Color.GREEN;
+    public static Color MAIN_BACKGROUND = null;
+    public static Color SECONDARY_BACKGROUND = /* new Color(190, 190, 190) */ null;
+    public static Color MAIN_TEXT_COLOR = null;
+    public static Color MAP_EDITOR_TAB_COLOR = null;
+    public static Color MAP_EDITOR_GRID = null;
+    public static Color MAIN_BUTTON_COLOR = null;
+    public static Color LAUCH_BUTTON_COLOR = null;
+    public static Color CLOSE_BUTTON_COLOR = null;
 
-    public static Color FILE_EXPLORER_BACKGROUND = Color.BLACK;
+    public static Color FILE_EXPLORER_BACKGROUND = null;
 
     public static final Border BUTTON_BORDER = BorderFactory.createBevelBorder(BevelBorder.RAISED);
     public static final Border SIMPLE_BORDER = BorderFactory.createLineBorder(Color.BLACK, 2);
@@ -57,13 +60,19 @@ public class Style {
 
         } catch (Exception e) {
         }
+
+        // FlatLaf settings
+        UIManager.put("Component.arc", 999);
+        UIManager.put("ProgressBar.arc", 999);
+        UIManager.put("Component.arrowType", "triangle");
+        UIManager.put("TabbedPane.selectedBackground", Color.white);
     }
 
     public static JButton GetStyledButton(String text) {
 
         JButton button = new JButton(text);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
+        // button.setBorderPainted(false);
+        // button.setFocusPainted(false);
 
         button.setFont(CONTENT_FONT);
         button.setBackground(MAIN_BACKGROUND);

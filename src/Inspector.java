@@ -39,8 +39,6 @@ public class Inspector extends JPanel implements ActionListener {
 
     public Inspector() {
 
-        setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-
         // Make inspector unaccessible
         for (JComponent c : inpectors) {
 
@@ -170,15 +168,12 @@ public class Inspector extends JPanel implements ActionListener {
             setBounds(5, y, 377, 50);
 
             name.setFont(Style.CONTENT_FONT);
-            name.setForeground(Color.WHITE);
             name.setBounds(5, 5, 300, 20);
 
             icon.setBounds(270, 10, 32, 32);
 
             details.setFont(Style.CONTENT_FONT);
             details.setBounds(5, 20, 300, 20);
-
-            setBorder(Style.BUTTON_BORDER);
 
             setLayout(null);
 

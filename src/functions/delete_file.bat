@@ -1,1 +1,1 @@
-del C:\Users\Utilizador\Desktop\my-game\art\src\main\java\com\com\nonamerhythmgame\Assets\Sprites\Screenshot_18.png
+del C:\my-game\mygame\src\main\java\com\com\nonamerhythmgame\Assets\Objects\Novo objecto.java

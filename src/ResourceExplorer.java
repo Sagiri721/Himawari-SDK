@@ -30,8 +30,8 @@ public class ResourceExplorer extends JPanel implements ActionListener {
         title0.setBounds(5, 5, 300, 20);
 
         // get inverted color
-        float[] rgb = Style.FILE_EXPLORER_BACKGROUND.getRGBComponents(null);
-        title0.setForeground(new Color(1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2]));
+        // float[] rgb = Style.FILE_EXPLORER_BACKGROUND.getRGBComponents(null);
+        // title0.setForeground(new Color(1.0f - rgb[0], 1.0f - rgb[1], 1.0f - rgb[2]));
 
         list.setName("erasable");
         list.setBounds(5, 110, 340, 900);

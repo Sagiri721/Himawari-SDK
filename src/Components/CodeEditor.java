@@ -61,6 +61,7 @@ public class CodeEditor extends JFrame implements ActionListener {
             text += s.nextLine() + "\n";
         }
 
+        s.close();
         return text;
     }
 

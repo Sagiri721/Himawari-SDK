@@ -8,8 +8,9 @@ public class SettingsRef {
     public String open_alias;
 
     public String username;
+    public String theme;
 
-    public SettingsRef(String s, Color b, String u, String alias) {
+    public SettingsRef(String s, Color b, String u, String alias, String t) {
 
         file_open_definition = s;
 
@@ -18,5 +19,6 @@ public class SettingsRef {
 
         open_alias = alias;
         username = u;
+        theme = t;
     }
 }

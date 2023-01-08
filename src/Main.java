@@ -1,9 +1,16 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
 import java.awt.*;
+
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.google.gson.Gson;
 
 public class Main {
@@ -12,9 +19,30 @@ public class Main {
 
     public static void main(String[] args) {
 
-        new Style();
         openSettings();
 
+        switch (Settings.theme) {
+
+            case "light":
+                FlatLightLaf.setup();
+                break;
+            case "dark":
+                FlatDarkLaf.setup();
+                break;
+            case "intellij":
+                FlatIntelliJLaf.setup();
+                break;
+            case "mac-light":
+                FlatMacLightLaf.setup();
+                break;
+            case "mac-dark":
+                FlatMacDarkLaf.setup();
+                break;
+            case "custom":
+                break;
+        }
+
+        new Style();
         new Window();
 
         /*
@@ -24,6 +52,15 @@ public class Main {
         // Functions.openMapEditor(map);
 
         new Project(new File("C:\\my-game\\mygame"));
+
+        // Merge file test
+        try {
+            PluginManager.joinFiles(new File("D:\\thefile.java"),
+                    new File[] { new File("D:\\file.java"), new File("D:\\otherfile.java") });
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
     }
 
     private static void openSettings() {
@@ -48,6 +85,7 @@ public class Main {
                     settings.background_color[2]);
             Settings.username = settings.username;
             Settings.open_alias = settings.open_alias;
+            Settings.theme = settings.theme;
 
         } catch (Exception e) {
 
@@ -63,5 +101,6 @@ public class Main {
 
         public String username;
         public String open_alias;
+        public String theme;
     }
 }

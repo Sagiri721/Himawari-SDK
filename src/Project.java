@@ -60,9 +60,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     JTabbedPane functions = new JTabbedPane();
 
-    JButton run = new JButton("LAUCH PROJECT"), website = new JButton("Website"), docs = new JButton("Documentation"),
-            update = new JButton("Update"),
-            quit = new JButton("QUIT");
+    JButton run = Style.GetStyledButton("LAUCH PROJECT"), website = Style.GetStyledButton("Website"),
+            docs = Style.GetStyledButton("Documentation"),
+            update = Style.GetStyledButton("Update"),
+            quit = Style.GetStyledButton("QUIT");
 
     public static MapEditor preview;
 
@@ -80,7 +81,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         setTitle(getProjectTitle());
         setSize(1610, 930);
-        getContentPane().setBackground(Color.black);
 
         // Find the main room and open it
 
@@ -168,7 +168,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         // User interface initization
         JPanel res = new ResourceExplorer();
         res.setBounds(5, 5, 350, 825);
-        res.setBackground(Style.FILE_EXPLORER_BACKGROUND);
+        // res.setBackground(Style.FILE_EXPLORER_BACKGROUND);
 
         // File control panel
 
@@ -182,35 +182,16 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         // Footer
         JLabel version = new JLabel("Version: " + Main.version);
-        version.setForeground(Color.white);
-        version.setBounds(5, 840, 100, 20);
+        // version.setForeground(Color.white);
+        version.setBounds(705, 850, 100, 20);
 
         Border b = BorderFactory.createBevelBorder(BevelBorder.RAISED);
 
-        website.setBounds(140, 840, 110, 20);
-        website.setBackground(Color.gray);
-        website.setForeground(Color.white);
-        website.setBorder(b);
-
-        docs.setBounds(255, 840, 110, 20);
-        docs.setBackground(Color.gray);
-        docs.setForeground(Color.white);
-        docs.setBorder(b);
-
-        update.setBounds(400, 840, 110, 20);
-        update.setBackground(Color.gray);
-        update.setForeground(Color.white);
-        update.setBorder(b);
-
-        quit.setBounds(515, 840, 110, 20);
-        quit.setBackground(Color.red);
-        quit.setForeground(Color.black);
-        quit.setBorder(b);
-
-        run.setBounds(630, 840, 110, 20);
-        run.setBackground(Color.green);
-        run.setForeground(Color.black);
-        run.setBorder(b);
+        website.setBounds(140 - 120, 840, 110, 40);
+        docs.setBounds(255 - 120, 840, 130, 40);
+        update.setBounds(400 - 120, 840, 110, 40);
+        quit.setBounds(515 - 120, 840, 110, 40);
+        run.setBounds(630 - 120, 840, 160, 40);
 
         quit.addActionListener(this);
         run.addActionListener(this);
@@ -513,6 +494,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             Functions.OpenFile(new File(path + "\\pom.xml"));
         } else if (e.getSource() == plugin) {
 
+            new PluginManager();
         }
     }
 

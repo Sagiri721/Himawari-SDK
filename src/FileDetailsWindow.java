@@ -46,7 +46,7 @@ public class FileDetailsWindow extends JFrame {
                     "<html><body>File created at: " + format.format(date)
                             + "<br>File last edited at: "
                             + format.format(date2) + "</body></html>");
-            time.setBounds(5, 60, 300, 30);
+            time.setBounds(5, 100, 300, 30);
             add(time);
         }
 
@@ -54,14 +54,14 @@ public class FileDetailsWindow extends JFrame {
         if (extension != "") {
 
             JLabel icon = new JLabel(new ImageIcon("src/res/file-icons/icon-" + extension + ".png"));
-            icon.setBounds(5, 130, 108, 108);
+            icon.setBounds(5, 150, 108, 108);
 
             add(icon);
         }
 
         name.setFont(Style.HEADER_FONT);
         name.setBounds(5, 5, 600, 30);
-        size.setBounds(5, 50, 300, 30);
+        size.setBounds(5, 50, 300, 60);
 
         add(name);
         add(size);
