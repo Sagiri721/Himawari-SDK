@@ -100,16 +100,26 @@ public class FileDetailsWindow extends JFrame {
                 Scanner s = null;
                 try {
                     s = new Scanner(file);
+
                     while (s.hasNext()) {
 
-                        if (s.nextLine().contains("extends Object")) {
+                        String line = s.nextLine();
+                        // System.out.println(line);
+
+                        if (line.contains("Object") && line.contains("extends") && !line.contains("//")) {
                             s.close();
                             return "object";
                         }
 
-                        if (s.nextLine().contains("extends Component")) {
+                        if (line.contains("Component") && line.contains("extends") && !line.contains("//")) {
                             s.close();
                             return "component";
+                        }
+
+                        if (line.contains("AlarmFunctionality") && line.contains("implements")
+                                && !line.contains("//")) {
+                            s.close();
+                            return "alert";
                         }
                     }
 

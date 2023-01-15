@@ -27,7 +27,7 @@ public class LibraryManager extends JFrame {
         label.setFont(Style.HEADER_FONT);
         label.setForeground(Style.MAIN_TEXT_COLOR);
 
-        label.setBounds(5, 5, 300, 30);
+        label.setBounds(5, 5, 320, 30);
         getContentPane().setBackground(Style.SECONDARY_BACKGROUND);
 
         libraries.setLayout(null);
@@ -39,7 +39,8 @@ public class LibraryManager extends JFrame {
         JScrollPane scrollPane = new JScrollPane(libraries, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        scrollPane.setBounds(5, 40, 440, 580);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBounds(5, 40, 480, 580);
         add(scrollPane);
         add(label);
 
@@ -90,32 +91,27 @@ public class LibraryManager extends JFrame {
                 panel.setLayout(layout);
 
                 panel.setBounds(5, 5 + (225 * index), 410, 220);
-                panel.setBackground(Color.BLACK);
 
                 Box box = Box.createVerticalBox();
 
                 JLabel name = new JLabel("<html><div style=\"margin: 5px;\"><h1>" + nam.substring(1, nam.length() - 1)
                         + "</h1></div></html>");
                 name.setAlignmentX(SwingConstants.CENTER);
-                name.setForeground(Color.WHITE);
                 box.add(name);
 
                 JLabel details = new JLabel("<html><div style=\"margin: 5px; width: 100%\"><p>"
                         + desc.substring(1, desc.length() - 1) + "</p><br><hr></div></html>");
-                details.setForeground(Color.WHITE);
                 details.setAlignmentX(SwingConstants.CENTER);
                 box.add(details);
 
                 JLabel uploadInfo = new JLabel("<html><div style=\"margin: 5px; width: 100%\"><p>Uploaded by "
                         + uploader.substring(1, uploader.length() - 1) + " at " + date.substring(1, date.length() - 1)
                         + "</p></div></html>");
-                uploadInfo.setForeground(Color.WHITE);
                 uploadInfo.setAlignmentX(SwingConstants.CENTER);
                 box.add(uploadInfo);
 
                 JButton downloadButton = Style.GetStyledButton("Add to project");
                 JLabel invalid = new JLabel("No download available");
-                invalid.setForeground(Color.WHITE);
 
                 downloadButton.addActionListener(new ActionListener() {
 

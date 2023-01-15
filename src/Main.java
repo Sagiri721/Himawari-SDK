@@ -52,15 +52,6 @@ public class Main {
         // Functions.openMapEditor(map);
 
         new Project(new File("C:\\my-game\\mygame"));
-
-        // Merge file test
-        try {
-            PluginManager.joinFiles(new File("D:\\thefile.java"),
-                    new File[] { new File("D:\\file.java"), new File("D:\\otherfile.java") });
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
     }
 
     private static void openSettings() {

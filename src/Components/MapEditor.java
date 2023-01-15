@@ -47,11 +47,11 @@ public class MapEditor extends JPanel implements ChangeListener {
             objectList = new JButton(new ImageIcon("src/res/objectlist.png")),
             parent = new JButton(new ImageIcon("src/res/parent.png"));
 
-    int[][] mapOutput;
-    static List<Object> objects = new ArrayList<>();
-    Object selected = null;
-    double sensibility = 5;
-    int curTile = 0;
+    private int[][] mapOutput;
+    public static List<Object> objects = new ArrayList<>();
+    private Object selected = null;
+    public double sensibility = 5;
+    private int curTile = 0;
 
     Object currentObject = null;
     BufferedImage oImg;
@@ -771,8 +771,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         panel.setFocusable(true);
         panel.requestFocus();
-
-        setBackground(Color.white);
+        prev.setIcon(getPreview());
 
         b.setToolTipText("Change the current tile");
         l1.setToolTipText("Change to tile placing mode");
@@ -1009,7 +1008,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         BufferedImage i = map.tileSet.getTileOf(curTile);
 
-        return new ImageIcon(i);
+        return new ImageIcon(i.getScaledInstance(32, 32, BufferedImage.SCALE_SMOOTH));
     }
 
     class DrawPanel extends JPanel {

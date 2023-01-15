@@ -114,6 +114,9 @@ public class Inspector extends JPanel implements ActionListener {
 
         HashMap<Components, String> comps = Functions.FindCompiledComponents(objFile);
 
+        if (comps == null)
+            return;
+
         int index = 0;
         for (Entry<Components, String> comEntry : comps.entrySet()) {
 

@@ -282,7 +282,8 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                         img = f;
 
                         tilesetPath = f.getAbsolutePath();
-                        tilesetSize = Integer.parseInt(f.getName().substring(f.getName().lastIndexOf("-") + 1));
+                        tilesetSize = Integer.parseInt(
+                                f.getName().substring(f.getName().lastIndexOf("-") + 1, f.getName().lastIndexOf(".")));
                     }
                 }
 
@@ -337,6 +338,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
 
                 JOptionPane.showMessageDialog(null, "There was a problem opening the map editor", "ERROR",
                         JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         }
     }

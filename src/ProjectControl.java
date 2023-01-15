@@ -14,7 +14,8 @@ import java.util.Scanner;
 
 public class ProjectControl extends JPanel implements ActionListener {
 
-    JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alert");
+    JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alarm");
+    JTextArea area = null;
 
     public ProjectControl() {
 
@@ -24,14 +25,20 @@ public class ProjectControl extends JPanel implements ActionListener {
         label0.setBounds(5, 5, 200, 30);
         add(label0);
 
-        JLabel create = new JLabel("Create", SwingConstants.CENTER);
-        create.setBounds(5, 35, 160, 20);
+        JLabel create = new JLabel("Creation", SwingConstants.CENTER);
+        create.setBounds(5, 35, 410, 20);
 
-        newObject.setBounds(5, 55, 160, 20);
+        newObject.setBounds(5, 70, 410, 30);
         newObject.addActionListener(this);
 
-        newAlert.setBounds(5, 80, 160, 20);
+        newAlert.setBounds(5, 105, 410, 30);
         newAlert.addActionListener(this);
+
+        area = new JTextArea();
+        JScrollPane pane = new JScrollPane(area);
+        pane.setBounds(5, 140, 410, 200);
+
+        add(pane);
 
         add(create);
         add(newObject);
@@ -100,6 +107,54 @@ public class ProjectControl extends JPanel implements ActionListener {
                     JOptionPane.showMessageDialog(null, "Object Created");
 
                 }
+
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        } else if (e.getSource() == newAlert) {
+
+            Scanner s;
+            try {
+
+                s = new Scanner(new File("src/templates/Alert.txt"));
+
+                String text = "";
+                while (s.hasNextLine())
+                    text += s.nextLine() + "\n";
+
+                s.close();
+
+                String object_name = JOptionPane.showInputDialog(null, "Alarm name?", "Create Alarm",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                if (object_name == null || object_name.trim() == "") {
+
+                    JOptionPane.showMessageDialog(null, "Alarm name can't be empty", "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                text = text.replace("[Object]", object_name);
+
+                File newFile = new File(Project.path + "/src/main/java/" + Project.projectName + "/Assets/Objects/"
+                        + object_name + ".java");
+                if (newFile.exists()) {
+
+                    JOptionPane.showMessageDialog(null, "There already exists an alarm with this name", "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                FileWriter fw = new FileWriter(newFile);
+
+                fw.write(text);
+                fw.close();
+
+                JOptionPane.showMessageDialog(null, "Alarm Created");
+
+                area.setText("AlarmPack pack = new AlarmPack(new Alarm1(), my_delay);\nAlarm.runAlarm(pack);");
 
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
