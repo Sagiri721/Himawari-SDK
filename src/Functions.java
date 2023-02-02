@@ -16,6 +16,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.plaf.synth.SynthSplitPaneUI;
 
 import Components.MapEditor;
 import Components.Structs.Map;
@@ -157,6 +158,17 @@ public class Functions {
 
         while (s.hasNextLine())
             filetext += s.nextLine();
+
+        s.close();
+        return filetext;
+    }
+
+    public static String getFileContentsLined(File file) throws FileNotFoundException {
+        Scanner s = new Scanner(file);
+        String filetext = "";
+
+        while (s.hasNextLine())
+            filetext += s.nextLine() + "\n";
 
         s.close();
         return filetext;
@@ -373,8 +385,31 @@ public class Functions {
                     fw.close();
 
                 } catch (Exception ee) {
-
                 }
+
+                // Create the utils
+
+                File changer = new File(folder.getAbsolutePath() + "/Changer.java");
+                File compile = new File(folder.getAbsolutePath() + "/compile.bat");
+
+                FileWriter w = new FileWriter(changer);
+
+                String text = getFileContents(new File("src\\templates\\Changer.txt"));
+                text = text.replace("[package]", pack.replace(".", "\\\\"));
+                w.write(text);
+
+                w.close();
+                w = new FileWriter(compile);
+
+                text = getFileContentsLined(new File("src\\templates\\Compile.txt"));
+                text = text.replace("[artifact]", artifact);
+
+                w.write(text);
+                w.close();
+                JOptionPane.showMessageDialog(null, "Project " + artifact + " was created", "Project created",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                System.out.println(changer.getAbsolutePath());
 
             } catch (IOException | InterruptedException e1) {
                 e1.printStackTrace();
@@ -387,6 +422,7 @@ public class Functions {
         // Refactor engine files
         searchFolder(path + "\\Engine", pack);
         searchFolder(path + "\\Assets", pack);
+
         // Refactor pom.xml
         File pom = new File(origin + "\\pom.xml");
         Scanner s;
@@ -399,11 +435,31 @@ public class Functions {
                 contents += s.nextLine() + "\n";
             s.close();
 
-            contents.replace("</dependencies>", "    <dependency>\n" +
+            // Add maven dependencies
+            contents = contents.replace("</dependencies>", "<dependency>\n" +
                     "<groupId>com.googlecode.json-simple</groupId>\n" +
                     "<artifactId>json-simple</artifactId>\n" +
-                    "<version>1.1</version>" +
-                    "</dependency>" +
+                    "<version>1.1</version>\n" +
+                    "</dependency><dependency>\n" +
+                    "<groupId>javazoom</groupId>\n" +
+                    "<artifactId>jlayer</artifactId>\n" +
+                    "<version>1.0.1</version\n" +
+                    "</dependency>\n" +
+                    "<dependency>\n" +
+                    "<groupId>com.google.guava</groupId>\n" +
+                    "<artifactId>guava</artifactId>\n" +
+                    "<version>31.0.1-jre</version>\n" +
+                    "</dependency>\n" +
+                    "<dependency>\n" +
+                    "<groupId>org.xerial</groupId>\n" +
+                    "<artifactId>sqlite-jdbc</artifactId>\n" +
+                    "<version>3.40.0.0</version>\n" +
+                    "</dependency>\n" +
+                    "<dependency>\n" +
+                    "<groupId>org.openjfx</groupId>\n" +
+                    "<artifactId>javafx-controls</artifactId>\n" +
+                    "<version>15.0.1</version>\n" +
+                    "</dependency>\n" +
                     "</dependencies>\n");
 
             FileWriter fw = new FileWriter(pom);

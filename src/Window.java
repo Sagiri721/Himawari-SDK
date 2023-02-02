@@ -122,13 +122,17 @@ public class Window extends JFrame implements ActionListener {
             explore.setBounds(0, 0, main.getWidth(), 200);
 
             String[] versions = getVersions();
-            String logsList = "<html><h1>Version Logs</h1><ul>";
+            String[] mapversions = getMapVersions();
+            String logsList = "<html><h1>Version Logs</h1><p>Editor Versions</p><ul>";
             for (String log : versions)
                 logsList += ("<li>" + log + "</li>");
 
+            logsList += "</ul><p>MapEditor Versions</p><ul>";
+            for (String log : mapversions)
+                logsList += ("<li>" + log + "</li>");
             logsList += "</ul></html>";
             JLabel listLabel = new JLabel(logsList);
-            listLabel.setBounds(0, 200, getWidth() / 2, 150);
+            listLabel.setBounds(5, 250, getWidth() - 20, listLabel.getPreferredSize().height + 20);
 
             main.add(listLabel);
             main.add(explore);
@@ -150,6 +154,26 @@ public class Window extends JFrame implements ActionListener {
             Gson gson = new Gson();
             Reader reader = Files
                     .newBufferedReader(Paths.get(new File("src/data/EngineVersions.json").getAbsolutePath()));
+            versions = gson.fromJson(reader, Versions.class);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }
+
+        return versions.versions;
+    }
+
+    public String[] getMapVersions() {
+
+        Versions versions = null;
+
+        try {
+
+            Gson gson = new Gson();
+            Reader reader = Files
+                    .newBufferedReader(Paths.get(new File("src/data/mapEditorVersions.json").getAbsolutePath()));
             versions = gson.fromJson(reader, Versions.class);
 
         } catch (Exception e) {

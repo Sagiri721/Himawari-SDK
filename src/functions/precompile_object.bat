@@ -1,3 +1,3 @@
 C: 
-cd C:\my-game\mygame\target\classes\com\com\nonamerhythmgame\Assets\Objects
-javap -private Wall.class
+cd C:\Newfolder\art\target\classes\com\com\name\Assets\Objects
+javap -private Player.class

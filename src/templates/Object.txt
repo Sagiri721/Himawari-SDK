@@ -1,23 +1,23 @@
-package Assets.Objects;
+package [package]Assets.Objects;
 
-import Engine.Entity.*;
-import Engine.Entity.Object;
+import [package]Engine.Entity.*;
+import [package]Engine.Entity.Object;
 
 import java.awt.Graphics2D;
 
-import Engine.Components.*;
-import Engine.Gfx.*;
-import Engine.Input.*;
-import Engine.Map.*;
-import Engine.Physics.*;
-import Engine.Sound.*;
-import Engine.Utils.*;
-import Engine.Utils.Geom.*;
+import [package]Engine.Components.*;
+import [package]Engine.Gfx.*;
+import [package]Engine.Input.*;
+import [package]Engine.Map.*;
+import [package]Engine.Physics.*;
+import [package]Engine.Sound.*;
+import [package]Engine.Utils.*;
+import [package]Engine.Utils.Geom.*;
 
 public class [Object] extends Object implements StdBehaviour{
 
     public [Object]() {
-        super([Object]);
+        super("[Object]");
     }
 
     /**
