@@ -303,6 +303,9 @@ public class ProjectControl extends JPanel implements ActionListener {
                 close();
 
             } else JOptionPane.showMessageDialog(null, "Can't delete system tables", "ERROR", JOptionPane.ERROR_MESSAGE);
+        } else if (e.getSource() == newPlugin) {
+
+            new PluginManager();
         }
 
     }

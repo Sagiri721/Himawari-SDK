@@ -543,4 +543,26 @@ public class Functions {
             e.printStackTrace();
         }
     }
+
+    public static String getPOM() throws FileNotFoundException{
+
+        File pom = new File(Project.path + "\\pom.xml");
+        Scanner s = new Scanner(pom);
+
+        String text = "";
+        while(s.hasNextLine()) text+= s.nextLine() + "\n";
+
+        s.close();
+        return text;
+    }
+
+    public static void writePOM(String text) throws IOException{
+
+        File pom = new File(Project.path + "\\pom.xml");
+        FileWriter fw = new FileWriter(pom);
+
+        fw.write(text);
+
+        fw.close();
+    }
 }

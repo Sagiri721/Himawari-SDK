@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.BufferedOutputStream;
@@ -9,8 +8,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import javax.swing.ImageIcon;
@@ -24,6 +25,11 @@ import javax.swing.JTextArea;
 
 import java.io.BufferedInputStream;
 import org.apache.commons.io.IOUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class PluginManager extends JFrame implements ActionListener {
 
@@ -57,7 +63,7 @@ public class PluginManager extends JFrame implements ActionListener {
 
         add(scroll);
         add(title);
-        add(icon);
+        //add(icon);
         add(importButton);
 
         setLayout(null);
@@ -175,6 +181,40 @@ public class PluginManager extends JFrame implements ActionListener {
                     if (f.isFile())
                         continue;
                     copyFromFolder(f);
+                }
+
+                //Import dependencies
+                File depenFile = new File(fc.getSelectedFile().getAbsolutePath() + "/plugin.json");
+                Gson g = new Gson();
+
+                if(depenFile.exists()){
+                 
+                    try(Reader reader = Files.newBufferedReader(Paths.get(depenFile.getAbsolutePath()))) {
+                 
+                        JsonObject obj = new JsonParser().parse(reader).getAsJsonObject();
+                        String text = Functions.getPOM();
+
+                        for(JsonElement d : obj.get("dependencies").getAsJsonArray()) {
+
+                            String elem = d.getAsString();
+                            if(!text.contains(elem)){
+                                
+                                text = text.replace("</dependencies>", elem + "</dependencies>");
+                                updateLogs(elem + " added as a dependency");
+                            }else updateLogs("Dependency " + elem + " already added. Skipping 1 line");
+                        }
+
+                        Functions.writePOM(text);
+                        updateLogs("Dependencies added");
+
+                    } catch (Exception ee) {
+                        
+                        updateLogs("Failed to open plugin.json");
+                        ee.printStackTrace();
+                    }
+                }else {
+
+                    updateLogs("Skipping dependency imports");
                 }
 
                 updateLogs("Plugin import finished\n" + files_moved + " files moved successfuly\n" + files_failed
