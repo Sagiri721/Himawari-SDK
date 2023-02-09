@@ -8,7 +8,12 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.awt.image.*;
 
-public class ProjectWizard extends JPanel {
+public class ProjectWizard extends JPanel implements ActionListener{
+
+    public JProgressBar progressBar = new JProgressBar(0, 100);
+    public JTextField outputField = new JTextField("No output to display");
+    public JComboBox<String> recents = new JComboBox<String>(new String[] {"---"});
+    private JButton createProject = Style.GetStyledButton("Create Project");
 
     public ProjectWizard(JFrame main) {
 
@@ -33,36 +38,38 @@ public class ProjectWizard extends JPanel {
         } catch (Exception e) {
         }
 
+        JLabel label = new JLabel("Recent projects: ");
+        label.setBounds(5, 95, 100, 20);
+        recents.setBounds(100, 95, 310, 20);
+        
         JButton openProject = Style.GetStyledButton("Open Project");
-
         openProject.setBounds(5, 50, 200, 40);
-
+        
+        outputField.setBounds(5, 150, 410, 20);
+        outputField.setEditable(false);
+        progressBar.setBounds(5, 135, 410, 10);
+        
+        add(recents);
+        add(label);
+        add(progressBar);
+        add(outputField);
         add(openProject);
         add(title);
 
-        JButton createProject = Style.GetStyledButton("Create Project");
-        createProject.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                Functions.CreateProject(0);
-            }
-
-        });
+        createProject.addActionListener(this);
 
         JPanel templates = new JPanel();
-        templates.setBounds(5, 100, 475, 255);
+        templates.setBounds(5, 170, 410, 255);
         templates.setBackground(Style.SECONDARY_BACKGROUND);
 
         JLabel temp = new JLabel("Project Templates");
         temp.setFont(new Font("Verdana", Font.BOLD, 18));
         temp.setBounds(5, 5, 300, 20);
 
-        createProject.setBounds(230, 5, 200, 20);
+        createProject.setBounds(215, 50, 200, 40);
 
         templates.setLayout(null);
-        templates.add(createProject);
+        add(createProject);
         templates.add(temp);
 
         Template[] temps = { new Template("EMPTY PROJECT", "empty.png",
@@ -113,6 +120,31 @@ public class ProjectWizard extends JPanel {
 
             setToolTipText(description);
             setLayout(null);
+        }
+    }
+
+    public void updateProgress(String message, int amount) {
+
+        progressBar.setValue(progressBar.getValue() + amount);
+        progressBar.repaint();
+
+        outputField.setText(message);
+    }
+
+    public void progressReset(){
+
+        progressBar.setValue(0);
+        progressBar.repaint();
+
+        outputField.setText("Output cleared");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        
+        if(e.getSource() == createProject) {
+
+            Functions.CreateProject(0, this);
         }
     }
 }

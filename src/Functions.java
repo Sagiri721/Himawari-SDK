@@ -5,18 +5,31 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Timer;
 
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.plaf.synth.SynthSplitPaneUI;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.awt.Desktop;
 
 import Components.MapEditor;
 import Components.Structs.Map;
@@ -260,7 +273,12 @@ public class Functions {
      * 
      */
 
-    public static void CreateProject(int template) {
+    public static void CreateProject(int template, ProjectWizard pw) {
+
+        long startMilis = System.currentTimeMillis();
+
+        pw.progressReset();
+        pw.updateProgress("Project creation started...", 0);
 
         File folder, script = new File("src\\functions\\project_creation.bat"),
                 script2 = new File("src\\functions\\engine_retrieve.bat");
@@ -326,15 +344,13 @@ public class Functions {
 
                 pr.waitFor();
 
-                JOptionPane.showMessageDialog(null, "Maven project creation: status " +
-                        pr.exitValue());
+                pw.updateProgress("Maven project creation status: " + pr.exitValue(), 20);
 
                 pr = run.exec(new File("src/functions/output/clone.bat").getAbsolutePath());
 
                 pr.waitFor();
 
-                JOptionPane.showMessageDialog(null, "Engine import: status " +
-                        pr.exitValue());
+                pw.updateProgress("Engine code import status: " + pr.exitValue(), 20);
 
                 String path = folder.getAbsolutePath() +
                         "\\" + artifact + "\\src\\main\\java\\com\\" + company
@@ -342,8 +358,6 @@ public class Functions {
 
                 refactorAll(path + "\\Himawari-2d", "com." + company + "." + name,
                         folder.getAbsolutePath() + "\\" + artifact);
-
-                JOptionPane.showMessageDialog(null, "Refactoring completed");
 
                 File enginefolder = new File(path + "\\Himawari-2d\\Engine"),
                         assetsfolder = new File(path + "\\Himawari-2d\\Assets"),
@@ -362,7 +376,7 @@ public class Functions {
                 deleteDirectory(new File(path + "\\Himawari-2d"));
                 deleteDirectory(new File(path + "\\App.java"));
 
-                JOptionPane.showMessageDialog(null, "Project files organized");
+                pw.updateProgress("Project files reorganized", 20);
 
                 String pack = "com." + company + "." + name;
                 // Refactor main file
@@ -387,6 +401,8 @@ public class Functions {
                 } catch (Exception ee) {
                 }
 
+                pw.updateProgress("Engine files refactored", 20);
+
                 // Create the utils
 
                 File changer = new File(folder.getAbsolutePath() + "/Changer.java");
@@ -404,9 +420,11 @@ public class Functions {
                 text = getFileContentsLined(new File("src\\templates\\Compile.txt"));
                 text = text.replace("[artifact]", artifact);
 
+                pw.updateProgress("Project util files created", 20);
+
                 w.write(text);
                 w.close();
-                JOptionPane.showMessageDialog(null, "Project " + artifact + " was created", "Project created",
+                JOptionPane.showMessageDialog(null, "Project " + artifact + " was created in " + (System.currentTimeMillis() - startMilis) / 1000 + " seconds", "Project created",
                         JOptionPane.INFORMATION_MESSAGE);
 
                 System.out.println(changer.getAbsolutePath());
@@ -564,5 +582,72 @@ public class Functions {
         fw.write(text);
 
         fw.close();
+    }
+
+    public static void addRecentFolder(String path) {
+
+        File file = new File("src/data/recentProjects.json");
+        Gson g = new Gson();
+
+        try {
+            
+            Scanner s = new Scanner(file);
+            String json = "";
+            while (s.hasNextLine())
+                json += s.nextLine();
+
+            s.close();
+            
+            JsonArray l = (g.fromJson(json, JsonObject.class)).get("recents").getAsJsonArray();
+            l.add(path);
+
+            FileWriter fw = new FileWriter(file);
+            fw.write("{\"recents\": "+l.toString()+"}");
+            fw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getWindowHTML(String view) {
+
+        try {
+         
+            Scanner s = new Scanner(new File("src/windows/" + view));
+            String html = "";
+
+            while (s.hasNext()) html += s.nextLine();
+            s.close();
+
+            return html;
+        } catch (Exception e) {
+            
+            return "<html>Failed to retrive HTML<html>";
+        }
+    }
+
+    public static JScrollPane toScrollPane(JEditorPane pane, int x, int y, int w, int h) {
+
+        pane.setEnabled(true);
+        pane.setFocusable(true);
+
+        pane.addHyperlinkListener(e -> {
+
+            if (HyperlinkEvent.EventType.ACTIVATED.equals(e.getEventType())) {
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                  desktop.browse(e.getURL().toURI());
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+                }
+              }
+        });
+
+        pane.setEditable(false);
+        JScrollPane js = new JScrollPane(pane);
+        js.setBounds(x, y, w, h);
+
+        return js;
     }
 }

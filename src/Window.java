@@ -1,5 +1,6 @@
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -8,6 +9,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
@@ -25,7 +27,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Window extends JFrame implements ActionListener {
 
@@ -87,7 +91,6 @@ public class Window extends JFrame implements ActionListener {
         user.setBounds(0, 0, 700, 30);
 
         name_label.setBounds(5, 5, 700, 20);
-        name_label.setForeground(Color.black);
         user.add(name_label);
 
         label.setBounds(5, 50, 100, 100);
@@ -116,24 +119,35 @@ public class Window extends JFrame implements ActionListener {
         else {
 
             // Add all the internet based components
-            JLabel explore = new JLabel(new ImageIcon("src/res/explore.jpg"));
-            explore.setBounds(0, 0, main.getWidth(), 200);
+            JLabel explore = new JLabel(new ImageIcon(new ImageIcon("src/res/explore.png").getImage().getScaledInstance(getWidth() - 80, 200, Image.SCALE_SMOOTH))),
+            minilogo = new JLabel(new ImageIcon("src/res/minilogo.png"));
+
+            minilogo.setBounds(260,300, 200, 200);
+            explore.setBounds(-15, -60, main.getWidth(), 200);
 
             String[] versions = getVersions();
             String[] mapversions = getMapVersions();
-            String logsList = "<html><h1>Version Logs</h1><p>Editor Versions</p><ul>";
-            for (String log : versions)
-                logsList += ("<li>" + log + "</li>");
-
-            logsList += "</ul><p>MapEditor Versions</p><ul>";
-            for (String log : mapversions)
-                logsList += ("<li>" + log + "</li>");
+            
+            String logsList = "<html><h1>Version Logs</h1><img src=\"file:src/res/logo-100.png\" alt=\"logo\"><p>HimawariEditor versions</p><ul>";
+            logsList += Arrays.asList(versions).stream().map(log -> ("<li>" + log + "</li>")).collect(Collectors.joining());
+            
+            logsList += "</ul><p>Himawari MapEditor versions</p><ul>";
+            logsList += Arrays.asList(mapversions).stream().map(log -> ("<li>" + log + "</li>")).collect(Collectors.joining());
+            
             logsList += "</ul></html>";
-            JLabel listLabel = new JLabel(logsList);
-            listLabel.setBounds(5, 250, getWidth() - 20, listLabel.getPreferredSize().height + 20);
-
-            main.add(listLabel);
+            
+            JEditorPane listLabel = new JEditorPane("text/html", logsList), github = new JEditorPane("text/html", Functions.getWindowHTML("Github.html")), news = new JEditorPane("text/html", Functions.getWindowHTML("News.html"));
+            
+            listLabel.setEditable(false);
+            
+            JScrollPane scroll0 = new JScrollPane(listLabel);
+            scroll0.setBounds(5, 150, 220, 300);
+            
+            main.add(scroll0);
             main.add(explore);
+            main.add(Functions.toScrollPane(github, 230, 150, 220, 300));
+            main.add(Functions.toScrollPane(news, 455, 150, 225, 300));
+            //main.add(minilogo);
         }
 
         JLabel versionLabel = new JLabel("version " + String.valueOf(version));
@@ -193,7 +207,7 @@ public class Window extends JFrame implements ActionListener {
 
             if (internet) {
 
-                Functions.OpenPanelAsFrame(500, 400, "Project Wizard", new ProjectWizard(this), false);
+                Functions.OpenPanelAsFrame(440, 400, "Project Wizard", new ProjectWizard(this), false);
 
             } else {
 

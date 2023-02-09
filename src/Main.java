@@ -52,7 +52,7 @@ public class Main {
         // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        new Project(new File("C:\\Newfolder\\art"));
+        //new Project(new File("C:\\Newfolder\\art"));
     }
 
     private static void openSettings() {
