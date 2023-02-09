@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -37,4 +38,23 @@ public class WebsiteConnector {
         return libs;
     }
 
+    public static Object[] isLoginValid(String name, String password){
+
+        try {
+            String d = Jsoup.connect(url + "recordFromName")
+            .method(Connection.Method.POST).header("Content-Type", "application/json")
+            .ignoreContentType(true).requestBody("{\"name\": \""+name+"\"}").execute().body();
+
+            JsonObject jo = (JsonObject) ((JsonArray) JsonParser.parseString(d)).get(0);
+
+            String pass = jo.get("password").getAsString();
+            String id = jo.get("_id").getAsString();
+            return new Object[] {pass.equals(password), id};
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new Object[] {false, null};
+    }
 }

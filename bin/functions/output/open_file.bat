@@ -1,1 +1,1 @@
-C:\Newfolder\art\pom.xml
+C:\Users\Utilizador\OneDrive - Colegio de Gaia\Desktop\myapp\src\main\java\com\com\pong\Assets\Sprites\welcome.png

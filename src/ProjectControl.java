@@ -295,14 +295,30 @@ public class ProjectControl extends JPanel implements ActionListener {
 
         }else if (e.getSource() == deleteCluster) {
 
-            if(!clusters.get(clusterBox.getSelectedIndex()).contains("custom cluster")){
+            //Delete
+            connect();
 
-                //Delete
-                connect();
+            String clusterName = clusterBox.getSelectedItem().toString().split(" ")[0];
+            if(clusterName.equals("localStorage".trim()) || clusterName.equals("logs".trim())) {
 
-                close();
+                JOptionPane.showMessageDialog(null, "Can't delete system tables", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            } else JOptionPane.showMessageDialog(null, "Can't delete system tables", "ERROR", JOptionPane.ERROR_MESSAGE);
+            String sql = "DROP TABLE " + clusterName;
+            try(Statement stmt = conn.createStatement()) {
+
+                stmt.execute(sql);
+                
+            } catch(SQLException ex) {
+
+                JOptionPane.showMessageDialog(null, "Cluster was not deleted", "ERROR", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "reason: " + ex.getStackTrace(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+
+            close();
+            updateComponent();
+            
         } else if (e.getSource() == newPlugin) {
 
             new PluginManager();

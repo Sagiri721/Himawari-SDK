@@ -12,6 +12,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Main {
 
@@ -67,31 +68,17 @@ public class Main {
                 json += s.nextLine();
 
             s.close();
-            Gson g = new Gson();
 
-            SettingsRef settings = g.fromJson(json, SettingsRef.class);
+            GsonBuilder gb = new GsonBuilder();
+            gb.excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT);
 
-            Settings.file_open_definition = settings.file_open_definition;
-            Settings.background = new Color(settings.background_color[0], settings.background_color[1],
-                    settings.background_color[2]);
-            Settings.username = settings.username;
-            Settings.open_alias = settings.open_alias;
-            Settings.theme = settings.theme;
+            Gson g = gb.create();
+            g.fromJson(json, Settings.class);
 
         } catch (Exception e) {
 
             System.out.println("There was an error parsing settings");
             e.printStackTrace();
         }
-    }
-
-    class SettingsRef {
-
-        public String file_open_definition;
-        public int[] background_color;
-
-        public String username;
-        public String open_alias;
-        public String theme;
     }
 }

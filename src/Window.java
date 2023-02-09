@@ -35,7 +35,7 @@ public class Window extends JFrame implements ActionListener {
             account = new JMenu("Account");
     JMenuItem i0 = new JMenuItem("New Map"), i1 = new JMenuItem("Load Map"),
             createP = new JMenuItem("Create Project"), loadP = new JMenuItem("Load Project"),
-            username = new JMenuItem("Change Username"), login = new JMenuItem("Login");
+            login = new JMenuItem("Login");
     JMenuBar mb = new JMenuBar();
 
     public static TileSet tileset;
@@ -80,7 +80,6 @@ public class Window extends JFrame implements ActionListener {
         menu.add(createP);
         menu.add(loadP);
 
-        account.add(username);
         account.add(login);
 
         JPanel user = new JPanel();
@@ -98,7 +97,6 @@ public class Window extends JFrame implements ActionListener {
         i1.addActionListener(this);
         createP.addActionListener(this);
         loadP.addActionListener(this);
-        username.addActionListener(this);
 
         mb.add(menu);
         mb.add(mapmenu);
@@ -190,14 +188,6 @@ public class Window extends JFrame implements ActionListener {
         if (e.getSource() == i0) {
 
             new CreateMap(0);
-        } else if (e.getSource() == username) {
-
-            String name = JOptionPane.showInputDialog(null, "What's your username?");
-
-            Settings.username = name;
-            Settings.updateFile();
-
-            name_label.setText("Hello there " + Settings.username);
 
         } else if (e.getSource() == createP) {
 

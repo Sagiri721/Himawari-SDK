@@ -443,7 +443,7 @@ public class Functions {
                     "</dependency><dependency>\n" +
                     "<groupId>javazoom</groupId>\n" +
                     "<artifactId>jlayer</artifactId>\n" +
-                    "<version>1.0.1</version\n" +
+                    "<version>1.0.1</version>\n" +
                     "</dependency>\n" +
                     "<dependency>\n" +
                     "<groupId>com.google.guava</groupId>\n" +
