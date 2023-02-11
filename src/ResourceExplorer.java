@@ -213,7 +213,11 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                 
-                    new CreateMap(0, new File(Project.engineFiles.getAbsoluteFile() + "/Rooms"));
+                    new MapCreator();
+                    
+                    chooser.setVisible(false);
+                    chooser.dispose();
+                    //new CreateMap(0, new File(Project.engineFiles.getAbsoluteFile() + "/Rooms"));
                 }
                 
             });

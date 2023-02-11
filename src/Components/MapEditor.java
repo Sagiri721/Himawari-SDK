@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.awt.*;
-
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 
@@ -49,6 +46,8 @@ public class MapEditor extends JPanel implements ChangeListener {
             importObjectList = new JButton("Import Objects"), shotcuts = new JButton("Shortcuts"),
             objectList = new JButton(new ImageIcon("src/res/objectlist.png")),
             parent = new JButton(new ImageIcon("src/res/parent.png"));
+
+    JLabel saved = new JLabel("Up to date");
 
     private int[][] mapOutput;
     public static List<Object> objects = new ArrayList<>();
@@ -158,6 +157,11 @@ public class MapEditor extends JPanel implements ChangeListener {
         panel.setBounds(0, 62, 790, 790);
         panel.setBackground(Color.WHITE);
 
+        saved.setOpaque(true);
+        saved.setBounds(5, 10, 80, 20);
+        saved.setBackground(Color.WHITE);
+        panel.add(saved);
+        
         JLabel tilePreview = new JLabel("Current tile: ");
         tilePreview.setBounds(37, 0, 100, 32);
         ImageIcon i = getPreview();
@@ -178,36 +182,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 try {
 
-                    String name = JOptionPane.showInputDialog(null, "Object name: ");
-                    int angle = Integer.parseInt(JOptionPane.showInputDialog(null, "Object rotation (degrees): ", 0));
-
-                    int scaleX = Integer.parseInt(JOptionPane.showInputDialog(null, "Object scale X: ", 1));
-                    int scaleY = Integer.parseInt(JOptionPane.showInputDialog(null, "Object scale Y: ", 1));
-
-                    if (angle < 0 || angle > 360) {
-
-                        JOptionPane.showMessageDialog(null, "Invalid angle", "ERROR", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else if (scaleX <= 0 || scaleY <= 0 || scaleX > 100 || scaleY > 100) {
-
-                        JOptionPane.showMessageDialog(null, "Invalid scale for 1-100", "ERROR",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-
-                        Object o = new Object();
-
-                        o.setName(name);
-                        o.angle = angle;
-                        o.w = scaleX;
-                        o.h = scaleY;
-
-                        currentObject = o;
-
-                        getComponentAt(0, 62).repaint();
-
-                        setEditorValues();
-                    }
+                    defineObject();
 
                 } catch (Exception ee) {
 
@@ -272,6 +247,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 if (o == JFileChooser.APPROVE_OPTION) {
                     String savePath = fc.getSelectedFile().getAbsolutePath();
+                    saveDir = fc.getSelectedFile();
 
                     String outTiles = "";
                     String outObjects = "";
@@ -687,10 +663,12 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 JFrame frame = new JFrame("Shortcuts");
 
-                frame.setSize(510, 520);
+                frame.setSize(510, 650);
                 JLabel img = new JLabel(new ImageIcon("src/res/quick shortcuts.png"));
-                img.setBounds(0, 0, 500, 500);
+                img.setBounds(0, 0, 500, 650);
 
+                frame.setLocationRelativeTo(null);
+                frame.setResizable(false);
                 frame.setLayout(null);
                 frame.add(img);
 
@@ -773,6 +751,18 @@ public class MapEditor extends JPanel implements ChangeListener {
         panels.add("Object Parameters", dataEditor);
         panels.add("Tileset and Project", tilesetPanel);
 
+        JButton saveButton = new JButton("Save project");
+        tilesetPanel.add(saveButton);
+        saveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+             
+                saveMap();
+            }
+
+        });
+
         add(panels);
         add(panel);
 
@@ -798,6 +788,8 @@ public class MapEditor extends JPanel implements ChangeListener {
                     x++;
                 }
 
+                if(e.getKeyChar() == 'o') defineObject();
+                if(e.getKeyChar() == 's') saveMap();
                 getComponentAt(0, 62).repaint();
             }
 
@@ -893,6 +885,8 @@ public class MapEditor extends JPanel implements ChangeListener {
                         try {
 
                             mapOutput[x + xx][y + yy] = curTile;
+                            changeConfirm();
+
                         } catch (Exception ee) {
 
                             JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
@@ -914,6 +908,8 @@ public class MapEditor extends JPanel implements ChangeListener {
                             o.angle = currentObject.angle;
 
                             currentObject = o;
+
+                            changeConfirm();
                         } else {
 
                             JOptionPane.showMessageDialog(null, "No object specified", "ERROR",
@@ -943,6 +939,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                                 selected.x = xx;
                                 selected.y = yy;
+                                changeConfirm();
                             }
 
                         }
@@ -1242,6 +1239,14 @@ public class MapEditor extends JPanel implements ChangeListener {
                 }
 
                 map.tileSet = tileset;
+                map.w = mapOutput[0].length;
+                map.h = mapOutput[0].length;
+                
+                saved.setText("Up to date");
+                saved.setBackground(Color.WHITE);
+
+                saveDir = new File(dirPath);
+                prev.setIcon(getPreview());
 
             } catch (Exception e) {
 
@@ -1391,14 +1396,15 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         String outTiles = "";
         String outObjects = "";
-
+        
         for (int i = 0; i < mapOutput[0].length; i++) {
             for (int j = 0; j < mapOutput[0].length; j++) {
-
+                
                 try {
                     outTiles += mapOutput[j][i] + (j < map.w - 1 ? " " : "");
                 } catch (Exception ee) {
-                    // ee.printStackTrace();
+                    
+                    ee.printStackTrace();
                 }
             }
 
@@ -1411,9 +1417,12 @@ public class MapEditor extends JPanel implements ChangeListener {
                     + oo.angle + " " + oo.w + "-" + oo.h + " " + (oo.parent == null ? "" : oo.parent)
                     + "\n";
         }
+
+        //System.out.println(outTiles);
         // Output the files
         File dir = saveDir;
-        if (!dir.exists()) {
+        //System.out.println(saveDir);
+        if (dir.exists()) {
 
             dir.mkdir();
             File tiles = new File(dir.getAbsolutePath() + "\\room-tiles.txt");
@@ -1440,7 +1449,10 @@ public class MapEditor extends JPanel implements ChangeListener {
                 File out = new File(dir.getAbsolutePath() + "\\" + name + ".png");
                 ImageIO.write(MapEditor.map.tileSet.tileSet, "png", out);
 
-                JOptionPane.showMessageDialog(null, "Export complete", "SUCCESS",
+                saved.setText("Up to date");
+                saved.setBackground(Color.WHITE);
+                
+                JOptionPane.showMessageDialog(null, "Save complete", "SUCCESS",
                         JOptionPane.INFORMATION_MESSAGE);
 
             } catch (IOException e1) {
@@ -1448,5 +1460,45 @@ public class MapEditor extends JPanel implements ChangeListener {
                 e1.printStackTrace();
             }
         }    
+    }
+
+    private void defineObject() {
+
+        String name = JOptionPane.showInputDialog(null, "Object name: ");
+        int angle = Integer.parseInt(JOptionPane.showInputDialog(null, "Object rotation (degrees): ", 0));
+
+        int scaleX = Integer.parseInt(JOptionPane.showInputDialog(null, "Object scale X: ", 1));
+        int scaleY = Integer.parseInt(JOptionPane.showInputDialog(null, "Object scale Y: ", 1));
+
+        if (angle < 0 || angle > 360) {
+
+            JOptionPane.showMessageDialog(null, "Invalid angle", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        } else if (scaleX <= 0 || scaleY <= 0 || scaleX > 100 || scaleY > 100) {
+
+            JOptionPane.showMessageDialog(null, "Invalid scale for 1-100", "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        } else {
+
+            Object o = new Object();
+
+            o.setName(name);
+            o.angle = angle;
+            o.w = scaleX;
+            o.h = scaleY;
+
+            currentObject = o;
+
+            getComponentAt(0, 62).repaint();
+
+            setEditorValues();
+        }
+    }
+
+    public void changeConfirm(){
+
+        saved.setText("There are unsaved changes!");
+        saved.setBackground(Color.RED);
     }
 }

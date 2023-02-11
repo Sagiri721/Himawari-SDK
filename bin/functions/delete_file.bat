@@ -1,1 +1,1 @@
-del C:\Newfolder\art\src\main\java\com\com\name\Assets\Rooms\room0
+del C:\Newfolder\art\src\main\java\com\com\name\Assets\Rooms\empty_room
