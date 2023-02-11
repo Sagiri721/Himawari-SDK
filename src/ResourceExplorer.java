@@ -144,19 +144,21 @@ public class ResourceExplorer extends JPanel implements ActionListener {
         } else if (e.getSource() == add) {
 
             JFrame chooser = new JFrame("Media chooser");
-            chooser.setSize(335, 200);
+            chooser.setSize(445, 200);
 
-            JLabel titLabel = new JLabel("Choose a media to upload");
+            JLabel titLabel = new JLabel("Choose a media to upload/create");
             titLabel.setFont(Style.HEADER_FONT);
-            titLabel.setBounds(5, 5, 350, 25);
+            titLabel.setBounds(5, 5, 455, 25);
 
             JButton sprite = new JButton(new ImageIcon("src/res/utils/sprite.png")),
                     sound = new JButton(new ImageIcon("src/res/utils/sound.png")),
-                    fonts = new JButton(new ImageIcon("src/res/utils/font.png"));
+                    fonts = new JButton(new ImageIcon("src/res/utils/font.png")),
+                    rooms = new JButton(new ImageIcon("src/res/utils/room.png"));
 
             sprite.setBounds(5, 50, 100, 100);
             sound.setBounds(110, 50, 100, 100);
             fonts.setBounds(215, 50, 100, 100);
+            rooms.setBounds(320,50, 100, 100);
 
             sprite.addActionListener(new ActionListener() {
 
@@ -206,6 +208,17 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                 }
             });
 
+            rooms.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                
+                    new CreateMap(0, new File(Project.engineFiles.getAbsoluteFile() + "/Rooms"));
+                }
+                
+            });
+
+            chooser.add(rooms);
             chooser.add(sprite);
             chooser.add(sound);
             chooser.add(fonts);

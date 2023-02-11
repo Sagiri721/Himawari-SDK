@@ -29,7 +29,7 @@ import java.awt.event.*;
 public class Project extends JFrame implements KeyListener, ActionListener {
 
     public static Inspector inspector = new Inspector();
-    public static File path, engineFiles;
+    public static File path, engineFiles, assetFiles;
     public static String projectName = "", disk = "C:";
     private File compiler;
 
@@ -75,7 +75,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         this.compiler = new File(path.getParentFile().getAbsolutePath() + "/compile.bat");
 
         // Map preview
-        JPanel editor = Functions.getMapEditor(engineFiles.getAbsolutePath());
+        JPanel editor = Functions.getMapEditor(engineFiles.getAbsolutePath(), new File(engineFiles.getAbsolutePath() + "/Rooms"));
         editor.setBounds(365, 0, editor.getWidth() - 10, editor.getHeight());
         preview = (MapEditor) editor;
 
@@ -88,6 +88,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         if (rooms != null && rooms.length > 0) {
 
             preview.importMap(rooms[0].getAbsolutePath());
+            preview.setSavePath(rooms[0]);
         }
 
         // Menu initialization

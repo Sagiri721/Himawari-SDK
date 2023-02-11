@@ -210,13 +210,13 @@ public class Functions {
         }
     }
 
-    public static void openMapEditor(Map map) {
+    public static void openMapEditor(Map map, File savePath) {
 
         JFrame mapEditor = new JFrame();
         mapEditor.setSize(800, 830);
         mapEditor.setTitle("Map editing tool");
 
-        MapEditor editor = new MapEditor(map, Optional.<File>empty());
+        MapEditor editor = new MapEditor(map, Optional.<File>empty(), savePath);
         editor.setBounds(0, 0, 800, 830);
 
         mapEditor.setLayout(null);
@@ -232,7 +232,7 @@ public class Functions {
         mapEditor.setSize(800, 830);
         mapEditor.setTitle("Map editing tool");
 
-        MapEditor editor = new MapEditor(map, Optional.<File>of(mapPath));
+        MapEditor editor = new MapEditor(map, Optional.<File>of(mapPath), mapPath);
         editor.importMap(mapPath.getAbsolutePath());
 
         editor.setBounds(0, 0, 800, 830);
@@ -244,9 +244,9 @@ public class Functions {
         mapEditor.setVisible(true);
     }
 
-    public static JPanel getMapEditor(String path) {
+    public static JPanel getMapEditor(String path, File savePath) {
 
-        MapEditor editor = new MapEditor(new Map(null, 100, 100), Optional.<File>empty());
+        MapEditor editor = new MapEditor(new Map(null, 100, 100), Optional.<File>empty(), savePath);
         editor.setObjectModelsFromFolder(path + "/Objects");
         editor.spriteFolder = path + "/Sprites";
         return editor;

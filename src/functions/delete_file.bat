@@ -1,1 +1,1 @@
-del C:\my-game\mygame\src\main\java\com\com\nonamerhythmgame\Assets\Objects\Novo objecto.java
+del C:\Newfolder\art\src\main\java\com\com\name\Assets\Rooms\room0

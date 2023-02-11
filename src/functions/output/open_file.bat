@@ -1,1 +1,1 @@
-C:\Users\Utilizador\OneDrive - Colegio de Gaia\Desktop\myapp\src\main\java\com\com\pong\Assets\Sprites\welcome.png
+C:\Newfolder\art\src\main\java\com\com\name\Assets\Sprites\Firefox.lnk

@@ -14,17 +14,16 @@ import java.io.File;
 
 public class CreateMap extends JFrame implements ActionListener {
 
-    int mode;
-
+    private int mode;
     public String tilesetPath;
-
-    File f;
+    public File f, savePath = null;
 
     JButton button0 = new JButton("Import tile set image"), button1 = new JButton("Create tile set");
     JSpinner sp = new JSpinner(), sp2 = new JSpinner();
 
-    public CreateMap(int mode) {
+    public CreateMap(int mode, File savePath) {
         this.mode = mode;
+        this.savePath = savePath;
 
         DrawOptions();
     }
@@ -107,7 +106,7 @@ public class CreateMap extends JFrame implements ActionListener {
                     Window.tileset = null;
                 }
 
-                new CreateMap(1);
+                new CreateMap(1, this.savePath);
 
                 setVisible(false);
                 dispose();
@@ -123,7 +122,7 @@ public class CreateMap extends JFrame implements ActionListener {
                         Map map = new Map(Window.tileset, (int) sp.getValue(),
                                 (int) sp.getValue());
 
-                        Functions.openMapEditor(map);
+                        Functions.openMapEditor(map, savePath);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Can't create map");

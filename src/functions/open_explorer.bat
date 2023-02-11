@@ -1,1 +1,1 @@
-explorer C:\Newfolder\art
+explorer C:\Newfolder\art\src\main\java\com\com\name\Assets

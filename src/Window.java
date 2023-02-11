@@ -201,7 +201,7 @@ public class Window extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == i0) {
 
-            new CreateMap(0);
+            new CreateMap(0, null);
 
         } else if (e.getSource() == createP) {
 

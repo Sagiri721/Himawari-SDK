@@ -23,13 +23,16 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.awt.*;
 
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 
 public class MapEditor extends JPanel implements ChangeListener {
 
     public static Map map;
-    JLabel prev, ll, pos;
+    private JLabel prev, ll, pos;
+    public File saveDir = null;
 
     private int displayX, displayY, maxSize;
     private int x = 0, y = 0;
@@ -72,8 +75,12 @@ public class MapEditor extends JPanel implements ChangeListener {
 
     public String spriteFolder = "";
 
-    public MapEditor(Map map, Optional<File> mapLocation) {
+    public void setSavePath(File path) {this.saveDir = path; }
 
+    public MapEditor(Map map, Optional<File> mapLocation, File savePath) {
+
+        this.saveDir = savePath;
+        System.out.println(saveDir);
         setBounds(0, 0, 800, 830);
         setLayout(null);
 
@@ -782,16 +789,12 @@ public class MapEditor extends JPanel implements ChangeListener {
             public void keyTyped(KeyEvent e) {
 
                 if (e.getKeyChar() == 'h') {
-
                     x--;
                 } else if (e.getKeyChar() == 'j') {
-
                     y--;
                 } else if (e.getKeyChar() == 'k') {
-
                     y++;
                 } else if (e.getKeyChar() == 'l') {
-
                     x++;
                 }
 
@@ -802,16 +805,12 @@ public class MapEditor extends JPanel implements ChangeListener {
             public void keyPressed(KeyEvent e) {
 
                 if (e.getKeyCode() == 37) {
-
                     x--;
                 } else if (e.getKeyCode() == 40) {
-
                     y++;
                 } else if (e.getKeyCode() == 38) {
-
                     y--;
                 } else if (e.getKeyCode() == 39) {
-
                     x++;
                 }
 
@@ -841,11 +840,30 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                     getComponentAt(0, 62).repaint();
                 }
+
+                if (selected == null) {
+
+                    int size = displayX + e.getWheelRotation();
+
+                    if (size <= 0 || size > maxSize * 2) {
+        
+                        JOptionPane.showMessageDialog(null, "Width out of bounds " + size + " for 1-" + maxSize*2,
+                                "ERROR", JOptionPane.ERROR_MESSAGE);
+                    } else {
+        
+                        displayX = size;
+                        displayY = size;
+                        getComponentAt(0, 62).repaint();
+                        requestFocus();
+                    }
+                }
             }
 
         });
 
-        panel.addMouseListener(new MouseInputListener() {
+        MouseInputListener inputListener = new MouseInputListener() {
+
+            public Point middleDrag = null;
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -993,7 +1011,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-
+             
             }
 
             @Override
@@ -1001,7 +1019,10 @@ public class MapEditor extends JPanel implements ChangeListener {
 
             }
 
-        });
+        };
+
+        panel.addMouseMotionListener(inputListener);
+        panel.addMouseListener(inputListener);
     }
 
     public ImageIcon getPreview() {
@@ -1358,5 +1379,74 @@ public class MapEditor extends JPanel implements ChangeListener {
                 setLayout(null);
             }
         }
+    }
+    
+    public void saveMap(){
+
+        if (saveDir == null) {JOptionPane.showMessageDialog(null, "No saving directory specified try exporting your map", "ERROR", JOptionPane.ERROR_MESSAGE);}
+        File tileFile = new File(saveDir.getAbsolutePath() + "/room-tiles.txt");
+        if (!tileFile.exists()) {JOptionPane.showMessageDialog(null, "The saving directory is not a map", "ERROR", JOptionPane.ERROR_MESSAGE);}
+
+        //Save information    
+
+        String outTiles = "";
+        String outObjects = "";
+
+        for (int i = 0; i < mapOutput[0].length; i++) {
+            for (int j = 0; j < mapOutput[0].length; j++) {
+
+                try {
+                    outTiles += mapOutput[j][i] + (j < map.w - 1 ? " " : "");
+                } catch (Exception ee) {
+                    // ee.printStackTrace();
+                }
+            }
+
+            outTiles += "\n";
+        }
+
+        for (Object oo : objects) {
+
+            outObjects += oo.name + " " + getRealCoords(oo.x) + "-" + getRealCoords(oo.y) + " "
+                    + oo.angle + " " + oo.w + "-" + oo.h + " " + (oo.parent == null ? "" : oo.parent)
+                    + "\n";
+        }
+        // Output the files
+        File dir = saveDir;
+        if (!dir.exists()) {
+
+            dir.mkdir();
+            File tiles = new File(dir.getAbsolutePath() + "\\room-tiles.txt");
+            try {
+
+                tiles.createNewFile();
+                FileWriter fw = new FileWriter(tiles);
+                fw.write(outTiles);
+                fw.close();
+
+                if (outObjects != "") {
+
+                    // Create objects file
+                    File objs = new File(dir.getAbsolutePath() + "\\room-objects.txt");
+                    objs.createNewFile();
+
+                    fw = new FileWriter(objs);
+                    fw.write(outObjects);
+                    fw.close();
+                }
+
+                // Save the tileset file to the folder
+                String name = "tiles-" + MapEditor.map.tileSet.size;
+                File out = new File(dir.getAbsolutePath() + "\\" + name + ".png");
+                ImageIO.write(MapEditor.map.tileSet.tileSet, "png", out);
+
+                JOptionPane.showMessageDialog(null, "Export complete", "SUCCESS",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(null, "Export canceled", "ERROR", JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+            }
+        }    
     }
 }
