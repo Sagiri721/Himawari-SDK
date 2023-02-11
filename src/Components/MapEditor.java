@@ -33,6 +33,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
     private int displayX, displayY, maxSize;
     private int x = 0, y = 0;
+    private boolean fastScroll = false;
 
     int layer = 0;
 
@@ -665,7 +666,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 frame.setSize(510, 650);
                 JLabel img = new JLabel(new ImageIcon("src/res/quick shortcuts.png"));
-                img.setBounds(0, 0, 500, 650);
+                img.setBounds(0, -20, 500, 650);
 
                 frame.setLocationRelativeTo(null);
                 frame.setResizable(false);
@@ -790,6 +791,9 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 if(e.getKeyChar() == 'o') defineObject();
                 if(e.getKeyChar() == 's') saveMap();
+
+                if(e.getKeyChar() == 'z') fastScroll = true; 
+
                 getComponentAt(0, 62).repaint();
             }
 
@@ -805,18 +809,21 @@ public class MapEditor extends JPanel implements ChangeListener {
                 } else if (e.getKeyCode() == 39) {
                     x++;
                 }
-
+                
                 getComponentAt(0, 62).repaint();
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
 
+                if(e.getKeyChar() == 'p') fastScroll = false; 
             }
 
         });
 
         panel.addMouseWheelListener(new MouseWheelListener() {
+            
+            private int sens = 3;
 
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
@@ -833,9 +840,10 @@ public class MapEditor extends JPanel implements ChangeListener {
                     getComponentAt(0, 62).repaint();
                 }
 
+
                 if (selected == null) {
 
-                    int size = displayX + e.getWheelRotation();
+                    int size = displayX + (e.getWheelRotation()) * (fastScroll ? sens : 1);
 
                     if (size <= 0 || size > maxSize * 2) {
         
@@ -854,8 +862,6 @@ public class MapEditor extends JPanel implements ChangeListener {
         });
 
         MouseInputListener inputListener = new MouseInputListener() {
-
-            public Point middleDrag = null;
 
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1465,6 +1471,7 @@ public class MapEditor extends JPanel implements ChangeListener {
     private void defineObject() {
 
         String name = JOptionPane.showInputDialog(null, "Object name: ");
+        if(name.trim() == "" || name == null) return;
         int angle = Integer.parseInt(JOptionPane.showInputDialog(null, "Object rotation (degrees): ", 0));
 
         int scaleX = Integer.parseInt(JOptionPane.showInputDialog(null, "Object scale X: ", 1));

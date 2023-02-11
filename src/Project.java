@@ -50,7 +50,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             readdremote = new JMenuItem("Change remote repository url"),
             importLibrary = new JMenuItem("Import himawari libraries"), addDepend = new JMenuItem("Add dependencies"),
             newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects"),
-            openPomFile = new JMenuItem("Open pom.xml"), plugin = new JMenuItem("Import plugin");
+            openPomFile = new JMenuItem("Open pom.xml"), plugin = new JMenuItem("Import plugin"), system = new JMenuItem("System & Preferences"),
+            physics = new JMenuItem("Game physics menu"), input =  new JMenuItem("Game input icon");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -112,8 +113,13 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         codeMenu.add(i1);
         codeMenu.add(recompile);
 
+        settingsMenu.add(system);
+        settingsMenu.add(input);
+        settingsMenu.add(physics);
+        settingsMenu.add(new JSeparator());
         settingsMenu.add(buildSettings);
         settingsMenu.add(settings);
+
         other.add(open);
         other.add(close);
         build.add(buildJar);

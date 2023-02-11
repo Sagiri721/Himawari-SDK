@@ -21,7 +21,7 @@ public class ProjectControl extends JPanel implements ActionListener {
     private JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alarm"),
             newPlugin = new JButton("Import plugin"), importComponent = new JButton("Import component"),
             deleteCluster = new JButton("Delete cluster"), createCluster = new JButton("Create cluster"),
-            clearLogs = new JButton("Clear logs");
+            clearLogs = new JButton("Clear logs"), checkLogs = new JButton("Check storage logs");
     private JTextArea area = null;
     private JComboBox<String> clusterBox = null;
 
@@ -53,10 +53,11 @@ public class ProjectControl extends JPanel implements ActionListener {
                 + " KB)");
         dbData.setBounds(5, 540, 410, 20);
         add(dbData);
-
+        
+        
         // Fetch database clusters
         connect();
-
+        
         try {
 
             ResultSet rs = conn.getMetaData().getTables(null, null, null, null);
@@ -76,19 +77,23 @@ public class ProjectControl extends JPanel implements ActionListener {
         clusterInfo.setText(active+" active clusters out of "+clusters.size());
         clusterInfo.setBounds(5, 520, 410, 100);
         add(clusterInfo);
-
+        
         clusterBox = new JComboBox<String>(clusters.toArray(new String[clusters.size()]));
         clusterBox.setBounds(5, 595, 200, 30);
 
         deleteCluster.setBounds(210, 595, 200, 30);
         deleteCluster.addActionListener(this);
-
+        
         createCluster.setBounds(5, 625, 200, 30);
         createCluster.addActionListener(this);
         
         clearLogs.setBounds(210, 625, 200, 30);
         clearLogs.addActionListener(this);
+        
+        checkLogs.setBounds(5, 660, 405, 30);
+        checkLogs.addActionListener(this);
 
+        add(checkLogs);
         add(clearLogs);
         add(deleteCluster);
         add(createCluster);
@@ -112,7 +117,7 @@ public class ProjectControl extends JPanel implements ActionListener {
         
         area = new JTextArea();
         JScrollPane pane = new JScrollPane(area);
-        pane.setBounds(5, 300, 410, 200);
+        pane.setBounds(5, 270, 410, 200);
         
         add(pane);
         
@@ -322,6 +327,29 @@ public class ProjectControl extends JPanel implements ActionListener {
         } else if (e.getSource() == newPlugin) {
 
             new PluginManager();
+        } else if (e.getSource() == checkLogs) {
+
+            long milis = System.currentTimeMillis();
+            connect();
+
+            String sql = "SELECT * FROM logs";
+            try(Statement stmt = conn.createStatement()){
+
+                ResultSet rs = stmt.executeQuery(sql);
+                
+                rs.last();
+                String output = "Found " + rs.getRow() + " logs in " + ((System.currentTimeMillis() - milis)/1000) + " seconds ...\n";
+
+                rs.first();
+                while(rs.next()) {
+
+                    output += "description: " + rs.getString("description") + " | date: " + rs.getString("log_date") + "\n";
+                }
+                area.setText(output);
+                
+            }catch(Exception ee) {ee.printStackTrace();}
+
+            close();
         }
 
     }

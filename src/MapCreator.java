@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 
 import Components.Structs.Map;
 
+import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,8 +55,8 @@ public class MapCreator extends JFrame implements ActionListener{
 
         create.addActionListener(this);
 
-        JLabel icon = new JLabel(new ImageIcon("src/res/room_wizard.png"));
-        icon.setBounds(5, 210, 300, 300);
+        JLabel icon = new JLabel(new ImageIcon(new ImageIcon("src/res/room_wizard.png").getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH)));
+        icon.setBounds(-30, 210-67 , 300, 300);
 
         add(icon);
         add(create);
