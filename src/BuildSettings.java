@@ -48,8 +48,8 @@ public class BuildSettings extends JPanel implements ActionListener {
         title.setFont(Style.HEADER_FONT);
         title.setBounds(5, 0, 300, 40);
 
-        JLabel pictute = new JLabel(new ImageIcon("src/res/buildsettings.png"));
-        pictute.setBounds(430, 120, 150, 150);
+        JLabel pictute = new JLabel(new ImageIcon("src/res/buildsettings(2).png"));
+        pictute.setBounds(240, 145, 407, 150);
         add(pictute);
 
         add(title);

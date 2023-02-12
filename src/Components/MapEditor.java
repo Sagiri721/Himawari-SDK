@@ -35,6 +35,11 @@ public class MapEditor extends JPanel implements ChangeListener {
     private int x = 0, y = 0;
     private boolean fastScroll = false;
 
+    private String[] modes = { "One-by-One", "Line", "Rectangle", "Flood fill" };
+    private String[] modeIcon = { "one-by-one", "line", "rectangle", "fill" };
+    public int paintMode = 0;
+    private Point drag = null, mousePos = new Point();
+
     int layer = 0;
 
     JButton l1 = new JButton(new ImageIcon("src/res/layer1.png")),
@@ -48,7 +53,7 @@ public class MapEditor extends JPanel implements ChangeListener {
             objectList = new JButton(new ImageIcon("src/res/objectlist.png")),
             parent = new JButton(new ImageIcon("src/res/parent.png"));
 
-    JLabel saved = new JLabel("Up to date");
+    JLabel saved = new JLabel("Up to date"), paintIndicator = new JLabel(modes[paintMode]);
 
     private int[][] mapOutput;
     public static List<Object> objects = new ArrayList<>();
@@ -336,6 +341,9 @@ public class MapEditor extends JPanel implements ChangeListener {
         pos = new JLabel("Root point: 0,0");
         pos.setBounds(420 + 37, 0, 100, 32);
 
+        paintIndicator.setBounds(getVisibleRect());
+
+        mapEditing.add(paintIndicator);
         mapEditing.add(pos);
         mapEditing.add(position);
         mapEditing.add(settings);
@@ -794,6 +802,8 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 if(e.getKeyChar() == 'z') fastScroll = true; 
 
+                if(e.getKeyChar() == 'f') changePaintMode();
+
                 getComponentAt(0, 62).repaint();
             }
 
@@ -888,16 +898,40 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                     if (layer == 0) {
 
-                        try {
+                        if(paintMode == 0){
 
-                            mapOutput[x + xx][y + yy] = curTile;
+                            try {
+    
+                                mapOutput[x + xx][y + yy] = curTile;
+                                changeConfirm();
+    
+                            } catch (Exception ee) {
+    
+                                JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else if (paintMode == 2) {
+
+                            drag = new Point();
+                            drag.setLocation(x + xx, y + yy);
+                        } else if (paintMode == 3) {
+
+                            //Fill from this square outwards
+                            int fillTolerance = mapOutput[x + xx][y + yy];
+
+                            try {
+                
+                                floodFill(x + xx, y + yy, fillTolerance);
+                            } catch (Exception ee) {
+                                
+                                JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
+                                JOptionPane.ERROR_MESSAGE);
+                            }
+                
+                            getComponentAt(0, 62).repaint();
                             changeConfirm();
-
-                        } catch (Exception ee) {
-
-                            JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
-                                    JOptionPane.ERROR_MESSAGE);
                         }
+
                     } else if (layer == 1) {
 
                         if (currentObject != null) {
@@ -1000,6 +1034,46 @@ public class MapEditor extends JPanel implements ChangeListener {
             @Override
             public void mouseReleased(MouseEvent e) {
 
+                if(drag != null && layer == 0 && paintMode == 2) {
+
+                    int _x = e.getPoint().x;
+                    int _y = e.getPoint().y;
+
+                    int xx = _x / (800 / (displayX));
+                    int yy = _y / (800 / (displayY));
+
+                    Point newPoint = new Point();
+                    newPoint.setLocation(x + xx, y + yy);
+
+                    if(drag.getX() >= mapOutput[0].length || drag.getY() >= mapOutput[0].length){
+
+                        JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
+                        
+                        drag = null;
+                        getComponentAt(0, 62).repaint();
+                        return;
+                    }
+
+                    //Fill rectangle
+                    try {
+                        
+                        for (int i = (int) Math.min(drag.getX(), newPoint.getX()); i <= (int) Math.max(drag.getX(), newPoint.getX()); i++) {
+                            for (int j = (int) Math.min(drag.getY(), newPoint.getY()); j <= (int) Math.max(drag.getY(), newPoint.getY()); j++) {
+                                
+                                try {mapOutput[i][j] = curTile;}catch(Exception eee){}
+                            }
+                        }
+
+                    } catch (Exception ee) {
+                        
+                        ee.printStackTrace();
+                    }
+
+                    drag = null;
+                    changeConfirm();
+                    getComponentAt(0, 62).repaint();
+                }
             }
 
             @Override
@@ -1014,7 +1088,35 @@ public class MapEditor extends JPanel implements ChangeListener {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-             
+
+                if((paintMode == 1) && layer == 0) {
+
+                    int _x = e.getPoint().x;
+                    int _y = e.getPoint().y;
+
+                    int xx = _x / (800 / (displayX));
+                    int yy = _y / (800 / (displayY));
+
+                    try {
+                        mapOutput[x + xx][y + yy] = curTile;
+                    } catch (Exception ee) {
+    
+                        JOptionPane.showMessageDialog(null, "Can't place tiles outside of map bounds", "ERROR",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+
+                    changeConfirm();
+                    getComponentAt(0, 62).repaint();
+                } else if (paintMode == 2 && layer == 0) {
+                    
+                    int _x = e.getPoint().x;
+                    int _y = e.getPoint().y;
+
+                    int xx = _x / (800 / (displayX));
+                    int yy = _y / (800 / (displayY));
+                    mousePos.setLocation(x + xx - (drag.getX() - 1), y + yy - (drag.getY() - 1));
+                    getComponentAt(0, 62).repaint();
+                }
             }
 
             @Override
@@ -1092,6 +1194,20 @@ public class MapEditor extends JPanel implements ChangeListener {
                     g2d.setStroke(stroke);
                     g.drawRect((o.x - x) * xx, (o.y - y) * yy, xx * o.w, yy * o.h);
                 }
+            }
+
+            if(drag != null) {
+
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setColor(Color.BLUE);
+
+                Stroke stroke = new BasicStroke(5);
+                g2d.setStroke(stroke);
+
+                Point myPoint = new Point();
+                myPoint.setLocation((mousePos.x - x) * xx, (mousePos.y - y) * yy);
+
+                g.drawRoundRect((int) (drag.getX() - x) * xx, (int) (drag.getY() - y) * yy, myPoint.x, myPoint.y, 10, 10);
             }
 
             pos.setText("Root point: " + x + "," + y);
@@ -1507,5 +1623,38 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         saved.setText("There are unsaved changes!");
         saved.setBackground(Color.RED);
+    }
+
+    public void changePaintMode(){
+
+        JComboBox<String> comboBox = new JComboBox<String>(modes);
+        JOptionPane.showMessageDialog(null, comboBox, "Paint mode", JOptionPane.QUESTION_MESSAGE);
+
+        paintMode = comboBox.getSelectedIndex();
+    }
+
+    private void floodFill(int xx, int yy, int checkTile) {
+
+        int prevC = checkTile;
+        if(prevC==curTile) return;
+        floodFillUtil(xx, yy, prevC);
+    }
+
+    private void floodFillUtil(int xx, int yy, int prevC)
+    {
+        // Base cases
+        if (xx < 0 || xx >= mapOutput[0].length || yy < 0 || yy >= mapOutput[0].length)
+            return;
+        if (mapOutput[xx][yy] != prevC)
+            return;
+    
+        // Replace the color at (x, y)
+        mapOutput[xx][yy] = curTile;
+    
+        // Recur for north, east, south and west
+        floodFillUtil(xx+1, yy, prevC);
+        floodFillUtil(xx-1, yy, prevC);
+        floodFillUtil(xx, yy+1, prevC);
+        floodFillUtil(xx, yy-1, prevC);
     }
 }

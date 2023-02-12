@@ -119,11 +119,11 @@ public class Window extends JFrame implements ActionListener {
         else {
 
             // Add all the internet based components
-            JLabel explore = new JLabel(new ImageIcon(new ImageIcon("src/res/explore.png").getImage().getScaledInstance(getWidth() - 80, 200, Image.SCALE_SMOOTH))),
+            JLabel explore = new JLabel(new ImageIcon(new ImageIcon("src/res/explore2.png").getImage().getScaledInstance(getWidth() , 150, Image.SCALE_SMOOTH))),
             minilogo = new JLabel(new ImageIcon("src/res/minilogo.png"));
 
             minilogo.setBounds(260,300, 200, 200);
-            explore.setBounds(-15, -60, main.getWidth(), 200);
+            explore.setBounds(0, -30, main.getWidth(), 200);
 
             String[] versions = getVersions();
             String[] mapversions = getMapVersions();

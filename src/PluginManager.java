@@ -46,24 +46,24 @@ public class PluginManager extends JFrame implements ActionListener {
 
         JLabel title = new JLabel("Himawari plugin manager");
         JLabel icon = new JLabel(
-                new ImageIcon(new ImageIcon("src\\res\\pluginmanager.png").getImage().getScaledInstance(200, 200,
+                new ImageIcon(new ImageIcon("src\\res\\pluginmanager.png").getImage().getScaledInstance(300, 150,
                         Image.SCALE_SMOOTH)));
 
         output.setEditable(false);
         JScrollPane scroll = new JScrollPane(output,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setBounds(6, 90, 400, 200);
+        scroll.setBounds(6, 100, 300, 200);
 
         title.setBounds(5, 5, 400, 30);
         title.setFont(Style.HEADER_FONT);
 
         importButton.setBounds(5, 50, 260, 30);
-        icon.setBounds(400, 0, 200, 180);
+        icon.setBounds(300, 100, 300, 150);
         importButton.addActionListener(this);
 
         add(scroll);
         add(title);
-        //add(icon);
+        add(icon);
         add(importButton);
 
         setLayout(null);

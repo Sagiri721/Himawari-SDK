@@ -1,3 +1,4 @@
+import java.awt.Image;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,8 +54,8 @@ public class FileDetailsWindow extends JFrame {
         String extension = getExtension();
         if (extension != "") {
 
-            JLabel icon = new JLabel(new ImageIcon("src/res/file-icons/icon-" + extension + ".png"));
-            icon.setBounds(5, 150, 108, 108);
+            JLabel icon = new JLabel(new ImageIcon(new ImageIcon("src/res/file-icons/icon-" + extension + ".png").getImage().getScaledInstance(200, 186, Image.SCALE_SMOOTH)));
+            icon.setBounds(5, 150, 200, 186);
 
             add(icon);
         }
@@ -69,7 +70,7 @@ public class FileDetailsWindow extends JFrame {
         setLayout(null);
         setTitle("File Inspector");
         setLocationRelativeTo(null);
-        setSize(300, 400);
+        setSize(226, 380);
         setResizable(false);
         setVisible(true);
     }

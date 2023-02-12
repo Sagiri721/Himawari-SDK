@@ -111,6 +111,12 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                 return;
             }
 
+            if(box.getSelectedIndex() == 3) {
+
+                JOptionPane.showMessageDialog(null, "Can't delete room's directly, go delete them yourself at " + Project.engineFiles.getAbsolutePath() + "/Rooms", "ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
             File file = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
                     .getSelectedIndex()];
@@ -119,6 +125,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
             Functions.WriteAndRun(command, "delete_file.bat");
 
             updateResources();
+
         } else if (e.getSource() == view) {
 
             if (list.getSelectedIndex() == -1) {
