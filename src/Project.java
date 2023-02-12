@@ -59,7 +59,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
     JMenuBar bar = new JMenuBar();
 
-    JTabbedPane functions = new JTabbedPane();
+    public static JTabbedPane functions = new JTabbedPane();
 
     JButton run = Style.GetStyledButton("LAUCH PROJECT"), website = Style.GetStyledButton("Website"),
             docs = Style.GetStyledButton("Documentation"),

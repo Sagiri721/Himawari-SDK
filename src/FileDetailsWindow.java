@@ -29,7 +29,7 @@ public class FileDetailsWindow extends JFrame {
 
         }
 
-        JLabel name = new JLabel("Inspecting " + file.getName()),
+        JLabel name = new JLabel(file.getName()),
                 size = new JLabel("<html><body>File size: " + file.length() + " bytes(" + (file.length() / 1000)
                         + " KB)</body></html>");
 

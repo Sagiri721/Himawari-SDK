@@ -138,6 +138,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
 
                 Project.inspector.inspectObject(new File(Project.engineFiles.getAbsolutePath() +
                         "/Objects").listFiles()[list.getSelectedIndex()]);
+                Project.functions.setSelectedIndex(1);
             } else {
 
                 String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
