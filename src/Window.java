@@ -38,7 +38,7 @@ public class Window extends JFrame implements ActionListener {
     JMenu menu = new JMenu("Project Manager Tool"), mapmenu = new JMenu("Map Editor Tool"),
             account = new JMenu("Account");
     JMenuItem i0 = new JMenuItem("New Map"), i1 = new JMenuItem("Load Map"),
-            createP = new JMenuItem("Create Project"), loadP = new JMenuItem("Load Project"),
+            createP = new JMenuItem("Manage Projects"), loadP = new JMenuItem("Load Project"),
             login = new JMenuItem("Login");
     JMenuBar mb = new JMenuBar();
 
@@ -207,7 +207,7 @@ public class Window extends JFrame implements ActionListener {
 
             if (internet) {
 
-                Functions.OpenPanelAsFrame(440, 400, "Project Wizard", new ProjectWizard(this), false);
+                Functions.OpenPanelAsFrame(440, 600, "Project Wizard", new ProjectWizard(this), false);
 
             } else {
 
@@ -232,6 +232,9 @@ public class Window extends JFrame implements ActionListener {
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+
+                    //Add to recent projects
+                    Functions.addRecentProject(folder);
 
                     // Open the project
                     new Project(folder);

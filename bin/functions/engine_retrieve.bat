@@ -1,4 +1,4 @@
-C:
+[disk]:
 cd [folder]
 cd [artifact]\src\main\java\com\[company]\[name]
 

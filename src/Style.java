@@ -45,6 +45,7 @@ public class Style {
 
     public static Font CONTENT_FONT;
     public static Font HEADER_FONT;
+    public static Font FONT1;
 
     public Style() {
 
@@ -55,8 +56,12 @@ public class Style {
             Style.HEADER_FONT = Font.createFont(Font.TRUETYPE_FONT,
                     getClass().getResource("res/fonts/OpenSans-SemiBold.ttf").openStream());
 
+            Style.FONT1 = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResource("res/fonts/BomberUrban-Regular.otf").openStream());
+            
             Style.CONTENT_FONT = Style.CONTENT_FONT.deriveFont(Style.MAIN_TEXT_SIZE);
             Style.HEADER_FONT = Style.HEADER_FONT.deriveFont(Style.HEADER_SIZE);
+            Style.FONT1 = Style.FONT1.deriveFont(Style.HEADER_SIZE);
 
         } catch (Exception e) {
         }

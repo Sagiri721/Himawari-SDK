@@ -1,3 +1,3 @@
 C: 
- cd C:\Newfolder
-cmd /c start "" C:\Newfolder\compile.bat
+ cd C:\Users\Utilizador\OneDrive - Colegio de Gaia\Documents
+cmd /c start "" C:\Users\Utilizador\OneDrive - Colegio de Gaia\Documents\compile.bat

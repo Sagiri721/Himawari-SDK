@@ -4,43 +4,50 @@
             "name": "EMPTY PROJECT",
             "image": "empty.png",
             "desc": "An empty canvas for you to create your games upon",
-            "class": "Himawari default"
+            "type": "Himawari default",
+            "clone": ""
         },
         {
             "name": "2D PLATFORMER",
             "image": "platformer.png",
             "desc": "Creates a little game set up with 2D physics and platforming movement",
-            "class": "Himawari default"
+            "type": "Himawari default",
+            "clone": ""
         },
         {
             "name": "TOP DOWN RPG",
             "image": "topdown.png",
             "desc": "Creates a game set up with bidimensional movement, a camera, and a map",
-            "class": "Himawari default"
+            "type": "Himawari default",
+            "clone": ""
         },
         {
             "name": "PONG!",
             "image": "pong.png",
             "desc": "Imports the complete Pong game template",
-            "class": "Himawari templates"
+            "type": "Himawari templates",
+            "clone": ""
         },
         {
             "name": "StepMania",
             "image": "sm.png",
             "desc": "Imports the complete StepMania game template",
-            "class": "Himawari templates"
+            "type": "Himawari templates",
+            "clone": ""
         },
         {
-            "name": "Mariooo",
+            "name": "Mario",
             "image": "mario.png",
             "desc": "Imports the complete Mario game template",
-            "class": "Himawari templates"
+            "type": "Himawari templates",
+            "clone": ""
         },
         {
             "name": "Touhou",
             "image": "touhou.png",
             "desc": "Imports the complete Touhou game template",
-            "class": "Himawari templates"
+            "type": "Himawari templates",
+            "clone": ""
         }
     ]
 }

@@ -1,1 +1,1 @@
-C:\Newfolder\art\src\main\java\com\com\name\Assets\Sprites\Firefox.lnk
+D:\games\com\src\main\java\com\com\com\Assets\Sprites\welcome.png

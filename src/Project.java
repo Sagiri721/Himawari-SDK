@@ -169,6 +169,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         i1.addActionListener(this);
         settings.addActionListener(this);
         addFont.addActionListener(this);
+        system.addActionListener(this);
+        physics.addActionListener(this);
+        input.addActionListener(this);
 
         setJMenuBar(bar);
 
@@ -502,6 +505,15 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == plugin) {
 
             new PluginManager();
+        } else if (e.getSource() == system) {
+
+            new SettingsMenu(0);
+        } else if (e.getSource() == physics) {
+
+            new SettingsMenu(1);
+        } else if (e.getSource() == input) {
+
+            new SettingsMenu(2);
         }
     }
 

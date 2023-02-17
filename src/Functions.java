@@ -26,6 +26,13 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.plaf.synth.SynthSplitPaneUI;
 
+
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -267,6 +274,30 @@ public class Functions {
         return project;
     }
 
+    public static void startTheme(){
+
+        switch (Settings.theme) {
+
+            case "light":
+                FlatLightLaf.setup();
+                break;
+            case "dark":
+                FlatDarkLaf.setup();
+                break;
+            case "intellij":
+                FlatIntelliJLaf.setup();
+                break;
+            case "mac-light":
+                FlatMacLightLaf.setup();
+                break;
+            case "mac-dark":
+                FlatMacDarkLaf.setup();
+                break;
+            case "custom":
+                break;
+        }
+    }
+
     /**
      * 
      * CREATE PROJECT FUNCTION AND UTILS
@@ -319,21 +350,24 @@ public class Functions {
                 }
 
                 scanner.close();
-
+                
+                String disk = folder.getAbsolutePath().substring(0, 1);
                 command = command.replace("[folder]", folder.getAbsolutePath());
                 command = command.replace("[company]", company);
                 command = command.replace("[name]", name);
                 command = command.replace("[artifact]", artifact);
+                command = command.replace("[disk]", disk);
 
                 command2 = command2.replace("[folder]", folder.getAbsolutePath());
                 command2 = command2.replace("[company]", company);
                 command2 = command2.replace("[name]", name);
                 command2 = command2.replace("[artifact]", artifact);
+                command2 = command2.replace("[disk]", disk);
 
                 FileWriter fw = new FileWriter(new File("src/functions/output/out.bat"));
                 fw.write(command);
                 fw.close();
-
+                
                 fw = new FileWriter(new File("src/functions/output/clone.bat"));
                 fw.write(command2);
                 fw.close();
@@ -341,11 +375,11 @@ public class Functions {
                 // Execute command
                 Runtime run = Runtime.getRuntime();
                 Process pr = run.exec(new File("src/functions/output/out.bat").getAbsolutePath());
-
                 pr.waitFor();
 
                 pw.updateProgress("Maven project creation status: " + pr.exitValue(), 20);
 
+                //Adapt disk
                 pr = run.exec(new File("src/functions/output/clone.bat").getAbsolutePath());
 
                 pr.waitFor();
@@ -494,6 +528,11 @@ public class Functions {
     private static void searchFolder(String folder, String pack) {
 
         File[] f = new File(folder).listFiles();
+        if(f == null) {
+
+            JOptionPane.showMessageDialog(null, "Couldn't read the folder " + folder, "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         for (File file : f) {
 
             if (file.getName().contains(".")) {
@@ -649,5 +688,93 @@ public class Functions {
         js.setBounds(x, y, w, h);
 
         return js;
+    }
+
+    public static void addRecentProject(File project){
+
+        Gson g = new Gson();
+
+        try(Reader reader = Files.newBufferedReader(Paths.get("src/data/recentProjects.json"))){
+
+            String[] recentArray = g.fromJson(reader, Recent.class).recents;
+            if (recentArray.length >= 10) {
+
+                for(int i = recentArray.length-1; i > 0; i--) { recentArray[i] = recentArray[i-1]; }
+                recentArray[0] = project.getAbsolutePath();
+            }else {
+
+                List<String> l = Arrays.asList(recentArray);
+                l = new ArrayList<String>(l);
+
+                l.add(0, project.getAbsolutePath());
+                recentArray = l.toArray(new String[l.size()]);
+            }
+
+            //Write recents out
+            Recent r = new Recent();
+            r.recents = recentArray;
+            //g.toJson(r, new FileWriter(new File("src/data/recentProjects.json")));
+            String json = g.toJson(r);
+            FileWriter fw = new FileWriter(new File("src/data/recentProjects.json"));
+
+            fw.write(json);
+            fw.close();
+
+        } catch(IOException e) {
+
+        }
+    }
+
+    public static class Recent { public Recent(){} public String[] recents;}
+
+    public static String[] getRecentProjects(){
+
+        Gson g = new Gson();
+        try(Reader reader = Files.newBufferedReader(Paths.get("src/data/recentProjects.json"))){ 
+
+            return g.fromJson(reader, Recent.class).recents;
+
+        }catch(IOException e){
+            
+            return null;
+        }
+    }
+
+    public static ProjectWizard.Template[] getTemplates(){
+
+        Gson g = new Gson();
+
+        try(Reader reader = Files.newBufferedReader(Paths.get("src/data/Templates.json"))){
+
+            Projects projs = g.fromJson(reader, Projects.class);
+            ProjectWizard.Template[] templates = new ProjectWizard.Template[projs.projects.length];
+
+            for (int i = 0; i < templates.length; i++) {
+                
+                templates[i] = new ProjectWizard.Template(projs.projects[i].name,
+                projs.projects[i].image,
+                projs.projects[i].desc,
+                projs.projects[i].type,
+                projs.projects[i].clone);
+            }
+
+            return templates;
+
+        }catch (IOException e) {
+
+            JOptionPane.showMessageDialog(null, "Error fetching templates", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    private class Projects {public Template[] projects;}
+
+    private class Template{
+
+        public String name;
+        public String image;
+        public String desc;
+        public String type;
+        public String clone;
     }
 }

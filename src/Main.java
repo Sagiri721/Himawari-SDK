@@ -6,11 +6,6 @@ import javax.swing.JOptionPane;
 
 import java.awt.*;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -22,26 +17,7 @@ public class Main {
 
         openSettings();
 
-        switch (Settings.theme) {
-
-            case "light":
-                FlatLightLaf.setup();
-                break;
-            case "dark":
-                FlatDarkLaf.setup();
-                break;
-            case "intellij":
-                FlatIntelliJLaf.setup();
-                break;
-            case "mac-light":
-                FlatMacLightLaf.setup();
-                break;
-            case "mac-dark":
-                FlatMacDarkLaf.setup();
-                break;
-            case "custom":
-                break;
-        }
+        Functions.startTheme();
 
         new Style();
         new Window();
@@ -52,7 +28,7 @@ public class Main {
         // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        new Project(new File("C:\\Newfolder\\art"));
+        //new Project(new File("C:\\Newfolder\\art"));
     }
 
     private static void openSettings() {
