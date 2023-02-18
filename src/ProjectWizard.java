@@ -3,10 +3,9 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.awt.image.*;
+import java.awt.event.*;
 
 public class ProjectWizard extends JPanel implements ActionListener{
 
@@ -20,8 +19,12 @@ public class ProjectWizard extends JPanel implements ActionListener{
     gson = new JCheckBox("Use Gson library"), jackson = new JCheckBox("Use Jackson library"), slf4j = new JCheckBox("use SLF4J library"), 
     bullet = new JCheckBox("Use JBullet library");
 
+    public int template = 0;
+    public static String clone = null;
+
     public ProjectWizard(JFrame main) {
 
+        ProjectWizard.clone = null;
         // setBackground(Color.DARK_GRAY);
         setBounds(0, 0, main.getWidth(), main.getHeight());
 
@@ -119,6 +122,8 @@ public class ProjectWizard extends JPanel implements ActionListener{
         for (Template t : temps) {
 
             t.setBounds(5 + (index * (t.getWidth() + 10)), 60, t.getWidth(), t.getHeight());
+            if(index == template) t.setBackground(t.myBackground.darker());
+
             templates.add(t);
             index++;
         }
@@ -132,9 +137,19 @@ public class ProjectWizard extends JPanel implements ActionListener{
         main.setResizable(false);
     }
 
-    public static class Template extends JPanel {
+    public static class Template extends JPanel implements MouseListener {
+
+        private JPanel self;
+        private Color myBackground;
+
+        private String clone = null;
 
         public Template(String name, String image, String description, String type, String clone) {
+
+            this.self = this;
+            this.myBackground = getBackground();
+
+            this.clone = clone.trim() == "" ? null : clone;
 
             setSize(200, 140);
             setBackground(Style.MAIN_BACKGROUND);
@@ -159,9 +174,39 @@ public class ProjectWizard extends JPanel implements ActionListener{
             } catch (Exception e) {
             }
 
+            addMouseListener(this);
+            setFocusable(true);
+            requestFocus();
+
             setToolTipText(description);
             setLayout(null);
         }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            
+            self.setBackground(myBackground.darker());
+            ProjectWizard.clone = this.clone;
+            
+            //Unset other's colors
+            for (Component c : getParent().getComponents()) {
+            
+                if(c == this) continue;
+                if(c.getClass() == Template.class) c.setBackground(myBackground);
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {}
+
+        @Override
+        public void mouseReleased(MouseEvent e) {}
+
+        @Override
+        public void mouseEntered(MouseEvent e) {}
+
+        @Override
+        public void mouseExited(MouseEvent e) {}
     }
 
     public void updateProgress(String message, int amount) {
@@ -188,7 +233,7 @@ public class ProjectWizard extends JPanel implements ActionListener{
         
         if(e.getSource() == createProject) {
 
-            Functions.CreateProject(0, this);
+            Functions.CreateProject(this, ProjectWizard.clone);
         } else if (e.getSource() == openProject) {
 
             if(recents.getSelectedIndex() == 0){

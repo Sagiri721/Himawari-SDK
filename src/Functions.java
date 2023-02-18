@@ -304,7 +304,7 @@ public class Functions {
      * 
      */
 
-    public static void CreateProject(int template, ProjectWizard pw) {
+    public static void CreateProject(ProjectWizard pw, String clone) {
 
         long startMilis = System.currentTimeMillis();
 
@@ -364,6 +364,9 @@ public class Functions {
                 command2 = command2.replace("[artifact]", artifact);
                 command2 = command2.replace("[disk]", disk);
 
+                clone = clone == null ? "empty https://github.com/Sagiri721/Himawari-2d.git" : clone;
+                command2 = command2.replace("[temp]", clone);
+
                 FileWriter fw = new FileWriter(new File("src/functions/output/out.bat"));
                 fw.write(command);
                 fw.close();
@@ -390,12 +393,15 @@ public class Functions {
                         "\\" + artifact + "\\src\\main\\java\\com\\" + company
                         + "\\" + name;
 
-                refactorAll(path + "\\Himawari-2d", "com." + company + "." + name,
+                String folderName = clone.substring(clone.lastIndexOf("/") + 1, clone.lastIndexOf("."));
+                System.out.println(folderName);
+
+                refactorAll(path + "\\" + folderName, "com." + company + "." + name,
                         folder.getAbsolutePath() + "\\" + artifact);
 
-                File enginefolder = new File(path + "\\Himawari-2d\\Engine"),
-                        assetsfolder = new File(path + "\\Himawari-2d\\Assets"),
-                        mainfile = new File(path + "\\Himawari-2d\\Main.java");
+                File enginefolder = new File(path + "\\" + folderName + "\\Engine"),
+                        assetsfolder = new File(path + "\\" + folderName + "\\Assets"),
+                        mainfile = new File(path + "\\" + folderName + "\\Main.java");
 
                 // Move the files
                 Files.move(Paths.get(enginefolder.getAbsolutePath()), Paths.get(path +
@@ -407,7 +413,7 @@ public class Functions {
                 Files.move(Paths.get(mainfile.getAbsolutePath()), Paths.get(path +
                         "\\Main.java"));
 
-                deleteDirectory(new File(path + "\\Himawari-2d"));
+                deleteDirectory(new File(path + "\\" + folderName));
                 deleteDirectory(new File(path + "\\App.java"));
 
                 pw.updateProgress("Project files reorganized", 20);
@@ -453,6 +459,7 @@ public class Functions {
 
                 text = getFileContentsLined(new File("src\\templates\\Compile.txt"));
                 text = text.replace("[artifact]", artifact);
+                text = text.replace("[pack]", "com." + company + "." + name + ".");
 
                 pw.updateProgress("Project util files created", 20);
 

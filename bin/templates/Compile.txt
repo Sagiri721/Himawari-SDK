@@ -9,4 +9,4 @@ java Changer
 cd [artifact]
 
 ::Load the app
-mvn clean compile exec:java -Dexec.mainClass="Main"
+mvn clean compile exec:java -Dexec.mainClass="[pack]Main"

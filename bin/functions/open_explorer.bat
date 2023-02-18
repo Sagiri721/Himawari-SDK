@@ -1,1 +1,1 @@
-explorer C:\Newfolder\art
+explorer C:\Games\aaa

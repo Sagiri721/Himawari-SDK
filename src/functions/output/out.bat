@@ -1,4 +1,4 @@
-D:
-cd D:\games
+C:
+cd C:\Games
 
-mvn archetype:generate -DgroupId=com.com.com -DartifactId=com -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+mvn archetype:generate -DgroupId=com.com.com -DartifactId=aaa -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false

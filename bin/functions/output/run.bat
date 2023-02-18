@@ -1,3 +1,3 @@
 C: 
- cd C:\Users\Utilizador\OneDrive - Colegio de Gaia\Documents
-cmd /c start "" C:\Users\Utilizador\OneDrive - Colegio de Gaia\Documents\compile.bat
+ cd C:\Games
+cmd /c start "" C:\Games\compile.bat

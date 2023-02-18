@@ -5,7 +5,7 @@
             "image": "empty.png",
             "desc": "An empty canvas for you to create your games upon",
             "type": "Himawari default",
-            "clone": ""
+            "clone": "empty https://github.com/Sagiri721/Himawari-2d.git"
         },
         {
             "name": "2D PLATFORMER",
@@ -26,7 +26,7 @@
             "image": "pong.png",
             "desc": "Imports the complete Pong game template",
             "type": "Himawari templates",
-            "clone": ""
+            "clone": "pong https://github.com/TiagoBarros721/Himawari-Templates.git"
         },
         {
             "name": "StepMania",
