@@ -1,1 +1,1 @@
-explorer C:\Games\aaa
+explorer C:\touhou\app

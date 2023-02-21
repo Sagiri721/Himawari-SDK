@@ -1,7 +1,9 @@
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,17 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.Timer;
 
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.plaf.synth.SynthSplitPaneUI;
-
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
@@ -39,14 +40,16 @@ import com.google.gson.JsonObject;
 import java.awt.Desktop;
 
 import Components.MapEditor;
+import Components.Structs.EngineData;
 import Components.Structs.Map;
+import Components.Structs.ObjectData;
 
 public class Functions {
 
     // No mp3 / ogg support yet
     private static String[][] allowedFileExtensions = {
             { "png", "jpg", "jpeg", "jfif", "avif" }, // Images
-            { "wav" }, // Sound
+            { "wav", "mp3", "ogg" }, // Sound
             { "otf", "ttf" },// Fonts
     };
 
@@ -447,11 +450,13 @@ public class Functions {
 
                 File changer = new File(folder.getAbsolutePath() + "/Changer.java");
                 File compile = new File(folder.getAbsolutePath() + "/compile.bat");
+                File export = new File(folder.getAbsolutePath() + "/export_references.bat");
 
                 FileWriter w = new FileWriter(changer);
 
                 String text = getFileContents(new File("src\\templates\\Changer.txt"));
                 text = text.replace("[package]", pack.replace(".", "\\\\"));
+                text = text.replace("[artifact]", artifact);
                 w.write(text);
 
                 w.close();
@@ -460,11 +465,21 @@ public class Functions {
                 text = getFileContentsLined(new File("src\\templates\\Compile.txt"));
                 text = text.replace("[artifact]", artifact);
                 text = text.replace("[pack]", "com." + company + "." + name + ".");
-
-                pw.updateProgress("Project util files created", 20);
-
+                
                 w.write(text);
                 w.close();
+                
+                w = new FileWriter(export);
+                
+                text = getFileContentsLined(new File("src\\templates\\ExportRefs.txt"));
+                text = text.replace("[artifact]", artifact);
+                text = text.replace("[pack]", "com." + company + "." + name + ".");
+                
+                w.write(text);
+                w.close();
+                
+                pw.updateProgress("Project util files created", 20);
+
                 JOptionPane.showMessageDialog(null, "Project " + artifact + " was created in " + (System.currentTimeMillis() - startMilis) / 1000 + " seconds", "Project created",
                         JOptionPane.INFORMATION_MESSAGE);
 
@@ -519,6 +534,11 @@ public class Functions {
                     "<artifactId>javafx-controls</artifactId>\n" +
                     "<version>15.0.1</version>\n" +
                     "</dependency>\n" +
+                    "<dependency>"+
+                    "<groupId>com.google.code.gson</groupId>"+
+                    "<artifactId>gson</artifactId>"+
+                    "<version>2.10.1</version>"+
+                    "</dependency>"+
                     "</dependencies>\n");
 
             FileWriter fw = new FileWriter(pom);
@@ -783,5 +803,50 @@ public class Functions {
         public String desc;
         public String type;
         public String clone;
+    }
+
+    public static void placeComponentWithLabel(String label, JComponent comp, JPanel pane, int x, int y, int w){
+
+        JLabel l = new JLabel(label);
+        int stringWidth = l.getFontMetrics(l.getFont()).stringWidth(label);
+
+        l.setBounds(x, y, stringWidth, 20);
+
+        w = w == -1 ? comp.getWidth() - stringWidth - 10 : w;
+        comp.setBounds(stringWidth + 10 + x, y, w, 20);
+
+        pane.add(comp);
+        pane.add(l);
+    }
+
+    public static void exportGameMetaData(){
+
+        File exporterFile = Project.exportFile;
+        if(exporterFile.exists()) {
+
+            Runtime run = Runtime.getRuntime();
+            try {
+            
+                Process p = run.exec(exporterFile.getAbsolutePath());
+                p.waitFor();
+                
+                Gson gson = new Gson();
+                ObjectData[] objs = gson.fromJson(new FileReader(Project.engineAssetFiles.getAbsolutePath() + "/MyObjectDataDump.json"), ObjectData[].class);
+                EngineData data = gson.fromJson(new FileReader(Project.engineAssetFiles.getAbsolutePath() + "/MyGameData.json"), EngineData.class);
+
+                Project.objectInformation = objs;
+                Project.gameData = data;
+            
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+            
+                JOptionPane.showMessageDialog(null, "There was a problem exporting your project's references", "ERROR", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }else {
+
+            JOptionPane.showMessageDialog(null, "No file capable of exporting the project's references was found", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

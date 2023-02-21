@@ -249,7 +249,7 @@ public class ProjectWizard extends JPanel implements ActionListener{
     
                     if (!new File(folder.getAbsolutePath() + "/pom.xml").exists()) {
     
-                        JOptionPane.showMessageDialog(null, "Inavalid directory, there is no pom.xml", "ERROR",
+                        JOptionPane.showMessageDialog(null, "Invalid directory, there is no pom.xml", "ERROR",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }

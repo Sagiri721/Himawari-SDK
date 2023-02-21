@@ -23,13 +23,17 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import Components.MapEditor;
+import Components.Structs.EngineData;
+import Components.Structs.ObjectData;
 
 import java.awt.event.*;
 
 public class Project extends JFrame implements KeyListener, ActionListener {
 
+    public static ObjectData[] objectInformation;
+    public static EngineData gameData;
     public static Inspector inspector = new Inspector();
-    public static File path, engineFiles, assetFiles;
+    public static File path, engineFiles, assetFiles, engineAssetFiles, exportFile;
     public static String projectName = "", disk = "C:";
     private File compiler;
 
@@ -73,7 +77,11 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         Project.path = path;
         fetchProjectLocalConfig();
         Project.engineFiles = new File(path.getAbsolutePath() + "/src/main/java/" + projectName + "/Assets");
+        Project.engineAssetFiles = new File(path.getAbsolutePath() + "/src/main/java/" + projectName + "/Engine/Assets");
         this.compiler = new File(path.getParentFile().getAbsolutePath() + "/compile.bat");
+        Project.exportFile = new File(path.getParentFile().getAbsolutePath() + "/export_references.bat");
+
+        Functions.exportGameMetaData();
 
         // Map preview
         JPanel editor = Functions.getMapEditor(engineFiles.getAbsolutePath(), new File(engineFiles.getAbsolutePath() + "/Rooms"));

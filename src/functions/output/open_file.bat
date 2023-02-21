@@ -1,1 +1,1 @@
-D:\games\com\src\main\java\com\com\com\Assets\Sprites\welcome.png
+C:\touhou\app\src\main\java\com\com\touhou\Assets\Objects\Player.java

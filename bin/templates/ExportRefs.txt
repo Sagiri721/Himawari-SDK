@@ -1,0 +1,8 @@
+@Echo off
+javac Changer.java
+java Changer
+
+cd [artifact]
+
+::Load the exporter
+mvn clean compile exec:java -Dexec.mainClass="[pack]Engine.Utils.Exporter"

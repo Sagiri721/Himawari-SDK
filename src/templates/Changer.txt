@@ -9,8 +9,8 @@ public class Changer {
 
 		String spackage = "[package]";
 
-		File loader = new File("my-app\\src\\main\\java\\" + spackage + "\\Engine\\Utils\\ObjectLoader.java");
-		File objects = new File("my-app\\src\\main\\java\\" + spackage + "\\Assets\\Objects");
+		File loader = new File("[artifact]\\src\\main\\java\\" + spackage + "\\Engine\\Utils\\ObjectLoader.java");
+		File objects = new File("[artifact]\\src\\main\\java\\" + spackage + "\\Assets\\Objects");
 
 		String cases = "";
 

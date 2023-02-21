@@ -1,4 +1,4 @@
 C:
-cd C:\Games
+cd C:\touhou
 
-mvn archetype:generate -DgroupId=com.com.com -DartifactId=aaa -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+mvn archetype:generate -DgroupId=com.com.touhou -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false

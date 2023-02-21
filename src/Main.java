@@ -9,6 +9,8 @@ import java.awt.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import Components.Structs.ObjectData;
+
 public class Main {
 
     public static final String version = "pre-build";
@@ -28,7 +30,7 @@ public class Main {
         // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        //new Project(new File("C:\\Newfolder\\art"));
+        new Project(new File("C:\\touhou\\app"));
     }
 
     private static void openSettings() {
