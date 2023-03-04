@@ -1,3 +1,3 @@
 C:
-cd C:\touhou\app
+cd C:\thenewgame\app
 mvn compiler:compile

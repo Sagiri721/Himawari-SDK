@@ -39,7 +39,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.awt.Desktop;
 
-import Components.MapEditor;
 import Components.Structs.EngineData;
 import Components.Structs.Map;
 import Components.Structs.ObjectData;
@@ -819,7 +818,7 @@ public class Functions {
         pane.add(l);
     }
 
-    public static void exportGameMetaData(){
+    public static void importGameMetaData(){
 
         File exporterFile = Project.exportFile;
         if(exporterFile.exists()) {
@@ -848,5 +847,15 @@ public class Functions {
 
             JOptionPane.showMessageDialog(null, "No file capable of exporting the project's references was found", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public static void showError(String message) {
+
+        JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void showMessage(String message) {
+
+        JOptionPane.showMessageDialog(null, message, "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
     }
 }

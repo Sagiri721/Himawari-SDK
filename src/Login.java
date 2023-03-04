@@ -31,7 +31,7 @@ public class Login extends JPanel {
 
                 try {
                  
-                    Object[] valid = WebsiteConnector.isLoginValid(username.getText().trim(), new String(password.getPassword()));
+                    java.lang.Object[] valid = WebsiteConnector.isLoginValid(username.getText().trim(), new String(password.getPassword()));
                     if((boolean) valid[0]) {
 
                         JOptionPane.showMessageDialog(null, "Login success", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);

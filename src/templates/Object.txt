@@ -47,6 +47,15 @@ public class [Object] extends Object implements StdBehaviour{
     }
 
     /**
+    * Called when a new room is loaded
+    */
+   @Override
+   public void RoomLoaded(Room room) {
+       
+       
+   }
+
+    /**
      * Called from a different object, receives the object that sent the message
      */
     @Override

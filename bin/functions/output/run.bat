@@ -1,3 +1,3 @@
 C: 
- cd C:\touhou
-cmd /c start "" C:\touhou\compile.bat
+ cd C:\thenewgame
+cmd /c start "" C:\thenewgame\compile.bat

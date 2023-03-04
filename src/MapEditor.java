@@ -1,4 +1,4 @@
-package Components;
+
 
 import java.awt.event.*;
 
@@ -10,6 +10,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 
 import Components.Structs.Map;
+import Components.Structs.ObjectData;
 import Components.Structs.TileSet;
 
 import java.awt.image.BufferedImage;
@@ -28,17 +29,17 @@ import java.awt.image.AffineTransformOp;
 public class MapEditor extends JPanel implements ChangeListener {
 
     public static Map map;
-    private JLabel prev, ll, pos;
+    public JLabel prev, ll, pos;
     public File saveDir = null;
 
     private int displayX, displayY, maxSize;
     private int x = 0, y = 0;
     private boolean fastScroll = false;
 
-    private String[] modes = { "One-by-One", "Line", "Rectangle", "Flood fill" };
-    private String[] modeIcon = { "one-by-one", "line", "rectangle", "fill" };
-    public int paintMode = 0;
+    public static String[] modes = { "One-by-One", "Line", "Rectangle", "Flood fill" };
+    public static int paintMode = 0;
     private Point drag = null, mousePos = new Point();
+    MapEditor self;
 
     int layer = 0;
 
@@ -59,7 +60,7 @@ public class MapEditor extends JPanel implements ChangeListener {
     public static List<Object> objects = new ArrayList<>();
     private Object selected = null;
     public double sensibility = 5;
-    private int curTile = 0;
+    public int curTile = 0;
 
     Object currentObject = null;
     BufferedImage oImg;
@@ -84,6 +85,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
     public MapEditor(Map map, Optional<File> mapLocation, File savePath) {
 
+        self = this;
         this.saveDir = savePath;
         System.out.println(saveDir);
         setBounds(0, 0, 800, 830);
@@ -400,7 +402,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                 JFrame main = new JFrame("Tile selector");
 
-                TilesetPreview preview = new TilesetPreview();
+                TilesetPreview preview = new TilesetPreview(self);
                 JScrollPane scroll = new JScrollPane(preview, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -520,12 +522,11 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         });
 
-        JLabel label0 = new JLabel("Object: "), label1 = new JLabel("Position X, Y: "),
+        JLabel label0 = new JLabel("Object: "),
                 label2 = new JLabel("Scale X, Y: "), label3 = new JLabel("Rotation: ");
 
         label0.setBounds(5, 5, 300, 30);
-        label1.setBounds(330, 10, 200, 20);
-        label2.setBounds(510, 10, 300, 20);
+        label2.setBounds(500, 10, 300, 20);
         label3.setBounds(675, 10, 300, 20);
 
         box.setBounds(60, 10, 200, 20);
@@ -577,7 +578,7 @@ public class MapEditor extends JPanel implements ChangeListener {
                     return;
                 }
 
-                String[] names = new String[objects.size()];
+                String[] names = new String[objects.size()-1];
                 int index = 0;
                 for (Object obj : objects) {
 
@@ -637,10 +638,10 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         mapEditing.add(objectList);
 
-        scaleX.setBounds(580, 5, 40, 28);
-        scaleY.setBounds(630, 5, 40, 28);
+        scaleX.setBounds(550, 5, 60, 28);
+        scaleY.setBounds(615, 5, 60, 28);
 
-        rotation.setBounds(730, 5, 40, 28);
+        rotation.setBounds(730, 5, 60, 28);
 
         scaleX.addChangeListener(this);
         scaleY.addChangeListener(this);
@@ -653,7 +654,6 @@ public class MapEditor extends JPanel implements ChangeListener {
         dataEditor.add(nextObject);
         dataEditor.add(label0);
         dataEditor.add(box);
-        dataEditor.add(label1);
         dataEditor.add(label2);
 
         dataEditor.setLayout(null);
@@ -717,6 +717,10 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                         getComponentAt(0, 62).repaint();
                         prev.setIcon(getPreview());
+
+                        Project.tilesetPanel.removeAll();
+                        ((TilesetPreview)Project.tilesetPanel).reload();
+ 
 
                     } catch (Exception e1) {
                         e1.printStackTrace();
@@ -1180,9 +1184,38 @@ public class MapEditor extends JPanel implements ChangeListener {
                 AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
                 AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 
-                g.drawImage(op.filter(oImg, null), (o.x - x) * xx, (o.y - y) * yy,
-                        xx * o.w,
-                        yy * o.h,
+                BufferedImage drawImage = oImg;
+                // Find id there are sprite references to object
+                ObjectData od = null;
+                for (ObjectData objectInformation : Project.objectInformation) {
+                    
+                    if(objectInformation.name.equals(o.realName)){
+
+                        try{
+                            drawImage = ImageIO.read(new File(objectInformation.image));
+                            od = objectInformation;
+                        }catch(Exception ignored){
+
+                            ignored.printStackTrace();
+                        }
+                    }
+                }
+                
+                int w = xx * o.w;
+                int h = yy * o.h;
+                
+                if(od != null){
+                    
+                    int relativesize = ((int) od.spriteDimensions.x * xx)/(map.tileSet.size);
+                    int relativesizeY = ((int) od.spriteDimensions.y * yy)/(map.tileSet.size);
+                    
+                    w = o.w * relativesize;
+                    h = o.h * relativesizeY;
+                }
+
+                g.drawImage(op.filter(drawImage, null), (o.x - x) * xx, (o.y - y) * yy,
+                        w,
+                        h,
                         null);
 
                 if (selected == o) {
@@ -1429,84 +1462,7 @@ public class MapEditor extends JPanel implements ChangeListener {
         }
 
         objectModels = results.toArray(new String[results.size()]);
-    }
-
-    private class TilesetPreview extends JPanel {
-
-        public TilesetPreview() {
-
-            setBounds(0, 0, 220, 500);
-
-            JButton quickButton = new JButton("Quick Selection");
-            quickButton.setBounds(5, 5, 150, 25);
-
-            quickButton.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                    try {
-
-                        curTile = Integer.valueOf(JOptionPane.showInputDialog(null, "Tile index"));
-                        prev.setIcon(getPreview());
-
-                    } catch (Exception ee) {
-                    }
-                }
-
-            });
-
-            add(quickButton);
-
-            BufferedImage[] images = MapEditor.map.tileSet.sprites;
-            int index = 0;
-            for (BufferedImage icon : images) {
-
-                Tile t = new Tile(index, icon);
-                t.setBounds(5, (69 * index) + 30, 200, 64);
-
-                add(t);
-                index++;
-            }
-
-            setPreferredSize(new Dimension(220, 69 * index + 5));
-
-            repaint();
-            setLayout(null);
-        }
-
-        private class Tile extends JPanel {
-
-            public Tile(int i, BufferedImage preview) {
-
-                JLabel name = new JLabel("Tile number " + i);
-                JLabel icon = new JLabel(new ImageIcon(preview.getScaledInstance(64, 64, Image.SCALE_SMOOTH)));
-
-                JButton choose = new JButton("Choose tile");
-
-                name.setBounds(5, 5, 300, 20);
-                icon.setBounds(120, 5, 64, 64);
-                choose.setBounds(5, 30, 100, 30);
-
-                choose.addActionListener(new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                        curTile = i;
-                        prev.setIcon(getPreview());
-                    }
-
-                });
-
-                add(name);
-                add(icon);
-                add(choose);
-
-                setLayout(null);
-            }
-        }
-    }
+    } 
     
     public void saveMap(){
 
@@ -1567,10 +1523,16 @@ public class MapEditor extends JPanel implements ChangeListener {
                 }
 
                 // Save the tileset file to the folder
+                //Delete current tileset
+                for (File f : new File(dir.getAbsolutePath()).listFiles()) {
+                    
+                    if(f.getName().contains("tiles-")) f.delete();
+                }
                 String name = "tiles-" + MapEditor.map.tileSet.size;
                 File out = new File(dir.getAbsolutePath() + "\\" + name + ".png");
                 ImageIO.write(MapEditor.map.tileSet.tileSet, "png", out);
 
+                System.out.println(name);
                 saved.setText("Up to date");
                 saved.setBackground(Color.WHITE);
                 

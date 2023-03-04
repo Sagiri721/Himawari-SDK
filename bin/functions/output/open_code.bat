@@ -1,3 +1,3 @@
 C: 
- cd C:\\src\main\java\com/com/name\
+ cd C:\thenewgame\compile.bat\src\main\java\com/com/game\
 code Main.java

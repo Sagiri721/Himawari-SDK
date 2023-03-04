@@ -1,1 +1,1 @@
-del C:\Newfolder\art\src\main\java\com\com\name\Assets\Rooms\empty_room
+del C:\thenewgame\app\src\main\java\com\com\game\Assets\Sprites\1b955751fb75b5fedc92105f95fcb5a2.jpg

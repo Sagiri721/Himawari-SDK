@@ -160,7 +160,8 @@ public class ProjectControl extends JPanel implements ActionListener {
                 String object_name = JOptionPane.showInputDialog(null, "Object name?", "Create Object",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                if (object_name == null || object_name.trim() == "") {
+                if(object_name == null) return;
+                if (object_name.trim() == "") {
 
                     JOptionPane.showMessageDialog(null, "Object name can't be empty", "ERROR",
                             JOptionPane.ERROR_MESSAGE);

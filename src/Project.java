@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.function.Function;
 import java.awt.Color;
 
+import javax.print.DocFlavor.STRING;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -22,7 +23,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import Components.MapEditor;
 import Components.Structs.EngineData;
 import Components.Structs.ObjectData;
 
@@ -30,6 +30,7 @@ import java.awt.event.*;
 
 public class Project extends JFrame implements KeyListener, ActionListener {
 
+    static JPanel tilesetPanel, editor;
     public static ObjectData[] objectInformation;
     public static EngineData gameData;
     public static Inspector inspector = new Inspector();
@@ -55,7 +56,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             importLibrary = new JMenuItem("Import himawari libraries"), addDepend = new JMenuItem("Add dependencies"),
             newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects"),
             openPomFile = new JMenuItem("Open pom.xml"), plugin = new JMenuItem("Import plugin"), system = new JMenuItem("System & Preferences"),
-            physics = new JMenuItem("Game physics menu"), input =  new JMenuItem("Game input icon");
+            physics = new JMenuItem("Game physics menu"), input =  new JMenuItem("Game input icon"), spriteRef = new JMenuItem("Recalculate sprite references");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -81,10 +82,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         this.compiler = new File(path.getParentFile().getAbsolutePath() + "/compile.bat");
         Project.exportFile = new File(path.getParentFile().getAbsolutePath() + "/export_references.bat");
 
-        Functions.exportGameMetaData();
+        Functions.importGameMetaData();
 
         // Map preview
-        JPanel editor = Functions.getMapEditor(engineFiles.getAbsolutePath(), new File(engineFiles.getAbsolutePath() + "/Rooms"));
+        editor = Functions.getMapEditor(engineFiles.getAbsolutePath(), new File(engineFiles.getAbsolutePath() + "/Rooms"));
         editor.setBounds(365, 0, editor.getWidth() - 10, editor.getHeight());
         preview = (MapEditor) editor;
 
@@ -119,7 +120,10 @@ public class Project extends JFrame implements KeyListener, ActionListener {
 
         codeMenu.add(openPomFile);
         codeMenu.add(i1);
+
+        codeMenu.add(new JSeparator());
         codeMenu.add(recompile);
+        codeMenu.add(spriteRef);
 
         settingsMenu.add(system);
         settingsMenu.add(input);
@@ -198,12 +202,40 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         // Inspector initialization
         functions.add("Inspector", inspector);
 
+        // Tile set initialization
+        JPanel tilesetJPanel = new JPanel();
+        tilesetPanel = new TilesetPreview((MapEditor) editor);
+        
+        JScrollPane p = new JScrollPane(tilesetPanel);
+        p.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        p.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        p.getVerticalScrollBar().setUnitIncrement(20);
+        p.setBounds(0,0, 230, 800);
+        
+        tilesetJPanel.add(p);
+        JComboBox<String> comboBox = new JComboBox<String>(MapEditor.modes);
+        comboBox.setBounds(240, 5, 150, 30);
+        comboBox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+
+                MapEditor.paintMode = comboBox.getSelectedIndex();
+            }
+            
+        });
+
+        tilesetJPanel.setLayout(null);
+        tilesetJPanel.add(comboBox);
+        functions.add("Tileset", tilesetJPanel);
+
         // Footer
         JLabel version = new JLabel("Version: " + Main.version);
         // version.setForeground(Color.white);
         version.setBounds(705, 850, 100, 20);
 
-        Border b = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+        spriteRef.addActionListener(this);
 
         website.setBounds(140 - 120, 840, 110, 40);
         docs.setBounds(255 - 120, 840, 130, 40);
@@ -522,6 +554,23 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == input) {
 
             new SettingsMenu(2);
+        } else if (e.getSource() == spriteRef) {
+
+            Runtime r = Runtime.getRuntime();
+            try {
+                
+                Process pr = r.exec("cmd /c start " + exportFile.getAbsolutePath());
+                pr.waitFor();
+                Functions.showMessage("Sprites references were reloaded");
+                Functions.importGameMetaData();
+
+            } catch (IOException e1) {
+                
+                Functions.showError("Couldn't find exporter file");
+            } catch (InterruptedException e2) {
+
+                Functions.showError("Exporter file found an error");
+            }
         }
     }
 
@@ -536,13 +585,13 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         File f = new File("src/functions/output/open_code.bat");
         FileWriter fw = new FileWriter(f);
 
-        String command = disk + " \n cd " + compiler.getParentFile().getParentFile().getAbsolutePath()
+        String command = disk + " \n cd " + compiler.getAbsolutePath()
                 + "\\src\\main\\java\\" + projectName + "\\" + filePath + "\n" + Settings.open_alias
                 + " Main.java";
         fw.write(command);
         fw.close();
 
-        Functions.RunBatchCmd("output\\" + f.getName());
+        Functions.RunBatch("output\\" + f.getName());
     }
 
     public static void addDependendyString(String depen) {

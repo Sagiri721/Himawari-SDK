@@ -1,15 +1,16 @@
-package Components;
+
 
 import java.util.List;
 
 public class Object {
 
-    public String name;
+    public String name, realName;
     public int x, y, angle, w, h;
     public String parent;
 
     public void setName(String name) {
 
+        this.realName = name;
         this.name = name;
         this.name = name.replace(" ", "-");
 

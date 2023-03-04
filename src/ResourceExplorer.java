@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 import Components.*;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import Components.Structs.Map;
 import Components.Structs.TileSet;
@@ -16,7 +18,7 @@ import java.awt.*;
 public class ResourceExplorer extends JPanel implements ActionListener {
 
     // List of all the folders the engine has to handle
-    protected static final String[] options = { "Sprites", "Sound", "Objects", "Maps" };
+    protected static final String[] options = { "Sprites", "Sound", "Objects", "Maps", "Shaders" };
 
     JButton openB = Style.GetStyledButton("Open file"), del = Style.GetStyledButton("Delete file"),
             view = Style.GetStyledButton("Inspect file"), add = Style.GetStyledButton("+");
@@ -45,11 +47,27 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                         return;
 
                     // Double-click detected
-                    String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+                    String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms", "/Shaders" };
                     File opened = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()])
                             .listFiles()[list.getSelectedIndex()];
 
                     new CodeEditor(opened);
+                }
+            }
+        });
+
+        list.addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                
+                if(Project.functions.getSelectedIndex() == 1 && box.getSelectedIndex() == 2){                    
+
+                    String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms", "/Shaders" };
+                    File opened = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()])
+                            .listFiles()[list.getSelectedIndex()];
+
+                    Project.inspector.inspectObject(opened);
                 }
             }
         });
@@ -190,7 +208,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                 public void actionPerformed(ActionEvent e) {
 
                     try {
-                        Functions.CopyFilesTo("Sprites");
+                        Functions.CopyFilesTo("Sounds");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -206,7 +224,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                 public void actionPerformed(ActionEvent e) {
 
                     try {
-                        Functions.CopyFilesTo("Sprites");
+                        Functions.CopyFilesTo("Fonts");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -245,7 +263,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
 
     public void updateResources() {
 
-        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms", "/Shaders" };
         list.setVisible(true);
         File spritesFolder = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]);
 
@@ -267,7 +285,7 @@ public class ResourceExplorer extends JPanel implements ActionListener {
 
     public void openFile() {
 
-        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms" };
+        String[] dirs = { "/Sprites", "/Sounds", "/Objects", "/Rooms", "/Shaders" };
         File opened = new File(Project.engineFiles.getAbsolutePath() + dirs[box.getSelectedIndex()]).listFiles()[list
                 .getSelectedIndex()];
 
@@ -311,13 +329,13 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                                 f.getName().substring(f.getName().lastIndexOf("-") + 1, f.getName().lastIndexOf(".")));
                     }
                 }
-
+                
                 if (img == null) {
 
                     JFileChooser fc = new JFileChooser();
                     fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
                     fc.setCurrentDirectory(new File(
-                            Project.path.getAbsolutePath() + "/src/main/java/" + Project.projectName
+                        Project.path.getAbsolutePath() + "/src/main/java/" + Project.projectName
                                     + "/Assets/Sprites"));
 
                     int option = fc.showDialog(null, "Choose tileset");
@@ -340,25 +358,27 @@ public class ResourceExplorer extends JPanel implements ActionListener {
                             JOptionPane.showMessageDialog(this, "Invalid image file");
 
                         tilesetSize = Integer.parseInt(JOptionPane.showInputDialog(null, "Tile set size?"));
-
+                        
                     } else {
-
+                        
                         return;
                     }
                 }
-
+                
                 // Get map measures
                 TileSet tileset = new TileSet(tilesetPath, tilesetSize);
-
+                
                 Scanner file = new Scanner(dirpath + "/room-tiles.txt");
                 Integer dimensions = file.nextLine().split(" ").length;
 
                 Map map = new Map(tileset, dimensions, dimensions);
                 MapEditor.map = map;
                 Project.preview.importMap(opened.getAbsolutePath());
-
+                
                 file.close();
-
+                Project.tilesetPanel.removeAll();
+                ((TilesetPreview)Project.tilesetPanel).reload();
+                
             } catch (Exception e) {
 
                 JOptionPane.showMessageDialog(null, "There was a problem opening the map editor", "ERROR",

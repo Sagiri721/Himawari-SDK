@@ -1,12 +1,16 @@
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.*;
 import java.awt.event.*;
-import javax.swing.border.BevelBorder;
+
+import Components.Structs.ObjectData;
 
 import java.awt.datatransfer.StringSelection;
 import java.awt.Toolkit;
@@ -29,7 +33,7 @@ public class Inspector extends JPanel implements ActionListener {
 
     JButton compSnippet = Style.GetStyledButton("Add component"), refresh = Style.GetStyledButton("Refresh components");
     public JTextArea snippetArea = new JTextArea();
-    JLabel objectName = new JLabel("Object name", SwingConstants.CENTER), componentLabel = new JLabel("Components");
+    JLabel objectName = new JLabel("Object name", SwingConstants.CENTER), componentLabel = new JLabel("Components"), preview = new JLabel("");
     JButton copy = Style.GetStyledButton("Copy snippet"), details = Style.GetStyledButton("See file details");
 
     public JComponent[] inpectors = { compSnippet, compBox, copy, details };
@@ -81,6 +85,10 @@ public class Inspector extends JPanel implements ActionListener {
         compPanel.setLayout(null);
         compPanel.setBackground(Style.MAIN_BACKGROUND);
 
+        preview.setBounds(5, 605, 170, 170);
+        preview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        add(preview);
         add(componentLabel);
         add(scrollFrame);
         add(details);
@@ -112,24 +120,58 @@ public class Inspector extends JPanel implements ActionListener {
         // Clear snippet area
         snippetArea.setText("");
 
-        HashMap<Components, String> comps = Functions.FindCompiledComponents(objFile);
-
-        if (comps == null)
-            return;
-
+        ObjectData data = Arrays.stream(Project.objectInformation).filter(entry -> (entry.name + ".java").equals(objFile.getName())).findFirst().get();
         int index = 0;
-        for (Entry<Components, String> comEntry : comps.entrySet()) {
 
-            Component cc = new Component(comEntry.getKey(), (55) * index);
-            cc.setDetails("Variable name: " + comEntry.getValue());
+        if(data == null){
 
-            compPanel.add(cc);
+            // This is a really bad way of doing it and it ignores local variables and shit so let's only use this method if we can not find an object reference
+            HashMap<Components, String> comps = Functions.FindCompiledComponents(objFile);
+    
+            if (comps == null)
+                return;
+    
+            for (Entry<Components, String> comEntry : comps.entrySet()) {
+    
+                Component cc = new Component(comEntry.getKey(), (145) * index);
+                cc.setDetails("Variable name: " + comEntry.getValue());
+    
+                compPanel.add(cc);
+    
+                index++;
+            }
+        } else {
 
-            index++;
+            for (String c : data.components) {
+                
+                Components comp = Components.getComponentbyString(c);
+                Component cc = new Component(comp, (145) * index);
+                
+                switch(c)
+                {
+                    case "Transform":
+
+                        cc.setDetails("Position: " + data.position.x + " | " + data.position.y + "<br>Angle: " + data.angle + "<br>Scale: " + data.scale.x + " | " + data.scale.y);
+                    break;
+                    case "ImageRenderer":
+
+                        cc.setDetails("Visible: "+(data.visible?"yes" : "no")+"<br>Image: " + data.image + "<br>Dimensions: " + data.spriteDimensions.x + " | " + data.spriteDimensions.y + "<br>Layer " + data.layer);
+                    break;
+                }
+
+                compPanel.add(cc);
+                index++;
+            }
+
+            if(data.image != null){
+
+                preview.setIcon(new ImageIcon(new ImageIcon(data.image).getImage().getScaledInstance(preview.getBounds().width, preview.getBounds().height, Image.SCALE_SMOOTH)));
+                preview.repaint();
+            }
         }
 
         compPanel.repaint();
-        compPanel.setPreferredSize(new Dimension((int) compPanel.getSize().getWidth(), (55) * index + 5));
+        compPanel.setPreferredSize(new Dimension((int) compPanel.getSize().getWidth(), (145) * index + 5));
         scrollFrame.revalidate();
         scrollFrame.repaint();
     }
@@ -163,20 +205,20 @@ public class Inspector extends JPanel implements ActionListener {
 
             this.comp = comp;
             name.setText(comp.getName());
+            name.setFont(Style.FONT2);
+
             details.setText(comp.getDetails());
 
             JLabel icon = new JLabel(new ImageIcon("src/res/icons/" + comp.getName() + ".png"));
             setBackground(Style.SECONDARY_BACKGROUND);
 
-            setBounds(5, y, 377, 50);
-
-            name.setFont(Style.CONTENT_FONT);
+            setBounds(5, y, 377, 140);
             name.setBounds(5, 5, 300, 20);
 
             icon.setBounds(270, 10, 32, 32);
 
             details.setFont(Style.CONTENT_FONT);
-            details.setBounds(5, 20, 300, 20);
+            details.setBounds(5, 20, 600, 120);
 
             setLayout(null);
 
@@ -187,7 +229,7 @@ public class Inspector extends JPanel implements ActionListener {
 
         public void setDetails(String details) {
 
-            this.details.setText(details);
+            this.details.setText("<html>"+details+"</html>");
         }
     }
 }

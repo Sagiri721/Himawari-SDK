@@ -1,1 +1,1 @@
-C:\touhou\app\src\main\java\com\com\touhou\Assets\Objects\Player.java
+C:\thenewgame\app\src\main\java\com\com\game\Assets\Objects\Player.java

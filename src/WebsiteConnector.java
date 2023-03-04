@@ -38,7 +38,7 @@ public class WebsiteConnector {
         return libs;
     }
 
-    public static Object[] isLoginValid(String name, String password){
+    public static java.lang.Object[] isLoginValid(String name, String password){
 
         try {
             String d = Jsoup.connect(url + "recordFromName")
@@ -49,12 +49,12 @@ public class WebsiteConnector {
 
             String pass = jo.get("password").getAsString();
             String id = jo.get("_id").getAsString();
-            return new Object[] {pass.equals(password), id};
+            return new java.lang.Object[] {pass.equals(password), id};
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return new Object[] {false, null};
+        return new java.lang.Object[] {false, null};
     }
 }

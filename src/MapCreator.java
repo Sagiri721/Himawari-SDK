@@ -91,6 +91,7 @@ public class MapCreator extends JFrame implements ActionListener{
                         return;
                     }
 
+                    name.setText(name.getText().replace(" ", "-"));
                     //Room file
                     File f = new File(Project.engineFiles.getAbsoluteFile() + "/Rooms/" + name.getText());
                     if(f.mkdir() == false) {
@@ -139,7 +140,7 @@ public class MapCreator extends JFrame implements ActionListener{
                     dispose();
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Tileset size can't be negative");
+                JOptionPane.showMessageDialog(this, "Tileset size can't be negative or 0");
             }
             
         }else if (e.getSource() == tileset) {

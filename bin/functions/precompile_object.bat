@@ -1,3 +1,3 @@
 C: 
-cd C:\Newfolder\art\target\classes\com\com\name\Assets\Objects
-javap -private Bullet.class
+cd C:\thenewgame\app\target\classes\com\com\game\Assets\Objects
+javap -private Player.class

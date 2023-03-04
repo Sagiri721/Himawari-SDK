@@ -46,6 +46,7 @@ public class Style {
     public static Font CONTENT_FONT;
     public static Font HEADER_FONT;
     public static Font FONT1;
+    public static Font FONT2;
 
     public Style() {
 
@@ -55,13 +56,15 @@ public class Style {
                     getClass().getResource("res/fonts/Roboto-Light.ttf").openStream());
             Style.HEADER_FONT = Font.createFont(Font.TRUETYPE_FONT,
                     getClass().getResource("res/fonts/OpenSans-SemiBold.ttf").openStream());
-
             Style.FONT1 = Font.createFont(Font.TRUETYPE_FONT,
                     getClass().getResource("res/fonts/BomberUrban-Regular.otf").openStream());
-            
+            Style.FONT2 = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResource("res/fonts/VictorMono-Bold.ttf").openStream());            
+
             Style.CONTENT_FONT = Style.CONTENT_FONT.deriveFont(Style.MAIN_TEXT_SIZE);
             Style.HEADER_FONT = Style.HEADER_FONT.deriveFont(Style.HEADER_SIZE);
             Style.FONT1 = Style.FONT1.deriveFont(Style.HEADER_SIZE);
+            Style.FONT2 = Style.FONT2.deriveFont(18.0f);
 
         } catch (Exception e) {
         }

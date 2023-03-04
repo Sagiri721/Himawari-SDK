@@ -2,14 +2,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
-
-import java.awt.*;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import Components.Structs.ObjectData;
 
 public class Main {
 
@@ -30,7 +24,7 @@ public class Main {
         // Map map = new Map(null, 100, 100);
         // Functions.openMapEditor(map);
 
-        new Project(new File("C:\\touhou\\app"));
+        new Project(new File("C:\\thenewgame\\app"));
     }
 
     private static void openSettings() {
