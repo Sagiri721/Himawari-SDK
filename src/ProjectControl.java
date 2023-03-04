@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -337,19 +338,28 @@ public class ProjectControl extends JPanel implements ActionListener {
             try(Statement stmt = conn.createStatement()){
 
                 ResultSet rs = stmt.executeQuery(sql);
-                
-                rs.last();
-                String output = "Found " + rs.getRow() + " logs in " + ((System.currentTimeMillis() - milis)/1000) + " seconds ...\n";
 
-                rs.first();
+                String output = "Fetched logs in " + ((System.currentTimeMillis() - milis)/1000) + " seconds ...\n";
                 while(rs.next()) {
 
-                    output += "description: " + rs.getString("description") + " | date: " + rs.getString("log_date") + "\n";
+                    output += rs.getString("description") + " | date: " + rs.getString("log_date") + "\n";
                 }
                 area.setText(output);
                 
             }catch(Exception ee) {ee.printStackTrace();}
 
+            close();
+        } else if (e.getSource() == clearLogs) {
+            
+            connect();
+
+            String sql = "DELETE FROM logs";
+            try(Statement stmt = conn.createStatement()){
+
+                stmt.executeUpdate(sql);
+                Functions.showMessage("Logs cleared");
+
+            }catch(Exception ee) {ee.printStackTrace();}
             close();
         }
 

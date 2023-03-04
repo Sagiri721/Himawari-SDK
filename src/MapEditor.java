@@ -12,6 +12,7 @@ import javax.swing.event.MouseInputListener;
 import Components.Structs.Map;
 import Components.Structs.ObjectData;
 import Components.Structs.TileSet;
+import Components.Structs.Vec2;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -39,7 +40,10 @@ public class MapEditor extends JPanel implements ChangeListener {
     public static String[] modes = { "One-by-One", "Line", "Rectangle", "Flood fill" };
     public static int paintMode = 0;
     private Point drag = null, mousePos = new Point();
-    MapEditor self;
+    private MapEditor self;
+    
+    public static boolean pathing = false;
+    public static List<Vec2> points = new ArrayList<Vec2>();
 
     int layer = 0;
 
@@ -1240,7 +1244,20 @@ public class MapEditor extends JPanel implements ChangeListener {
                 Point myPoint = new Point();
                 myPoint.setLocation((mousePos.x - x) * xx, (mousePos.y - y) * yy);
 
-                g.drawRoundRect((int) (drag.getX() - x) * xx, (int) (drag.getY() - y) * yy, myPoint.x, myPoint.y, 10, 10);
+                g.drawRoundRect((int) (Math.max(drag.getX(), x) - Math.min(drag.getX(), x)) * xx, (int) (Math.max(drag.getY(), y) - Math.min(drag.getY(), y)) * yy, myPoint.x, myPoint.y, 10, 10);
+            }
+
+            if(pathing) {
+
+                Vec2 myPoint = new Vec2();
+                myPoint.x = (mousePos.x - x) * xx;
+                myPoint.y = (mousePos.y - y) * yy;
+
+                for (Vec2 v : points) {
+                
+                    g.fillOval((int)v.x, (int)v.y, xx, yy);
+                }
+                g.fillOval((int)myPoint.x, (int)myPoint.y, xx, yy);
             }
 
             pos.setText("Root point: " + x + "," + y);

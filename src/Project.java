@@ -226,6 +226,20 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             
         });
 
+        JButton btn = new JButton("Draw Path");
+        btn.setBounds(240, 45, 150, 30);
+
+        btn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                MapEditor.pathing = true;
+            }
+            
+        });
+
+        //tilesetJPanel.add(btn);
         tilesetJPanel.setLayout(null);
         tilesetJPanel.add(comboBox);
         functions.add("Tileset", tilesetJPanel);
