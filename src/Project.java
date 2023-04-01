@@ -83,6 +83,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         Project.exportFile = new File(path.getParentFile().getAbsolutePath() + "/export_references.bat");
 
         Functions.importGameMetaData();
+        
+        Main.UpdateDiscordPresence("Working on: " + Project.projectName);
 
         // Map preview
         editor = Functions.getMapEditor(engineFiles.getAbsolutePath(), new File(engineFiles.getAbsolutePath() + "/Rooms"));
