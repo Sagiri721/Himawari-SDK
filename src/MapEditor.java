@@ -1508,8 +1508,8 @@ public class MapEditor extends JPanel implements ChangeListener {
 
         for (Object oo : objects) {
 
-            outObjects += oo.name + " " + getRealCoords(oo.x) + "-" + getRealCoords(oo.y) + " "
-                    + oo.angle + " " + oo.w + "-" + oo.h + " " + (oo.parent == null ? "" : oo.parent)
+            outObjects += oo.realName + " " + getRealCoords(oo.x) + "-" + getRealCoords(oo.y) + " "
+                    + oo.angle + " " + oo.w + "-" + oo.h + " " + (oo.name == null ? "" : oo.name) + (oo.parent == null ? "" : oo.parent)
                     + "\n";
         }
 

@@ -1,1 +1,1 @@
-C:\thenewgame\app\src\main\java\com\com\game\Assets\Objects\Player.java
+C:\Games\mario\mario\src\main\java\com\com\com\Assets\Objects\Wall.java

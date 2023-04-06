@@ -1,3 +1,3 @@
 C: 
- cd C:\thenewgame
-cmd /c start "" C:\thenewgame\compile.bat
+ cd C:\Games\mario
+cmd /c start "" C:\Games\mario\compile.bat

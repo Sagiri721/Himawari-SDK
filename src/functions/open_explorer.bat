@@ -1,1 +1,1 @@
-explorer C:\Games\mario\mario\src\main\java\com\com\com\Assets
+explorer C:\thenewgame\app

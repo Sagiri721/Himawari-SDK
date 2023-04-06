@@ -575,14 +575,14 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             Runtime r = Runtime.getRuntime();
             try {
                 
-                Process pr = r.exec("cmd /c start " + exportFile.getAbsolutePath());
+                Process pr = r.exec("cmd /C start " + new File("src/functions/get_references.bat").getAbsolutePath());
                 pr.waitFor();
-                Functions.showMessage("Sprites references were reloaded");
                 Functions.importGameMetaData();
 
             } catch (IOException e1) {
                 
                 Functions.showError("Couldn't find exporter file");
+                e1.printStackTrace();
             } catch (InterruptedException e2) {
 
                 Functions.showError("Exporter file found an error");

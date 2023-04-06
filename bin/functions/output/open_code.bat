@@ -1,3 +1,3 @@
 C: 
- cd C:\thenewgame\compile.bat\src\main\java\com/com/game\
+ cd C:\Games\mario\compile.bat\src\main\java\com/com/com\
 code Main.java
