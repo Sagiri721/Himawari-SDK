@@ -13,6 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 import java.awt.Image;
@@ -33,6 +37,9 @@ public class ObjectWizard extends JPanel implements ActionListener {
 
     JComboBox<String> comps = new JComboBox<String>(Components.fetchAll());
     HashMap<Components, String> comMap = new HashMap<Components, String>();
+
+    JTextField tag = new JTextField();
+    JSpinner layer = new JSpinner();
 
     String imagerenderer = "";
 
@@ -68,6 +75,12 @@ public class ObjectWizard extends JPanel implements ActionListener {
         scrollFrame.setPreferredSize(new Dimension(375, 300));
         scrollFrame.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollFrame.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        Functions.placeComponentWithLabel("Layer", layer, this, 5, 450, 100);
+        Functions.placeComponentWithLabel("Tag", tag, this, 5, 480, 150);
+
+        SpinnerModel model = new SpinnerNumberModel(0, 0, 99, 1);
+        layer.setModel(model);
 
         compPanel.setLayout(null);
         compPanel.setBackground(Style.MAIN_BACKGROUND);
@@ -146,6 +159,9 @@ public class ObjectWizard extends JPanel implements ActionListener {
                         + "\n";
                 startMethod += entry.getValue();
             }
+
+            startMethod += "setLayer("+((Integer) layer.getValue())+");\n";
+            startMethod += "setTag(\""+tag.getText()+"\");\n";
 
             try {
 

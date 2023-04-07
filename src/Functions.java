@@ -858,4 +858,34 @@ public class Functions {
 
         JOptionPane.showMessageDialog(null, message, "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    public static String ask(String question){
+
+        return JOptionPane.showInputDialog(null, question);
+    }
+
+    public static void WriteObjectFile(String contents, String name) throws IOException {
+
+        File f;
+        while (true){
+
+            f = new File(Project.engineFiles + "/Objects/" + name);
+    
+            if(f.exists()){
+    
+                Functions.showError("Object " + name + " already exists! Please input a new name");
+                name = ask("New name?");
+
+                if(!name.toLowerCase().contains(".java")) name = name += ".java";
+                continue;
+            }
+
+            break;
+        }
+
+        FileWriter fw = new FileWriter(f);        
+
+        fw.write(contents);
+        fw.close();
+    }
 }

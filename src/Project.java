@@ -41,7 +41,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     JMenu gamemenu = new JMenu("Game"), codeMenu = new JMenu("Code"), settingsMenu = new JMenu("Settings"),
             addResources = new JMenu("Manage Resources"),
             other = new JMenu("File"),
-            build = new JMenu("Build Project"), git = new JMenu("Git");
+            build = new JMenu("Build Project"), git = new JMenu("Git"),
+            objects = new JMenu("Object templates");
 
     JMenuItem i0 = new JMenuItem("Run"), i1 = new JMenuItem("Open Game Code"),
             openFolder = new JMenuItem("Open game folder"),
@@ -56,7 +57,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             importLibrary = new JMenuItem("Import himawari libraries"), addDepend = new JMenuItem("Add dependencies"),
             newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects"),
             openPomFile = new JMenuItem("Open pom.xml"), plugin = new JMenuItem("Import plugin"), system = new JMenuItem("System & Preferences"),
-            physics = new JMenuItem("Game physics menu"), input =  new JMenuItem("Game input icon"), spriteRef = new JMenuItem("Recalculate sprite references");
+            physics = new JMenuItem("Game physics menu"), input =  new JMenuItem("Game input icon"), spriteRef = new JMenuItem("Recalculate sprite references"),
+            camera = new JMenuItem("Game camera");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -126,6 +128,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         codeMenu.add(new JSeparator());
         codeMenu.add(recompile);
         codeMenu.add(spriteRef);
+        codeMenu.add(objects);
+
+        objects.add(camera);
 
         settingsMenu.add(system);
         settingsMenu.add(input);
@@ -186,6 +191,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         system.addActionListener(this);
         physics.addActionListener(this);
         input.addActionListener(this);
+        camera.addActionListener(this);
 
         setJMenuBar(bar);
 
@@ -586,6 +592,20 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             } catch (InterruptedException e2) {
 
                 Functions.showError("Exporter file found an error");
+            }
+        } else if (e.getSource() == camera) {
+
+            String target = JOptionPane.showInputDialog(null, "Camera follow target");
+            try {
+
+                String text = Functions.getFileContentsLined(new File("src/templates/GameCamera.txt"));
+                text = text.replace("[package]", (projectName.replace("/", ".") + "."));
+                text = text.replace("[target]", target);
+
+                Functions.WriteObjectFile(text, "GameCamera.java");
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         }
     }

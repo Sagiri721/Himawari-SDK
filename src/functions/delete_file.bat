@@ -1,1 +1,1 @@
-del C:\thenewgame\app\src\main\java\com\com\game\Assets\Sprites\1b955751fb75b5fedc92105f95fcb5a2.jpg
+del C:\thenewgame\app\src\main\java\com\com\game\Assets\Objects\Player
