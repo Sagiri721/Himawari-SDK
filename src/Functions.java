@@ -431,7 +431,7 @@ public class Functions {
                         contents += s.nextLine() + "\n";
                     }
 
-                    contents = contents.replace("package", "package " + pack);
+                    contents = "package "+pack+";\n" + contents;
                     contents = contents.replace("import Engine", "import " + pack + ".Engine");
                     contents = contents.replace("import Assets", "import " + pack + ".Assets");
 
@@ -509,6 +509,9 @@ public class Functions {
             s.close();
 
             // Add maven dependencies
+            contents = contents.replace("<maven.compiler.source>1.7</maven.compiler.source>", "<maven.compiler.source>1.8</maven.compiler.source>");
+            contents = contents.replace("<maven.compiler.target>1.7</maven.compiler.target>", "<maven.compiler.target>1.8</maven.compiler.target>");
+
             contents = contents.replace("</dependencies>", "<dependency>\n" +
                     "<groupId>com.googlecode.json-simple</groupId>\n" +
                     "<artifactId>json-simple</artifactId>\n" +
@@ -574,6 +577,8 @@ public class Functions {
                             contents += s.nextLine() + "\n";
 
                         s.close();
+
+                        contents = contents.replace("System.getProperty(\"user.dir\") + \"/src/main/java", "System.getProperty(\"user.dir\") + \"/src/main/java/" + pack.replace(".", "/"));
 
                         contents = contents.replace("import Engine", "import " + pack + ".Engine");
                         contents = contents.replace("import Assets", "import " + pack + ".Assets");

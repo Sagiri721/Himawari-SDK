@@ -1,3 +1,3 @@
 C: 
- cd C:\Games\mario\compile.bat\src\main\java\com/com/com\
+ cd C:\Games\fdsgsfdg\compile.bat\src\main\java\com/com/com\
 code Main.java

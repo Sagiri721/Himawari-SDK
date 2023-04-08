@@ -1,3 +1,3 @@
 C: 
- cd C:\Games\mario
-cmd /c start "" C:\Games\mario\compile.bat
+ cd C:\Games\fdsgsfdg
+cmd /c start "" C:\Games\fdsgsfdg\compile.bat
