@@ -892,5 +892,31 @@ public class Functions {
 
         fw.write(contents);
         fw.close();
+    }    
+
+    public static void WriteGameFile(String folder, String contents, String name) throws IOException {
+
+        File f;
+        while (true){
+
+            if(!name.toLowerCase().contains(".java")) name = name += ".java";
+            f = new File(Project.engineFiles + "/" + folder + "/" + name);
+    
+            if(f.exists()){
+    
+                Functions.showError(folder + " " + name + " already exists! Please input a new name");
+                name = ask("New name?");
+
+                continue;
+            }
+
+            break;
+        }
+
+        System.out.println(f.getAbsolutePath());
+        FileWriter fw = new FileWriter(f);        
+
+        fw.write(contents);
+        fw.close();
     }
 }

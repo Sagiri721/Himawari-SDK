@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class ProjectControl extends JPanel implements ActionListener {
 
     private JButton newObject = new JButton("New Object"), newAlert = new JButton("Create Alarm"),
-            newPlugin = new JButton("Import plugin"), importComponent = new JButton("Import component"),
+            newPlugin = new JButton("Import plugin"), importComponent = new JButton("Create Shader"),
             deleteCluster = new JButton("Delete cluster"), createCluster = new JButton("Create cluster"),
             clearLogs = new JButton("Clear logs"), checkLogs = new JButton("Check storage logs");
     private JTextArea area = null;
@@ -122,7 +122,6 @@ public class ProjectControl extends JPanel implements ActionListener {
         
         add(pane);
         
-        add(create);
         add(newObject);
         add(newAlert);
         add(newPlugin);
@@ -361,6 +360,25 @@ public class ProjectControl extends JPanel implements ActionListener {
 
             }catch(Exception ee) {ee.printStackTrace();}
             close();
+        } else if (e.getSource() == importComponent) {
+
+            String name = Functions.ask("Shader name?");
+
+            if(name != null){
+
+                try {
+                    
+                    String txt = Functions.getFileContentsLined(new File("src/templates/Shader.txt"));
+                    txt = txt.replace("[pack]", Project.projectName.replace("/", ".") + ".");
+                    txt = txt.replace("[name]", name);
+
+                    Functions.WriteGameFile("Shaders", txt, name + ".java");
+
+                } catch (Exception ee) {
+
+                    ee.printStackTrace();
+                }
+            }
         }
 
     }

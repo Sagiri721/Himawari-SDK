@@ -1,1 +1,1 @@
-explorer C:\Games\fdsgsfdg\com
+explorer C:\thenewgame\app

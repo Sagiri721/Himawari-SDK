@@ -6,9 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ThreadInfo;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.awt.Color;
+import java.awt.List;
 
 import javax.print.DocFlavor.STRING;
 import javax.swing.*;
@@ -33,6 +35,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     static JPanel tilesetPanel, editor;
     public static ObjectData[] objectInformation;
     public static EngineData gameData;
+
     public static Inspector inspector = new Inspector();
     public static File path, engineFiles, assetFiles, engineAssetFiles, exportFile;
     public static String projectName = "", disk = "C:";
@@ -621,7 +624,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         File f = new File("src/functions/output/open_code.bat");
         FileWriter fw = new FileWriter(f);
 
-        String command = disk + " \n cd " + compiler.getAbsolutePath()
+        String command = disk + " \n cd " + path.getAbsolutePath()
                 + "\\src\\main\\java\\" + projectName + "\\" + filePath + "\n" + Settings.open_alias
                 + " Main.java";
         fw.write(command);

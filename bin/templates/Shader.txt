@@ -1,0 +1,27 @@
+package [pack]Engine.Gfx.Shaders;
+
+import java.awt.*;
+import javax.swing.JComponent;
+import [pack]Engine.Gfx.ShaderInterface;
+import [pack]Engine.Utils.Window;
+
+public class [name] implements ShaderInterface {
+
+    public [name]() {
+
+    }
+
+    @Override
+    public void graphicsUpdate() {
+        
+    }
+
+    @Override
+    public void render(Graphics g, JComponent c) {
+
+        Graphics2D g2 = (Graphics2D) g.create();
+
+
+        g2.dispose();
+    }
+}
