@@ -61,7 +61,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             newComp = new JMenuItem("Import scriptable components"), recompile = new JMenuItem("Recompile objects"),
             openPomFile = new JMenuItem("Open pom.xml"), plugin = new JMenuItem("Import plugin"), system = new JMenuItem("System & Preferences"),
             physics = new JMenuItem("Game physics menu"), input =  new JMenuItem("Game input icon"), spriteRef = new JMenuItem("Recalculate sprite references"),
-            camera = new JMenuItem("Game camera");
+            camera = new JMenuItem("Create Game camera");
 
     // Menu items to add resources
     JMenuItem addSprite = new JMenuItem("Add Image"), addMusic = new JMenuItem("Add Sound"),
@@ -79,6 +79,8 @@ public class Project extends JFrame implements KeyListener, ActionListener {
     public static MapEditor preview;
 
     Project(File path) {
+
+        Project.functions = new JTabbedPane();
 
         Project.path = path;
         fetchProjectLocalConfig();

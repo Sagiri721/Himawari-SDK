@@ -1,3 +1,3 @@
 C: 
- cd C:\Games\fdsgsfdg
-cmd /c start "" C:\Games\fdsgsfdg\compile.bat
+ cd C:\thenewgame
+cmd /c start "" C:\thenewgame\compile.bat

@@ -117,6 +117,8 @@ public class ProjectControl extends JPanel implements ActionListener {
 
         
         area = new JTextArea();
+        area.setEditable(false);
+
         JScrollPane pane = new JScrollPane(area);
         pane.setBounds(5, 270, 410, 200);
         

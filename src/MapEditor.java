@@ -1208,7 +1208,7 @@ public class MapEditor extends JPanel implements ChangeListener {
                 int w = xx * o.w;
                 int h = yy * o.h;
                 
-                if(od != null){
+                if(od != null){ 
                     
                     int relativesize = ((int) od.spriteDimensions.x * xx)/(map.tileSet.size);
                     int relativesizeY = ((int) od.spriteDimensions.y * yy)/(map.tileSet.size);
@@ -1229,7 +1229,7 @@ public class MapEditor extends JPanel implements ChangeListener {
 
                     Stroke stroke = new BasicStroke(5);
                     g2d.setStroke(stroke);
-                    g.drawRect((o.x - x) * xx, (o.y - y) * yy, xx * o.w, yy * o.h);
+                    g.drawRect((o.x - x) * xx, (o.y - y) * yy, w, h);
                 }
             }
 

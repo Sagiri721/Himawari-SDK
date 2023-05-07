@@ -306,7 +306,7 @@ public class Functions {
      * 
      */
 
-    public static void CreateProject(ProjectWizard pw, String clone) {
+    public static void CreateProject(ProjectWizard pw, String clone, Boolean[] conditions) {
 
         long startMilis = System.currentTimeMillis();
 
@@ -399,7 +399,7 @@ public class Functions {
                 System.out.println(folderName);
 
                 refactorAll(path + "\\" + folderName, "com." + company + "." + name,
-                        folder.getAbsolutePath() + "\\" + artifact);
+                        folder.getAbsolutePath() + "\\" + artifact, conditions);
 
                 File enginefolder = new File(path + "\\" + folderName + "\\Engine"),
                         assetsfolder = new File(path + "\\" + folderName + "\\Assets"),
@@ -490,11 +490,11 @@ public class Functions {
         }
     }
 
-    private static void refactorAll(String path, String pack, String origin) {
+    private static void refactorAll(String path, String pack, String origin, Boolean[] conditions) {
 
         // Refactor engine files
-        searchFolder(path + "\\Engine", pack);
-        searchFolder(path + "\\Assets", pack);
+        searchFolder(path + "\\Engine", pack, conditions);
+        searchFolder(path + "\\Assets", pack, conditions);
 
         // Refactor pom.xml
         File pom = new File(origin + "\\pom.xml");
@@ -511,6 +511,15 @@ public class Functions {
             // Add maven dependencies
             contents = contents.replace("<maven.compiler.source>1.7</maven.compiler.source>", "<maven.compiler.source>1.8</maven.compiler.source>");
             contents = contents.replace("<maven.compiler.target>1.7</maven.compiler.target>", "<maven.compiler.target>1.8</maven.compiler.target>");
+
+            String[] dependencies = {
+                "<dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>2.13.3</version> <!-- Use newest version --></dependency>",
+                "<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.5</version></dependency>",
+                "<dependency><groupId>cz.advel.jbullet</groupId><artifactId>jbullet</artifactId><version>20101010-1</version></dependency>"
+            };
+
+            String appendText = "";
+            if(conditions != null) for(int i = 3; i < dependencies.length + 3; i++) appendText += conditions[i] ? dependencies[i-3] : "";
 
             contents = contents.replace("</dependencies>", "<dependency>\n" +
                     "<groupId>com.googlecode.json-simple</groupId>\n" +
@@ -540,7 +549,7 @@ public class Functions {
                     "<groupId>com.google.code.gson</groupId>"+
                     "<artifactId>gson</artifactId>"+
                     "<version>2.10.1</version>"+
-                    "</dependency>"+
+                    "</dependency>"+ appendText +
                     "</dependencies>\n");
 
             FileWriter fw = new FileWriter(pom);
@@ -554,7 +563,7 @@ public class Functions {
         }
     }
 
-    private static void searchFolder(String folder, String pack) {
+    private static void searchFolder(String folder, String pack, Boolean[] conditions) {
 
         File[] f = new File(folder).listFiles();
         if(f == null) {
@@ -562,6 +571,35 @@ public class Functions {
             JOptionPane.showMessageDialog(null, "Couldn't read the folder " + folder, "ERROR", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if(conditions != null){
+
+            if(new File(folder).getName().equals("Objects") && conditions[1]){
+
+                String target = "Player";
+                try {
+
+                    System.out.println("CAMERA");
+                    String text = Functions.getFileContentsLined(new File("src/templates/GameCamera.txt"));
+                    text = text.replace("[package]", (Project.projectName.replace("/", ".") + "."));
+                    text = text.replace("[target]", target);
+
+                    System.out.println(new File(folder).getAbsolutePath());
+                    Functions.WriteObjectFileForced(text, "GameCamera.java", new File(folder).getParentFile().getAbsolutePath());
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            if(new File(folder).getName() == "Objects" && !conditions[0]) {
+
+                //Delete the previous object
+                for(File ff : new File(folder).listFiles())ff.delete();
+                return;
+            }
+        }
+
         for (File file : f) {
 
             if (file.getName().contains(".")) {
@@ -596,7 +634,7 @@ public class Functions {
                 }
             } else {
 
-                searchFolder(folder + "\\" + file.getName(), pack);
+                searchFolder(folder + "\\" + file.getName(), pack, conditions);
             }
         }
     }
@@ -893,6 +931,17 @@ public class Functions {
         fw.write(contents);
         fw.close();
     }    
+
+    public static void WriteObjectFileForced(String contents, String name, String path) throws IOException {
+
+        File f;
+        f = new File(path + "/Objects/" + name);
+
+        FileWriter fw = new FileWriter(f);        
+
+        fw.write(contents);
+        fw.close();
+    }   
 
     public static void WriteGameFile(String folder, String contents, String name) throws IOException {
 

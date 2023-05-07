@@ -1,1 +1,1 @@
-C:\thenewgame\app\src\main\java\com\com\game\Assets\Shaders\uiy.java
+C:\thenewgame\app\src\main\java\com\com\game\Assets\Sprites\fumo.png

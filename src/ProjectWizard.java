@@ -4,6 +4,8 @@ import javax.swing.border.BevelBorder;
 
 import java.awt.*;
 import java.io.*;
+import java.util.Arrays;
+import java.util.stream.Collector;
 import java.awt.image.*;
 import java.awt.event.*;
 
@@ -15,14 +17,17 @@ public class ProjectWizard extends JPanel implements ActionListener{
     private JButton createProject = Style.GetStyledButton("Create Project");
     private JButton openProject = Style.GetStyledButton("Open Project");
 
-    private JCheckBox mainObject = new JCheckBox("Add a starting Object"), camera = new JCheckBox("Add a configured Camera Object"), 
+    private static JCheckBox mainObject = new JCheckBox("Add a starting Object"), camera = new JCheckBox("Add a configured Camera Object"), 
     gson = new JCheckBox("Use Gson library"), jackson = new JCheckBox("Use Jackson library"), slf4j = new JCheckBox("use SLF4J library"), 
     bullet = new JCheckBox("Use JBullet library");
+
+    public static JCheckBox[] checks = {mainObject, camera, gson, jackson, slf4j, bullet};
 
     public int template = 0;
     public static String clone = null;
 
     public ProjectWizard(JFrame main) {
+
 
         ProjectWizard.clone = null;
         // setBackground(Color.DARK_GRAY);
@@ -192,7 +197,18 @@ public class ProjectWizard extends JPanel implements ActionListener{
             for (Component c : getParent().getComponents()) {
             
                 if(c == this) continue;
-                if(c.getClass() == Template.class) c.setBackground(myBackground);
+                if(c.getClass() == Template.class) {
+
+                    c.setBackground(myBackground);
+
+                    if(getX() == 5){
+                        
+                        for(JComponent j : ProjectWizard.checks) j.setEnabled(true);
+                        return;
+                    }
+
+                    for(JComponent j : ProjectWizard.checks) j.setEnabled(false);
+                }
             }
         }
 
@@ -230,10 +246,15 @@ public class ProjectWizard extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+
         if(e.getSource() == createProject) {
 
-            Functions.CreateProject(this, ProjectWizard.clone);
+            if(ProjectWizard.camera.isEnabled()){
+
+                Boolean[] conditions = Arrays.stream(ProjectWizard.checks).map(c -> c.isSelected()).toArray(Boolean[]::new);
+                Functions.CreateProject(this, ProjectWizard.clone, conditions);
+                
+            }else Functions.CreateProject(this, ProjectWizard.clone, null);
         } else if (e.getSource() == openProject) {
 
             if(recents.getSelectedIndex() == 0){
