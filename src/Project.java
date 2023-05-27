@@ -51,7 +51,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             openFolder = new JMenuItem("Open game folder"),
             openRes = new JMenuItem("Open Resources Folder"),
             settings = new JMenuItem("Set default code editor"), buildSettings = new JMenuItem("Tweak build settings"),
-            close = new JMenuItem("Close Project"), open = new JMenuItem("Open Himawari Store"),
+            close = new JMenuItem("Close Project"),
             buildJar = new JMenuItem("Build .JAR File (recomended)"), buildExe = new JMenuItem("Build .EXE File"),
             commit = new JMenuItem("Commit to Git"), push = new JMenuItem("Push to GitHub"),
             pull = new JMenuItem("Pull from GitHub"), init = new JMenuItem("Initialize Git repository"),
@@ -144,7 +144,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         settingsMenu.add(buildSettings);
         settingsMenu.add(settings);
 
-        other.add(open);
         other.add(close);
         build.add(buildJar);
         build.add(buildExe);
@@ -155,7 +154,6 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         addResources.addSeparator();
         addResources.add(addDepend);
         addResources.add(importLibrary);
-        addResources.add(newComp);
         addResources.addSeparator();
         addResources.add(addSprite);
         addResources.add(addMusic);
@@ -381,7 +379,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == website) {
 
             // Open website
-            Functions.RunBatch("open_site.bat");
+            Functions.openSite("localhost:3000");
         } else if (e.getSource() == addSprite) {
 
             try {
@@ -612,6 +610,9 @@ public class Project extends JFrame implements KeyListener, ActionListener {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+        } else if (e.getSource() == docs){
+
+            Functions.openSite("https://sagiri721.github.io/Himawari-Docs/");
         }
     }
 

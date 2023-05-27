@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class Window extends JFrame implements ActionListener {
 
-    public String version = "1.0.0";
+    public String version = "2.0.3";
 
     JMenu menu = new JMenu("Project Manager Tool"), mapmenu = new JMenu("Map Editor Tool"),
             account = new JMenu("Account");

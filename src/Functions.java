@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -967,5 +968,15 @@ public class Functions {
 
         fw.write(contents);
         fw.close();
+    }
+
+    public static void openSite(String URL){
+
+        Desktop desk = Desktop.getDesktop();
+        try {
+            desk.browse(URI.create(URL));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

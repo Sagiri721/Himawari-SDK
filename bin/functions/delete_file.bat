@@ -1,1 +1,1 @@
-del C:\thenewgame\app\src\main\java\com\com\game\Assets\Objects\Player
+del C:\thenewgame\app\src\main\java\com\com\game\Assets\Objects\dasf.java

@@ -1,1 +1,1 @@
-explorer C:\thenewgame\app
+explorer C:\thenewgame\app\src\main\java\com\com\game\Assets
