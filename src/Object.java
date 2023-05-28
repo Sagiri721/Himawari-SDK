@@ -12,8 +12,11 @@ public class Object {
 
         this.realName = name;
         this.name = name;
-        this.name = name.replace(" ", "-");
 
+        this.name = name.replace(" ", "-");
+        this.realName = realName.replace(" ", "-");
+
+        System.out.println(realName);
         if (nameExists(name)) {
 
             autoNameChangeProtocol();
@@ -25,8 +28,8 @@ public class Object {
         int index = 1;
         while (true) {
 
-            String tempName = this.name + String.valueOf(index);
-            System.out.println(tempName);
+            String tempName = this.realName + String.valueOf(index);
+            System.out.println(realName);
 
             if (!nameExists(tempName)) {
                 // System.out.println("Only once");

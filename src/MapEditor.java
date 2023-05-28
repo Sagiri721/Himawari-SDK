@@ -950,7 +950,7 @@ public class MapEditor extends JPanel implements ChangeListener {
                             objects.add(currentObject);
 
                             Object o = new Object();
-                            o.setName(currentObject.name);
+                            o.setName(currentObject.realName);
                             o.h = currentObject.h;
                             o.w = currentObject.w;
                             o.angle = currentObject.angle;
