@@ -379,7 +379,7 @@ public class Project extends JFrame implements KeyListener, ActionListener {
         } else if (e.getSource() == website) {
 
             // Open website
-            Functions.openSite("localhost:3000");
+            Functions.openSite("http://localhost:3000");
         } else if (e.getSource() == addSprite) {
 
             try {
