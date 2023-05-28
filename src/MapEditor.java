@@ -582,8 +582,10 @@ public class MapEditor extends JPanel implements ChangeListener {
                     return;
                 }
 
-                String[] names = new String[objects.size()-1];
-                int index = 0;
+                String[] names = new String[objects.size()];
+
+                names[0] = "NO PARENT";
+                int index = 1;
                 for (Object obj : objects) {
 
                     if (obj == selected)
@@ -600,7 +602,7 @@ public class MapEditor extends JPanel implements ChangeListener {
                 if (comboBox.getSelectedIndex() == -1)
                     return;
 
-                selected.parent = comboBox.getSelectedItem().toString();
+                selected.parent = comboBox.getSelectedIndex() == 0 ? null : comboBox.getSelectedItem().toString();
                 JOptionPane.showMessageDialog(null, "Parent set", "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
             }
         });
