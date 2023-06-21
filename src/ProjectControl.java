@@ -423,6 +423,7 @@ public class ProjectControl extends JPanel implements ActionListener {
     public void updateComponent(){
 
          // Fetch database clusters
+         clusterBox.removeAllItems();
          connect();
 
          try {

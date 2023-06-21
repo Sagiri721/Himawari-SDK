@@ -1195,7 +1195,7 @@ public class MapEditor extends JPanel implements ChangeListener {
                 ObjectData od = null;
                 for (ObjectData objectInformation : Project.objectInformation) {
                     
-                    if(objectInformation.name.equals(o.realName)){
+                    if(objectInformation.name != null && objectInformation.name.equals(o.realName)){
 
                         try{
                             drawImage = ImageIO.read(new File(objectInformation.image));
