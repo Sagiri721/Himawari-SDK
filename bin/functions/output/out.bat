@@ -1,4 +1,4 @@
-C:
-cd C:\Games\dafafasdf
+D:
+cd D:\TIAGO\program\himawari-utils\New Folder
 
-mvn archetype:generate -DgroupId=com.com.com -DartifactId=com -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+mvn archetype:generate -DgroupId=com.com.com -DartifactId=test -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false

@@ -309,8 +309,6 @@ public class Functions {
 
     public static void CreateProject(ProjectWizard pw, String clone, Boolean[] conditions) {
 
-        long startMilis = System.currentTimeMillis();
-
         pw.progressReset();
         pw.updateProgress("Project creation started...", 0);
 
@@ -337,6 +335,7 @@ public class Functions {
                 return;
             }
 
+            long startMilis = System.currentTimeMillis();
             Scanner scanner;
             try {
                 scanner = new Scanner(script);
