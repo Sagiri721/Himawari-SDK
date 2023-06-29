@@ -105,7 +105,7 @@ public class MapCreator extends JFrame implements ActionListener{
 
                         try {
 
-                            String newFile = f.getAbsolutePath() + "/tiles-" + (int)(sp2.getValue()) + (tileset.getName().substring(tileset.getName().lastIndexOf(".")));
+                            String newFile = f.getAbsolutePath() + "/tiles-" + (int)(sp.getValue()) + (tileset.getName().substring(tileset.getName().lastIndexOf(".")));
                             Files.copy(tileset.toPath(), new File(newFile).toPath(), StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException e1) {
                             e1.printStackTrace();

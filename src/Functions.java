@@ -531,6 +531,11 @@ public class Functions {
                     "<version>1.0.1</version>\n" +
                     "</dependency>\n" +
                     "<dependency>\n" +
+                    "<groupId>net.java.jinput</groupId>\n" +
+                    "<artifactId>jinput</artifactId>\n" +
+                    "<version>2.0.9</version>\n" +
+                    "</dependency>\n" +
+                    "<dependency>\n" +
                     "<groupId>com.google.guava</groupId>\n" +
                     "<artifactId>guava</artifactId>\n" +
                     "<version>31.0.1-jre</version>\n" +
@@ -545,10 +550,10 @@ public class Functions {
                     "<artifactId>javafx-controls</artifactId>\n" +
                     "<version>15.0.1</version>\n" +
                     "</dependency>\n" +
-                    "<dependency>"+
-                    "<groupId>com.google.code.gson</groupId>"+
-                    "<artifactId>gson</artifactId>"+
-                    "<version>2.10.1</version>"+
+                    "<dependency>\n"+
+                    "<groupId>com.google.code.gson</groupId>\n"+
+                    "<artifactId>gson</artifactId>\n"+
+                    "<version>2.10.1</version>\n"+
                     "</dependency>"+ appendText +
                     "</dependencies>\n");
 

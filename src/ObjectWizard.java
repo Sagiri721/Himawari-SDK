@@ -173,6 +173,8 @@ public class ObjectWizard extends JPanel implements ActionListener {
 
                 s.close();
 
+                
+                text = text.replace("[package]", (Project.projectName.replace("/", ".") + "."));
                 text = text.replace("[Object]", this.name);
                 text = text.replace("[Start]", startMethod);
 

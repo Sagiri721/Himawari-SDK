@@ -1,3 +1,3 @@
-C: 
- cd C:\thenewgame
-cmd /c start "" C:\thenewgame\compile.bat
+D: 
+ cd D:\TIAGO\program\himawari-utils\testegame
+cmd /c start "" D:\TIAGO\program\himawari-utils\testegame\compile.bat

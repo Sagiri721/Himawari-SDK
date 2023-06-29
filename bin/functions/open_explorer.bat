@@ -1,1 +1,1 @@
-explorer C:\thenewgame\app\src\main\java\com\com\game\Assets
+explorer D:\TIAGO\program\himawari-utils\testegame\test\src\main\java\com\com\com\Assets

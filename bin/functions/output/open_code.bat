@@ -1,3 +1,3 @@
-C: 
- cd C:\thenewgame\app\src\main\java\com/com/game\
+D: 
+ cd D:\TIAGO\program\himawari-utils\New Folder\test\src\main\java\com/com/com\
 code Main.java
